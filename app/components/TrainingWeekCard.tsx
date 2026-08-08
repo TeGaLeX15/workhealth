@@ -99,7 +99,7 @@ export default function TrainingWeekCard({
           return (
             <Link
               key={workout.id}
-              href={`/workout/${workout.id}`}
+              href={`/workouts/${workout.id}`}
               className="block rounded-2xl border border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700 hover:bg-zinc-800 active:scale-[0.99]"
             >
               <div className="flex items-center justify-between">
