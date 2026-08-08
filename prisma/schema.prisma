@@ -1,7 +1,6 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// learn more about it in the docs:
+// https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client"
@@ -13,9 +12,15 @@ datasource db {
 }
 
 enum WorkoutStatus {
+  PLANNED
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum TrainingWeekStatus {
+  ACTIVE
+  COMPLETED
 }
 
 model User {
@@ -27,6 +32,7 @@ model User {
 
   exercises     UserExercise[]
   workouts      Workout[]
+  trainingWeeks TrainingWeek[]
   sessions      Session[]
 
   @@index([email])
@@ -40,72 +46,93 @@ model Exercise {
 
   userExercises UserExercise[]
   workouts      Workout[]
+  trainingWeeks TrainingWeek[]
 }
 
 model UserExercise {
-  id            String    @id @default(cuid())
+  id           String    @id @default(cuid())
+  userId       String
+  exerciseId   String
+  maxReps      Int?
+  maxUpdatedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  userId        String
-  exerciseId    String
-
-  maxReps       Int?
-  maxUpdatedAt  DateTime?
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise      Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, exerciseId])
   @@index([userId])
   @@index([exerciseId])
 }
 
-model Workout {
-  id          String         @id @default(cuid())
-
+model TrainingWeek {
+  id          String             @id @default(cuid())
   userId      String
   exerciseId  String
-
-  status      WorkoutStatus  @default(IN_PROGRESS)
-
-  createdAt   DateTime       @default(now())
+  weekNumber  Int
+  maxReps     Int
+  startDate   DateTime           @default(now())
+  endDate     DateTime?
+  status      TrainingWeekStatus @default(ACTIVE)
+  createdAt   DateTime           @default(now())
   completedAt DateTime?
 
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise    Exercise       @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
-  sets        WorkoutSet[]
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
 
+  workouts Workout[]
+
+  @@unique([userId, exerciseId, weekNumber])
+  @@index([userId, status])
+  @@index([userId, exerciseId, status])
+}
+
+model Workout {
+  id             String        @id @default(cuid())
+  trainingWeekId String
+  userId         String
+  exerciseId     String
+  workoutNumber  Int
+  status WorkoutStatus @default(PLANNED)
+  createdAt      DateTime      @default(now())
+  completedAt    DateTime?
+
+  trainingWeek TrainingWeek @relation(fields: [trainingWeekId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise     Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  sets WorkoutSet[]
+
+  @@unique([trainingWeekId, workoutNumber])
   @@index([userId, createdAt])
   @@index([exerciseId])
+  @@index([trainingWeekId])
 }
 
 model WorkoutSet {
   id          String    @id @default(cuid())
-
   workoutId   String
-
   setNumber   Int
   targetReps  Int
   actualReps  Int?
   completed   Boolean   @default(false)
   completedAt DateTime?
 
-  workout     Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
 
   @@unique([workoutId, setNumber])
   @@index([workoutId])
 }
 
 model Session {
-  id          String   @id @default(cuid())
-  tokenHash   String   @unique
-  userId      String
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
