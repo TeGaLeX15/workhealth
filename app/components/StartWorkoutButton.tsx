@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 
 type StartWorkoutButtonProps = {
   workoutId: string;
@@ -16,9 +17,7 @@ export default function StartWorkoutButton({
   const [error, setError] = useState("");
 
   async function handleStart() {
-    if (isLoading) {
-      return;
-    }
+    if (isLoading) return;
 
     setIsLoading(true);
     setError("");
@@ -52,38 +51,47 @@ export default function StartWorkoutButton({
   }
 
   return (
-    <div className="mt-4">
+    <div className="w-full">
       {error && (
-        <div className="mb-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <p
+          className="mb-3 rounded-xl px-3 py-2 text-center text-xs"
+          style={{
+            color: "#ef4444",
+            backgroundColor:
+              "color-mix(in srgb, #ef4444 7%, transparent)",
+          }}
+        >
           {error}
-        </div>
+        </p>
       )}
 
       <button
         type="button"
         onClick={handleStart}
         disabled={isLoading}
-        className="
-          flex h-13 w-full items-center justify-center gap-2
-          rounded-2xl bg-emerald-500 px-5
-          text-sm font-semibold text-white
-          shadow-sm
-          transition
-          hover:bg-emerald-600
-          active:scale-[0.98]
-          disabled:cursor-not-allowed
-          disabled:opacity-60
-        "
+        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-semibold text-white transition-transform active:scale-[0.98] disabled:opacity-50"
+        style={{
+          backgroundColor: "var(--accent)",
+        }}
       >
         {isLoading ? (
           <>
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            <LoaderCircle
+              size={18}
+              strokeWidth={2}
+              className="animate-spin"
+            />
+
             <span>Начинаем...</span>
           </>
         ) : (
           <>
             <span>Начать тренировку</span>
-            <span className="text-base">→</span>
+
+            <ArrowRight
+              size={18}
+              strokeWidth={2}
+            />
           </>
         )}
       </button>

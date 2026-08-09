@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Sun,
   Moon,
@@ -14,47 +14,19 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-type ThemeMode = "light" | "dark" | "system";
-type AccentKey = "green" | "blue" | "purple" | "orange" | "red";
-
-const ACCENTS: Record<
-  AccentKey,
-  {
-    label: string;
-    primary: string;
-    dark: string;
-  }
-> = {
-  green: {
-    label: "Зелёный",
-    primary: "#22c55e",
-    dark: "#16a34a",
-  },
-  blue: {
-    label: "Синий",
-    primary: "#3b82f6",
-    dark: "#2563eb",
-  },
-  purple: {
-    label: "Фиолетовый",
-    primary: "#8b5cf6",
-    dark: "#7c3aed",
-  },
-  orange: {
-    label: "Оранжевый",
-    primary: "#f97316",
-    dark: "#ea580c",
-  },
-  red: {
-    label: "Красный",
-    primary: "#ef4444",
-    dark: "#dc2626",
-  },
-};
+import {
+  useTheme,
+  ACCENTS,
+} from "@/app/providers/theme-provider";
 
 export default function SettingsPage() {
-  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
-  const [accentKey, setAccentKey] = useState<AccentKey>("green");
+  const {
+    themeMode,
+    setThemeMode,
+    accentKey,
+    setAccentKey,
+    dark,
+  } = useTheme();
 
   const [notifications, setNotifications] = useState({
     workout: true,
@@ -62,39 +34,19 @@ export default function SettingsPage() {
     weekly: true,
   });
 
-  const [systemDark, setSystemDark] = useState(false);
+  const accentConfig =
+    ACCENTS[accentKey] ?? ACCENTS.green;
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const update = () => {
-      setSystemDark(media.matches);
-    };
-
-    update();
-    media.addEventListener("change", update);
-
-    return () => {
-      media.removeEventListener("change", update);
-    };
-  }, []);
-
-  const dark =
-    themeMode === "dark" ||
-    (themeMode === "system" && systemDark);
-
-  const accentConfig = ACCENTS[accentKey];
   const accent = accentConfig.primary;
 
   const colors = {
-    background: dark ? "#09090b" : "#ffffff",
     card: dark ? "#18181b" : "#ffffff",
     surface: dark ? "#27272a" : "#f4f4f5",
     border: dark ? "#27272a" : "#e4e4e7",
     divider: dark ? "#27272a" : "#f4f4f5",
     foreground: dark ? "#fafafa" : "#18181b",
     muted: dark ? "#a1a1aa" : "#71717a",
-    subtle: dark ? "#52525b" : "#a1a1aa",
+    subtle: dark ? "#71717a" : "#a1a1aa",
   };
 
   function toggleNotification(
@@ -108,157 +60,192 @@ export default function SettingsPage() {
 
   return (
     <main
-      className="min-h-screen"
+      className="py-4"
       style={{
-        backgroundColor: colors.background,
         color: colors.foreground,
       }}
     >
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 pb-28 pt-5">
+      {/* Page header */}
+      <header className="mb-7">
+        <h1 className="text-[28px] font-bold tracking-[-0.035em]">
+          Настройки
+        </h1>
 
-        {/* Header */}
-        <div className="mb-1">
-          <h1 className="text-[26px] font-bold tracking-[-0.03em]">
-            Настройки
-          </h1>
+        <p
+          className="mt-1.5 text-sm"
+          style={{ color: colors.muted }}
+        >
+          Персонализируй BodyOS под себя
+        </p>
+      </header>
 
-          <p
-            className="mt-1 text-sm"
-            style={{ color: colors.muted }}
-          >
-            Персонализируй BodyOS под себя
-          </p>
-        </div>
-
-        {/* Profile */}
-        <section
-          className="overflow-hidden rounded-2xl border"
+      {/* Profile */}
+      <SettingSection
+        title="Профиль"
+        description="Личные данные и цели"
+      >
+        <button
+          type="button"
+          className="flex w-full items-center gap-3.5 rounded-2xl border p-4 text-left transition active:scale-[0.99]"
           style={{
             backgroundColor: colors.card,
             borderColor: colors.border,
           }}
         >
-          <div className="flex items-center gap-3 p-4">
-            <div
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
-              style={{ backgroundColor: accent }}
-            >
-              <UserRound size={21} strokeWidth={2} />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold">
-                Профиль
-              </p>
-
-              <p
-                className="mt-0.5 text-xs"
-                style={{ color: colors.muted }}
-              >
-                Личные данные и цели
-              </p>
-            </div>
-
-            <ChevronRight
-              size={18}
-              style={{ color: colors.subtle }}
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+            style={{
+              backgroundColor: accent,
+            }}
+          >
+            <UserRound
+              size={20}
+              strokeWidth={2}
             />
           </div>
-        </section>
 
-        {/* Appearance */}
-        <section
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">
+              Профиль
+            </p>
+
+            <p
+              className="mt-0.5 text-xs"
+              style={{ color: colors.muted }}
+            >
+              Имя, параметры и цели
+            </p>
+          </div>
+
+          <ChevronRight
+            size={18}
+            style={{
+              color: colors.subtle,
+            }}
+          />
+        </button>
+      </SettingSection>
+
+      {/* Appearance */}
+      <SettingSection
+        title="Внешний вид"
+        description="Тема и цвет интерфейса"
+      >
+        <div
           className="overflow-hidden rounded-2xl border"
           style={{
             backgroundColor: colors.card,
             borderColor: colors.border,
           }}
         >
-          <SectionTitle>
-            Внешний вид
-          </SectionTitle>
-
-          <div className="px-4 pb-4">
-            <p className="mb-2.5 text-sm font-semibold">
+          {/* Theme */}
+          <div className="p-4">
+            <p className="mb-3 text-sm font-semibold">
               Тема
             </p>
 
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {[
                 {
-                  key: "light" as ThemeMode,
+                  key: "light" as const,
                   label: "Светлая",
                   icon: Sun,
                 },
                 {
-                  key: "dark" as ThemeMode,
+                  key: "dark" as const,
                   label: "Тёмная",
                   icon: Moon,
                 },
                 {
-                  key: "system" as ThemeMode,
+                  key: "system" as const,
                   label: "Системная",
                   icon: Monitor,
                 },
-              ].map(({ key, label, icon: Icon }) => {
-                const active = themeMode === key;
+              ].map(
+                ({
+                  key,
+                  label,
+                  icon: Icon,
+                }) => {
+                  const active =
+                    themeMode === key;
 
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setThemeMode(key)}
-                    className="flex min-h-16 flex-1 flex-col items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition active:scale-[0.97]"
-                    style={{
-                      backgroundColor: active
-                        ? accent
-                        : colors.surface,
-                      color: active
-                        ? "#ffffff"
-                        : colors.muted,
-                    }}
-                  >
-                    <Icon
-                      size={16}
-                      strokeWidth={2}
-                    />
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() =>
+                        setThemeMode(key)
+                      }
+                      className="flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition active:scale-[0.97]"
+                      style={{
+                        backgroundColor: active
+                          ? accent
+                          : colors.surface,
+                        color: active
+                          ? "#ffffff"
+                          : colors.muted,
+                      }}
+                    >
+                      <Icon
+                        size={17}
+                        strokeWidth={
+                          active ? 2.2 : 1.8
+                        }
+                      />
 
-                    {label}
-                  </button>
-                );
-              })}
+                      {label}
+                    </button>
+                  );
+                }
+              )}
             </div>
           </div>
 
           {/* Accent */}
           <div
-            className="border-t px-4 py-4"
+            className="border-t p-4"
             style={{
               borderColor: colors.divider,
             }}
           >
-            <p className="mb-3 text-sm font-semibold">
+            <p className="text-sm font-semibold">
               Акцентный цвет
             </p>
 
-            <div className="flex gap-3">
+            <p
+              className="mt-1 text-xs"
+              style={{
+                color: colors.muted,
+              }}
+            >
+              Цвет основных элементов интерфейса
+            </p>
+
+            <div className="mt-4 flex items-center gap-3">
               {(
-                Object.entries(ACCENTS) as [
-                  AccentKey,
-                  (typeof ACCENTS)[AccentKey],
+                Object.entries(
+                  ACCENTS
+                ) as [
+                  keyof typeof ACCENTS,
+                  (typeof ACCENTS)[keyof typeof ACCENTS],
                 ][]
               ).map(([key, value]) => {
-                const active = accentKey === key;
+                const active =
+                  accentKey === key;
 
                 return (
                   <button
                     key={key}
                     type="button"
-                    onClick={() => setAccentKey(key)}
+                    onClick={() =>
+                      setAccentKey(key)
+                    }
                     aria-label={value.label}
-                    className="relative h-10 w-10 rounded-xl transition active:scale-95"
+                    className="relative h-10 w-10 rounded-xl transition active:scale-90"
                     style={{
-                      backgroundColor: value.primary,
+                      backgroundColor:
+                        value.primary,
                       boxShadow: active
                         ? `0 0 0 2px ${colors.card}, 0 0 0 4px ${value.primary}`
                         : "none",
@@ -277,28 +264,29 @@ export default function SettingsPage() {
             </div>
 
             <p
-              className="mt-2 text-center text-[11px]"
+              className="mt-3 text-xs font-medium"
               style={{
-                color: colors.muted,
+                color: accent,
               }}
             >
               {accentConfig.label}
             </p>
           </div>
-        </section>
+        </div>
+      </SettingSection>
 
-        {/* Notifications */}
-        <section
+      {/* Notifications */}
+      <SettingSection
+        title="Уведомления"
+        description="Напоминания и полезные события"
+      >
+        <div
           className="overflow-hidden rounded-2xl border"
           style={{
             backgroundColor: colors.card,
             borderColor: colors.border,
           }}
         >
-          <SectionTitle>
-            Уведомления
-          </SectionTitle>
-
           <SettingToggle
             label="Напоминания о тренировке"
             description="Не забывать о запланированной тренировке"
@@ -332,20 +320,21 @@ export default function SettingsPage() {
             colors={colors}
             last
           />
-        </section>
+        </div>
+      </SettingSection>
 
-        {/* Training */}
-        <section
+      {/* Training */}
+      <SettingSection
+        title="Тренировки"
+        description="Параметры тренировочного процесса"
+      >
+        <div
           className="overflow-hidden rounded-2xl border"
           style={{
             backgroundColor: colors.card,
             borderColor: colors.border,
           }}
         >
-          <SectionTitle>
-            Тренировки
-          </SectionTitle>
-
           <SettingRow
             icon={<Target size={17} />}
             label="Целевые подходы"
@@ -367,34 +356,56 @@ export default function SettingsPage() {
             colors={colors}
             last
           />
-        </section>
-
-        {/* About */}
-        <div
-          className="flex items-center justify-center gap-2 pt-2 text-[11px]"
-          style={{
-            color: colors.subtle,
-          }}
-        >
-          <Dumbbell size={13} />
-          BodyOS · версия 1.0.0
         </div>
+      </SettingSection>
+
+      {/* About */}
+      <div
+        className="flex items-center justify-center gap-2 pb-2 pt-2 text-[11px]"
+        style={{
+          color: colors.subtle,
+        }}
+      >
+        <Dumbbell size={13} />
+        BodyOS · версия 1.0.0
       </div>
     </main>
   );
 }
 
-function SectionTitle({
+/* -------------------------------------------------------------------------- */
+/* Section                                                                     */
+/* -------------------------------------------------------------------------- */
+
+function SettingSection({
+  title,
+  description,
   children,
 }: {
+  title: string;
+  description: string;
   children: React.ReactNode;
 }) {
   return (
-    <p className="px-4 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-500">
+    <section className="mb-7">
+      <div className="mb-3 px-0.5">
+        <h2 className="text-sm font-bold tracking-[-0.01em]">
+          {title}
+        </h2>
+
+        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+          {description}
+        </p>
+      </div>
+
       {children}
-    </p>
+    </section>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Toggle                                                                      */
+/* -------------------------------------------------------------------------- */
 
 function SettingToggle({
   label,
@@ -415,20 +426,21 @@ function SettingToggle({
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${
-        !last ? "border-b" : ""
-      }`}
+      className={[
+        "flex items-center justify-between gap-4 px-4 py-3.5",
+        !last ? "border-b" : "",
+      ].join(" ")}
       style={{
         borderColor: colors.divider,
       }}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">
           {label}
         </p>
 
         <p
-          className="mt-0.5 text-xs"
+          className="mt-0.5 text-xs leading-5"
           style={{
             color: colors.muted,
           }}
@@ -442,7 +454,7 @@ function SettingToggle({
         onClick={onChange}
         role="switch"
         aria-checked={enabled}
-        className="relative h-6 w-10 shrink-0 rounded-full transition-colors"
+        className="relative h-6 w-10 shrink-0 rounded-full transition active:scale-95"
         style={{
           backgroundColor: enabled
             ? accent
@@ -460,6 +472,10 @@ function SettingToggle({
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Row                                                                         */
+/* -------------------------------------------------------------------------- */
+
 function SettingRow({
   icon,
   label,
@@ -475,21 +491,21 @@ function SettingRow({
 }) {
   return (
     <div
-      className={`flex items-center justify-between px-4 py-3.5 ${
-        !last ? "border-b" : ""
-      }`}
+      className={[
+        "flex items-center justify-between gap-4 px-4 py-4",
+        !last ? "border-b" : "",
+      ].join(" ")}
       style={{
         borderColor: colors.divider,
       }}
     >
-      <div className="flex items-center gap-2.5">
-        <span
-          style={{
-            color: colors.muted,
-          }}
-        >
-          {icon}
-        </span>
+      <div
+        className="flex items-center gap-3"
+        style={{
+          color: colors.muted,
+        }}
+      >
+        {icon}
 
         <span className="text-sm font-semibold">
           {label}
@@ -497,7 +513,7 @@ function SettingRow({
       </div>
 
       <span
-        className="text-sm"
+        className="shrink-0 text-sm"
         style={{
           color: colors.muted,
         }}
@@ -507,4 +523,3 @@ function SettingRow({
     </div>
   );
 }
-

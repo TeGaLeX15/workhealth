@@ -4,24 +4,34 @@
   --background: #ffffff;
   --foreground: #18181b;
 
+  --card: #ffffff;
+  --surface: #f4f4f5;
+
   --accent: #22c55e;
   --accent-dark: #16a34a;
 
   --muted: #71717a;
+  --subtle: #a1a1aa;
+
   --border: #e4e4e7;
-  --surface: #f4f4f5;
+  --divider: #f4f4f5;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
+  --color-card: var(--card);
+  --color-surface: var(--surface);
+
   --color-accent: var(--accent);
   --color-accent-dark: var(--accent-dark);
 
   --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+
   --color-border: var(--border);
-  --color-surface: var(--surface);
+  --color-divider: var(--divider);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -33,14 +43,22 @@
 
 html {
   background: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
 }
 
 body {
   min-height: 100%;
   margin: 0;
+
   background: var(--background);
   color: var(--foreground);
+
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
 }
 
 button,
@@ -54,5 +72,104 @@ button {
 
 ::selection {
   background: var(--accent);
-  color: white;
+  color: #ffffff;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+@keyframes bodyos-active-workout {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px
+        color-mix(in srgb, var(--accent) 7%, transparent),
+      0 8px 24px
+        color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px
+        color-mix(in srgb, var(--accent) 12%, transparent),
+      0 10px 28px
+        color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+}
+
+@keyframes bodyos-current-set {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0
+        color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 3px
+        color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+}
+
+@keyframes bodyos-current-indicator {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes bodyos-current-dot {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes bodyos-action-dot {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.bodyos-active-workout {
+  animation: bodyos-active-workout 3s ease-in-out infinite;
+}
+
+.bodyos-current-set {
+  animation: bodyos-current-set 2.4s ease-in-out infinite;
+}
+
+.bodyos-current-indicator {
+  animation: bodyos-current-indicator 2s ease-in-out infinite;
+}
+
+.bodyos-current-dot {
+  animation: bodyos-current-dot 1.8s ease-in-out infinite;
+}
+
+.bodyos-action-dot {
+  animation: bodyos-action-dot 1.8s ease-in-out infinite;
 }

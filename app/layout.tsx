@@ -5,6 +5,7 @@ import "./globals.css";
 
 import AppHeader from "@/app/components/AppHeader";
 import BottomNavigation from "@/app/components/BottomNavigation";
+import { ThemeProvider } from "@/app/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,15 +29,24 @@ export default function RootLayout({
     <html
       lang="ru"
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <body className="overflow-x-hidden bg-white text-zinc-950">
-        <AppHeader />
+      <body
+        className="min-h-dvh"
+        style={{
+          backgroundColor: "var(--background)",
+          color: "var(--foreground)",
+        }}
+      >
+        <ThemeProvider>
+          <AppHeader />
 
-        <main className="mx-auto w-full max-w-xl px-5 pb-28">
-          {children}
-        </main>
+          <main className="mx-auto w-full max-w-xl px-5 pb-24">
+            {children}
+          </main>
 
-        <BottomNavigation />
+          <BottomNavigation />
+        </ThemeProvider>
       </body>
     </html>
   );

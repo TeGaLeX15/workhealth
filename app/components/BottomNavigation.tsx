@@ -9,6 +9,8 @@ import {
   Settings,
 } from "lucide-react";
 
+import { useTheme } from "@/app/providers/theme-provider";
+
 const navigation = [
   {
     href: "/",
@@ -34,26 +36,24 @@ const navigation = [
 
 export default function BottomNavigation() {
   const pathname = usePathname();
+  const { dark, accent } = useTheme();
 
   return (
     <nav
       aria-label="Основная навигация"
-      className={[
-        "fixed inset-x-0 bottom-0 z-50",
-        "px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
-        "pointer-events-none",
-      ].join(" ")}
+      className="fixed inset-x-0 bottom-0 z-50 w-full"
+      style={{
+        backgroundColor: dark
+          ? "rgba(9, 9, 11, 0.96)"
+          : "rgba(255, 255, 255, 0.96)",
+        borderTop: `1px solid ${
+          dark ? "#27272a" : "#e4e4e7"
+        }`,
+        paddingBottom:
+          "env(safe-area-inset-bottom)",
+      }}
     >
-      <div
-        className={[
-          "pointer-events-auto mx-auto flex w-full max-w-xl",
-          "items-center gap-1",
-          "rounded-2xl border border-zinc-200/80",
-          "bg-white/95 px-2 py-2",
-          "shadow-[0_8px_30px_rgba(0,0,0,0.08)]",
-          "backdrop-blur-md",
-        ].join(" ")}
-      >
+      <div className="mx-auto flex w-full max-w-xl">
         {navigation.map((item) => {
           const isActive =
             item.href === "/"
@@ -66,27 +66,47 @@ export default function BottomNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              aria-current={isActive ? "page" : undefined}
+              aria-current={
+                isActive ? "page" : undefined
+              }
               className={[
-                "flex min-h-14 flex-1 shrink-0",
+                "relative flex min-h-16 flex-1",
                 "flex-col items-center justify-center",
-                "gap-1 rounded-xl px-2",
-                "text-xs font-medium",
-                "transition-colors duration-200",
-                "active:scale-[0.96]",
-                "motion-reduce:transition-none motion-reduce:active:scale-100",
-                isActive
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-700",
+                "gap-1",
+                "transition-colors duration-150",
+                "active:opacity-70",
+                "motion-reduce:transition-none",
               ].join(" ")}
+              style={{
+                color: isActive
+                  ? accent
+                  : dark
+                    ? "#71717a"
+                    : "#a1a1aa",
+              }}
             >
+              {/* Active indicator */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-0.5"
+                style={{
+                  backgroundColor: isActive
+                    ? accent
+                    : "transparent",
+                }}
+              />
+
               <Icon
                 size={21}
-                strokeWidth={isActive ? 2.2 : 1.8}
+                strokeWidth={
+                  isActive ? 2.25 : 1.8
+                }
                 aria-hidden="true"
               />
 
-              <span>{item.label}</span>
+              <span className="text-[10px] font-semibold leading-none">
+                {item.label}
+              </span>
             </Link>
           );
         })}

@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { getSessionUser } from "@/app/server/auth/session";
-import Exercises from "../components/Exercises";
+import Exercises from "@/app/components/Exercises";
 
-export default async function HomePage() {
+export default async function TrainingPage() {
   const user = await getSessionUser();
 
   if (!user) {
@@ -11,25 +11,40 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="pt-8">
-      <header>
-        <p className="text-sm font-medium text-green-600">
+    <main className="py-6">
+      <header className="pt-2">
+        <p
+          className="text-sm font-semibold"
+          style={{
+            color: "var(--accent)",
+          }}
+        >
           Тренировки
         </p>
 
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-950">
+        <h1
+          className="mt-2 text-[30px] font-bold leading-tight tracking-[-0.04em]"
+          style={{
+            color: "var(--foreground)",
+          }}
+        >
           Выбери упражнение
         </h1>
 
-        <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-500">
+        <p
+          className="mt-3 max-w-md text-sm leading-6"
+          style={{
+            color: "var(--muted)",
+          }}
+        >
           Выбери упражнение, чтобы посмотреть программу
           и начать тренировку.
         </p>
       </header>
 
-      <section className="mt-8">
+      <section className="mt-7">
         <Exercises />
       </section>
-    </div>
+    </main>
   );
 }
