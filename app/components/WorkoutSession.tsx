@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type WorkoutSet = {
@@ -51,10 +51,6 @@ export default function WorkoutSession({
 
   /*
    * Таймер отдыха.
-   *
-   * Важно:
-   * effect только подписывается на interval.
-   * Никаких setState напрямую из тела effect.
    */
   useEffect(() => {
     if (!isResting) {
@@ -62,9 +58,14 @@ export default function WorkoutSession({
     }
 
     const timer = window.setInterval(() => {
-      setRestSeconds((seconds) =>
-        seconds > 0 ? seconds - 1 : 0,
-      );
+      setRestSeconds((seconds) => {
+        if (seconds <= 1) {
+          window.clearInterval(timer);
+          return 0;
+        }
+
+        return seconds - 1;
+      });
     }, 1000);
 
     return () => {
@@ -73,25 +74,23 @@ export default function WorkoutSession({
   }, [isResting]);
 
   /*
-   * Когда таймер дошёл до нуля,
-   * следующий рендер покажет следующий подход.
+   * Когда отдых закончился,
+   * автоматически переходим к следующему подходу.
    */
-  const restFinished =
-    isResting && restSeconds === 0;
+  useEffect(() => {
+    if (!isResting || restSeconds !== 0) {
+      return;
+    }
 
-  const formattedRestTime = useMemo(() => {
-    const minutes = Math.floor(
-      restSeconds / 60,
-    )
-      .toString()
-      .padStart(2, "0");
+    const timeout = window.setTimeout(() => {
+      setIsResting(false);
+      setRestSeconds(REST_SECONDS);
+    }, 500);
 
-    const seconds = (restSeconds % 60)
-      .toString()
-      .padStart(2, "0");
-
-    return `${minutes}:${seconds}`;
-  }, [restSeconds]);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [isResting, restSeconds]);
 
   async function handleCompleteSet() {
     if (!currentSet || isLoading || isResting) {
@@ -133,9 +132,7 @@ export default function WorkoutSession({
 
       if (data.completed) {
         setCurrentIndex(completedSets.length);
-
         router.refresh();
-
         return;
       }
 
@@ -152,15 +149,6 @@ export default function WorkoutSession({
     }
   }
 
-  function handleContinueAfterRest() {
-    if (!restFinished) {
-      return;
-    }
-
-    setIsResting(false);
-    setRestSeconds(REST_SECONDS);
-  }
-
   function increaseRest() {
     setRestSeconds(
       (seconds) => seconds + 30,
@@ -168,31 +156,29 @@ export default function WorkoutSession({
   }
 
   /*
-   * Закончили все подходы.
+   * Тренировка завершена.
    */
   if (isFinished) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center px-4">
-        <div className="text-center">
-          <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900">
-            <span className="text-4xl">
-              ✓
-            </span>
-          </div>
-
-          <h2 className="mt-6 text-2xl font-semibold">
-            Тренировка завершена
-          </h2>
-
-          <p className="mt-2 text-sm text-zinc-500">
-            Все подходы выполнены
-          </p>
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+          <span className="text-4xl text-green-600">
+            ✓
+          </span>
         </div>
+
+        <h2 className="mt-7 text-2xl font-bold tracking-tight text-zinc-950">
+          Тренировка завершена
+        </h2>
+
+        <p className="mt-2 max-w-xs text-sm leading-6 text-zinc-500">
+          Все подходы выполнены. Отличная работа.
+        </p>
 
         <button
           type="button"
           onClick={() => router.refresh()}
-          className="mt-8 rounded-xl border border-zinc-800 px-5 py-3 text-sm text-zinc-400 transition hover:border-zinc-600 hover:text-white"
+          className="mt-8 h-12 rounded-xl bg-zinc-950 px-6 text-sm font-semibold text-white transition active:scale-[0.98]"
         >
           Вернуться
         </button>
@@ -201,68 +187,85 @@ export default function WorkoutSession({
   }
 
   /*
-   * Отдых.
+   * Экран отдыха.
    */
   if (isResting) {
+    const progress =
+      restSeconds === 0
+        ? 100
+        : ((REST_SECONDS - restSeconds) /
+            REST_SECONDS) *
+          100;
+
     return (
-      <div className="flex min-h-[70vh] flex-col items-center px-4 pt-10">
+      <div className="flex min-h-[70vh] flex-col">
         <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-zinc-600">
+          <p className="text-sm font-medium text-zinc-500">
             Отдых
           </p>
 
-          <p className="mt-3 text-sm text-zinc-500">
+          <p className="mt-1 text-lg font-semibold text-zinc-950">
             Следующий подход
           </p>
         </div>
 
-        <div className="mt-12 flex justify-center">
-          <button
-            type="button"
-            onClick={
-              restFinished
-                ? handleContinueAfterRest
-                : undefined
-            }
-            disabled={!restFinished}
-            className={[
-              "flex h-72 w-72 flex-col items-center justify-center rounded-full",
-              "border transition-all duration-300",
-              restFinished
-                ? "cursor-pointer border-white bg-white text-zinc-950 hover:scale-[1.02] active:scale-[0.98]"
-                : "cursor-default border-zinc-700 bg-zinc-900 text-white",
-            ].join(" ")}
-          >
-            <span className="text-6xl font-semibold tabular-nums">
-              {formattedRestTime}
-            </span>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="relative flex h-72 w-72 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50">
+            <div
+              className="absolute inset-2 rounded-full border-4 border-transparent"
+              style={{
+                background: `conic-gradient(
+                  #16a34a ${progress}%,
+                  #e4e4e7 ${progress}% 100%
+                )`,
+                mask:
+                  "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                maskComposite: "exclude",
+                padding: "4px",
+              }}
+            />
 
-            <span
-              className={[
-                "mt-3 text-sm",
-                restFinished
-                  ? "text-zinc-500"
-                  : "text-zinc-500",
-              ].join(" ")}
-            >
-              {restFinished
-                ? "Продолжить"
-                : "отдых"}
-            </span>
-          </button>
+            <div className="relative flex h-64 w-64 flex-col items-center justify-center rounded-full bg-white">
+              {restSeconds === 0 ? (
+                <>
+                  <span className="text-4xl font-bold text-zinc-950">
+                    Готово
+                  </span>
+
+                  <span className="mt-2 text-sm text-zinc-500">
+                    следующий подход
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-6xl font-bold tabular-nums tracking-tight text-zinc-950">
+                    {Math.floor(restSeconds / 60)
+                      .toString()
+                      .padStart(2, "0")}
+                    :
+                    {(restSeconds % 60)
+                      .toString()
+                      .padStart(2, "0")}
+                  </span>
+
+                  <span className="mt-2 text-sm text-zinc-500">
+                    отдых
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={increaseRest}
-          className="mt-8 rounded-xl border border-zinc-800 px-5 py-3 text-sm text-zinc-400 transition hover:border-zinc-600 hover:text-white"
-        >
-          +30 сек
-        </button>
-
-        <p className="mt-6 text-center text-sm text-zinc-600">
-          Отдохни перед следующим подходом
-        </p>
+        <div className="pb-4">
+          <button
+            type="button"
+            onClick={increaseRest}
+            className="h-12 w-full rounded-xl border border-zinc-200 bg-white text-sm font-semibold text-zinc-700 transition active:scale-[0.98]"
+          >
+            +30 сек
+          </button>
+        </div>
       </div>
     );
   }
@@ -270,55 +273,76 @@ export default function WorkoutSession({
   /*
    * Текущий подход.
    */
+  const progress =
+    (currentIndex / completedSets.length) * 100;
+
   return (
-    <div className="flex min-h-[70vh] flex-col items-center px-4 pt-10">
+    <div className="flex min-h-[70vh] flex-col">
+      {/* Верхняя часть */}
       <div className="text-center">
-        <p className="text-sm uppercase tracking-[0.2em] text-zinc-600">
+        <p className="text-sm font-medium text-zinc-500">
           Подход {currentSet.setNumber}
         </p>
 
-        <p className="mt-2 text-sm text-zinc-600">
-          {currentSet.setNumber} /{" "}
+        <p className="mt-1 text-lg font-semibold text-zinc-950">
+          {currentSet.setNumber} из{" "}
           {completedSets.length}
         </p>
       </div>
 
-      <div className="mt-10 flex justify-center">
+      {/* Основной круг */}
+      <div className="flex flex-1 items-center justify-center">
         <button
           type="button"
           onClick={handleCompleteSet}
           disabled={isLoading}
-          className={[
-            "flex h-72 w-72 flex-col items-center justify-center rounded-full",
-            "border border-zinc-500 bg-white text-zinc-950",
-            "transition-all duration-300",
-            "select-none",
-            "hover:scale-[1.02]",
-            "active:scale-[0.97]",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-          ].join(" ")}
+          className="group relative flex h-72 w-72 flex-col items-center justify-center rounded-full bg-zinc-950 text-white shadow-xl shadow-zinc-200 transition-transform active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span className="text-7xl font-semibold">
+          <span className="text-7xl font-bold tabular-nums tracking-tight">
             {currentSet.targetReps}
           </span>
 
-          <span className="mt-3 text-sm text-zinc-500">
+          <span className="mt-2 text-sm text-zinc-400">
             {isLoading
               ? "сохраняем..."
               : "повторений"}
           </span>
+
+          {!isLoading && (
+            <span className="absolute bottom-12 text-xs text-zinc-500 opacity-0 transition-opacity group-hover:opacity-100">
+              нажми после выполнения
+            </span>
+          )}
         </button>
       </div>
 
-      {error && (
-        <p className="mt-6 text-center text-sm text-red-400">
-          {error}
-        </p>
-      )}
+      {/* Нижняя часть */}
+      <div className="pb-4">
+        <div className="flex items-center justify-between text-xs text-zinc-500">
+          <span>
+            {currentIndex} выполнено
+          </span>
 
-      <p className="mt-8 text-center text-sm text-zinc-600">
-        Выполни подход и нажми на круг
-      </p>
+          <span>
+            {completedSets.length} всего
+          </span>
+        </div>
+
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-100">
+          <div
+            className="h-full rounded-full bg-green-600 transition-all duration-500"
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+        </div>
+
+        {error && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

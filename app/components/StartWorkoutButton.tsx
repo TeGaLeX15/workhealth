@@ -16,6 +16,10 @@ export default function StartWorkoutButton({
   const [error, setError] = useState("");
 
   async function handleStart() {
+    if (isLoading) {
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
@@ -39,16 +43,18 @@ export default function StartWorkoutButton({
 
       router.refresh();
     } catch {
-      setError("Не удалось подключиться к серверу");
+      setError(
+        "Не удалось подключиться к серверу",
+      );
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div>
+    <div className="mt-4">
       {error && (
-        <div className="mb-4 rounded-xl border border-red-900/50 bg-red-950/30 px-4 py-3 text-sm text-red-300">
+        <div className="mb-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -57,11 +63,29 @@ export default function StartWorkoutButton({
         type="button"
         onClick={handleStart}
         disabled={isLoading}
-        className="h-12 w-full rounded-xl bg-white px-4 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+        className="
+          flex h-13 w-full items-center justify-center gap-2
+          rounded-2xl bg-emerald-500 px-5
+          text-sm font-semibold text-white
+          shadow-sm
+          transition
+          hover:bg-emerald-600
+          active:scale-[0.98]
+          disabled:cursor-not-allowed
+          disabled:opacity-60
+        "
       >
-        {isLoading
-          ? "Начинаем..."
-          : "Начать тренировку"}
+        {isLoading ? (
+          <>
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            <span>Начинаем...</span>
+          </>
+        ) : (
+          <>
+            <span>Начать тренировку</span>
+            <span className="text-base">→</span>
+          </>
+        )}
       </button>
     </div>
   );

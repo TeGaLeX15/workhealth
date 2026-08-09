@@ -47,24 +47,24 @@ function getStatusLabel(
   }
 }
 
-function getStatusClass(
+function getStatusStyle(
   status: Workout["status"],
 ) {
   switch (status) {
     case "PLANNED":
-      return "text-zinc-500";
+      return "bg-zinc-100 text-zinc-500";
 
     case "IN_PROGRESS":
-      return "text-white";
+      return "bg-emerald-50 text-emerald-600";
 
     case "COMPLETED":
-      return "text-green-400";
+      return "bg-emerald-100 text-emerald-700";
 
     case "CANCELLED":
-      return "text-red-400";
+      return "bg-red-50 text-red-500";
 
     default:
-      return "text-zinc-500";
+      return "bg-zinc-100 text-zinc-500";
   }
 }
 
@@ -73,83 +73,151 @@ export default function TrainingWeekCard({
   workouts,
 }: TrainingWeekCardProps) {
   return (
-    <section className="mt-8">
-      <div className="mb-4">
-        <p className="text-sm text-zinc-500">
-          Тренировочная неделя
-        </p>
+    <div className="space-y-3">
+      {workouts.map((workout) => {
+        const completedSets = workout.sets.filter(
+          (set) => set.completed,
+        ).length;
 
-        <h2 className="mt-1 text-xl font-semibold">
-          Неделя {weekNumber}
-        </h2>
+        const totalSets = workout.sets.length;
 
-        <p className="mt-1 text-sm text-zinc-500">
-          {workouts.length} тренировки
-        </p>
-      </div>
+        const progress =
+          totalSets > 0
+            ? Math.round(
+                (completedSets / totalSets) * 100,
+              )
+            : 0;
 
-      <div className="space-y-3">
-        {workouts.map((workout) => {
-          const completedSets = workout.sets.filter(
-            (set) => set.completed,
-          ).length;
+        const isCompleted =
+          workout.status === "COMPLETED";
 
-          const totalSets = workout.sets.length;
+        const isInProgress =
+          workout.status === "IN_PROGRESS";
 
-          return (
-            <Link
-              key={workout.id}
-              href={`/workouts/${workout.id}`}
-              className="block rounded-2xl border border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700 hover:bg-zinc-800 active:scale-[0.99]"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-zinc-500">
+        return (
+          <Link
+            key={workout.id}
+            href={`/workouts/${workout.id}`}
+            className={[
+              "group block overflow-hidden rounded-3xl",
+              "border border-zinc-200 bg-white",
+              "shadow-sm",
+              "transition-all duration-200",
+              "active:scale-[0.985]",
+              "hover:border-zinc-300 hover:shadow-md",
+            ].join(" ")}
+          >
+            {/* Верхняя часть */}
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    Неделя {weekNumber}
+                  </p>
+
+                  <h3 className="mt-1 text-xl font-bold tracking-tight text-zinc-950">
                     Тренировка {workout.workoutNumber}
-                  </p>
-
-                  <p
-                    className={`mt-1 text-sm font-medium ${getStatusClass(
-                      workout.status,
-                    )}`}
-                  >
-                    {getStatusLabel(workout.status)}
-                  </p>
+                  </h3>
                 </div>
 
-                <span className="text-xl text-zinc-600">
-                  →
+                <span
+                  className={[
+                    "shrink-0 rounded-full px-3 py-1.5",
+                    "text-xs font-semibold",
+                    getStatusStyle(workout.status),
+                  ].join(" ")}
+                >
+                  {getStatusLabel(workout.status)}
                 </span>
               </div>
 
-              <div className="mt-4 flex items-center gap-2 overflow-x-auto">
+              {/* Прогресс */}
+              <div className="mt-5">
+                <div className="flex items-end justify-between">
+                  <div>
+                    <span className="text-2xl font-bold tracking-tight text-zinc-950">
+                      {completedSets}
+                    </span>
+
+                    <span className="ml-1 text-sm text-zinc-400">
+                      / {totalSets} подходов
+                    </span>
+                  </div>
+
+                  <span className="text-xs font-medium text-zinc-400">
+                    {progress}%
+                  </span>
+                </div>
+
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-100">
+                  <div
+                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                    style={{
+                      width: `${progress}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Подходы */}
+            <div className="border-t border-zinc-100 bg-zinc-50/70 px-5 py-4">
+              <div className="flex gap-2 overflow-x-auto">
                 {workout.sets.map((set) => (
                   <div
                     key={set.id}
-                    className={`min-w-[72px] rounded-xl border px-3 py-2 ${
+                    className={[
+                      "flex min-w-[64px] flex-col items-center",
+                      "rounded-2xl border px-3 py-2.5",
                       set.completed
-                        ? "border-green-900/50 bg-green-950/20"
-                        : "border-zinc-800 bg-zinc-950"
-                    }`}
+                        ? "border-emerald-100 bg-emerald-50"
+                        : "border-zinc-200 bg-white",
+                    ].join(" ")}
                   >
-                    <p className="text-xs text-zinc-500">
-                      Подход {set.setNumber}
-                    </p>
+                    <span
+                      className={[
+                        "text-[11px] font-medium",
+                        set.completed
+                          ? "text-emerald-600"
+                          : "text-zinc-400",
+                      ].join(" ")}
+                    >
+                      {set.setNumber} подход
+                    </span>
 
-                    <p className="mt-1 text-sm font-medium">
-                      {set.actualReps ?? set.targetReps}
-                    </p>
+                    <span
+                      className={[
+                        "mt-1 text-sm font-bold",
+                        set.completed
+                          ? "text-emerald-700"
+                          : "text-zinc-950",
+                      ].join(" ")}
+                    >
+                      {set.actualReps ??
+                        set.targetReps}
+                    </span>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="mt-3 text-xs text-zinc-500">
-                Подходы: {completedSets}/{totalSets}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </section>
+            {/* Нижняя строка */}
+            <div className="flex items-center justify-between border-t border-zinc-100 px-5 py-3.5">
+              <span className="text-xs font-medium text-zinc-400">
+                {isCompleted
+                  ? "Тренировка завершена"
+                  : isInProgress
+                    ? "Продолжить тренировку"
+                    : "Готова к выполнению"}
+              </span>
+
+              <span className="text-zinc-300 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-zinc-500">
+                →
+              </span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
   );
 }

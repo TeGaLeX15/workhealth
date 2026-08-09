@@ -31,7 +31,7 @@ export default async function ExercisePage({
   });
 
   if (!exercise) {
-    redirect("/");
+    redirect("/training");
   }
 
   const userExercise =
@@ -72,57 +72,92 @@ export default async function ExercisePage({
       : null;
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="mx-auto max-w-xl px-5 py-6">
+    <div className="flex flex-1 flex-col">
+      {/* Навигация */}
+      <div className="pt-6">
         <Link
-          href="/"
-          className="inline-flex items-center text-sm text-zinc-500 transition hover:text-white"
+          href="/training"
+          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 transition hover:text-zinc-950"
         >
-          ← Назад
+          <span className="text-lg leading-none">←</span>
+          <span>Тренировки</span>
         </Link>
+      </div>
 
-        <div className="mt-10">
-          <p className="text-sm text-zinc-500">
-            Упражнение
-          </p>
+      {/* Заголовок */}
+      <header className="mt-8">
+        <p className="text-sm font-semibold text-emerald-600">
+          Упражнение
+        </p>
 
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            {exercise.name}
-          </h1>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight text-zinc-950">
+          {exercise.name}
+        </h1>
+      </header>
 
-          {maxReps === null ? (
-            <MaxRepsForm
-              exerciseId={exercise.id}
-              exerciseName={exercise.name}
-            />
-          ) : (
-            <>
-              {/* Максимум */}
-              <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
-                <p className="text-sm text-zinc-500">
+      {/* Максимум ещё не задан */}
+      {maxReps === null ? (
+        <section className="mt-8">
+          <MaxRepsForm
+            exerciseId={exercise.id}
+            exerciseName={exercise.name}
+          />
+        </section>
+      ) : (
+        <div className="mt-8 space-y-10">
+          {/* Максимум */}
+          <section>
+            <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50">
+              <div className="px-6 pb-7 pt-6">
+                <p className="text-sm font-medium text-zinc-500">
                   Твой текущий максимум
                 </p>
 
-                <p className="mt-2 text-4xl font-semibold">
-                  {maxReps}
-                </p>
+                <div className="mt-3 flex items-baseline gap-2">
+                  <span className="text-6xl font-bold tracking-tight text-zinc-950">
+                    {maxReps}
+                  </span>
 
-                <p className="mt-1 text-sm text-zinc-500">
-                  повторений
-                </p>
+                  <span className="text-sm font-medium text-zinc-500">
+                    повторений
+                  </span>
+                </div>
               </div>
 
-              {/* Текущая программа */}
-              {activeWeek && (
-                <TrainingWeekCard
-                  weekNumber={activeWeek.weekNumber}
-                  workouts={activeWeek.workouts}
-                />
-              )}
-            </>
+              <div className="h-1 bg-emerald-500" />
+            </div>
+          </section>
+
+          {/* Программа */}
+          {activeWeek && (
+            <section>
+              <div className="mb-5">
+                <p className="text-sm font-semibold text-emerald-600">
+                  Твоя программа
+                </p>
+
+                <div className="mt-1 flex items-end justify-between gap-4">
+                  <h2 className="text-2xl font-bold tracking-tight text-zinc-950">
+                    Неделя {activeWeek.weekNumber}
+                  </h2>
+
+                  <span className="pb-0.5 text-sm text-zinc-400">
+                    {activeWeek.workouts.length}{" "}
+                    {activeWeek.workouts.length === 1
+                      ? "тренировка"
+                      : "тренировки"}
+                  </span>
+                </div>
+              </div>
+
+              <TrainingWeekCard
+                weekNumber={activeWeek.weekNumber}
+                workouts={activeWeek.workouts}
+              />
+            </section>
           )}
         </div>
-      </div>
-    </main>
+      )}
+    </div>
   );
 }
