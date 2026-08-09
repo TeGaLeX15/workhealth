@@ -1,21 +1,35 @@
+/* app/globals.css */
 @import "tailwindcss";
 
+/* ==========================================================================
+   BODY OS — DESIGN TOKENS
+   ========================================================================== */
+
 :root {
+  /* Base */
   --background: #ffffff;
   --foreground: #18181b;
 
+  /* Surfaces */
   --card: #ffffff;
   --surface: #f4f4f5;
 
+  /* Accent */
   --accent: #22c55e;
   --accent-dark: #16a34a;
 
+  /* Text */
   --muted: #71717a;
   --subtle: #a1a1aa;
 
+  /* Borders */
   --border: #e4e4e7;
   --divider: #f4f4f5;
 }
+
+/* ==========================================================================
+   TAILWIND THEME
+   ========================================================================== */
 
 @theme inline {
   --color-background: var(--background);
@@ -37,14 +51,28 @@
   --font-mono: var(--font-geist-mono);
 }
 
-* {
+/* ==========================================================================
+   RESET
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
+  min-height: 100%;
+
   background: var(--background);
   color: var(--foreground);
+
   color-scheme: light;
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  scroll-behavior: smooth;
 }
 
 body {
@@ -54,12 +82,18 @@ body {
   background: var(--background);
   color: var(--foreground);
 
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 
   transition:
     background-color 180ms ease,
     color 180ms ease;
 }
+
+/* ==========================================================================
+   INTERACTION
+   ========================================================================== */
 
 button,
 a {
@@ -70,9 +104,30 @@ button {
   font: inherit;
 }
 
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 ::selection {
   background: var(--accent);
   color: #ffffff;
+}
+
+/* ==========================================================================
+   FORM ELEMENTS
+   ========================================================================== */
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
 }
 
 input[type="number"] {
@@ -85,39 +140,51 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* ==========================================================================
+   BODY OS — ACTIVE WORKOUT
+   ========================================================================== */
+
 @keyframes bodyos-active-workout {
   0%,
   100% {
     box-shadow:
-      0 0 0 1px
-        color-mix(in srgb, var(--accent) 7%, transparent),
-      0 8px 24px
-        color-mix(in srgb, var(--accent) 5%, transparent);
+      0 0 0 1px color-mix(in srgb, var(--accent) 7%, transparent),
+      0 8px 24px color-mix(in srgb, var(--accent) 5%, transparent);
   }
 
   50% {
     box-shadow:
-      0 0 0 1px
-        color-mix(in srgb, var(--accent) 12%, transparent),
-      0 10px 28px
-        color-mix(in srgb, var(--accent) 9%, transparent);
+      0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent),
+      0 10px 28px color-mix(in srgb, var(--accent) 9%, transparent);
   }
 }
+
+.bodyos-active-workout {
+  animation: bodyos-active-workout 3s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BODY OS — CURRENT SET
+   ========================================================================== */
 
 @keyframes bodyos-current-set {
   0%,
   100% {
-    box-shadow:
-      0 0 0 0
-        color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
   }
 
   50% {
-    box-shadow:
-      0 0 0 3px
-        color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
   }
 }
+
+.bodyos-current-set {
+  animation: bodyos-current-set 2.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BODY OS — CURRENT INDICATOR
+   ========================================================================== */
 
 @keyframes bodyos-current-indicator {
   0%,
@@ -129,6 +196,14 @@ input[type="number"]::-webkit-outer-spin-button {
     opacity: 1;
   }
 }
+
+.bodyos-current-indicator {
+  animation: bodyos-current-indicator 2s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BODY OS — CURRENT DOT
+   ========================================================================== */
 
 @keyframes bodyos-current-dot {
   0%,
@@ -143,6 +218,14 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
+.bodyos-current-dot {
+  animation: bodyos-current-dot 1.8s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BODY OS — ACTION DOT
+   ========================================================================== */
+
 @keyframes bodyos-action-dot {
   0%,
   100% {
@@ -154,22 +237,24 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-active-workout {
-  animation: bodyos-active-workout 3s ease-in-out infinite;
-}
-
-.bodyos-current-set {
-  animation: bodyos-current-set 2.4s ease-in-out infinite;
-}
-
-.bodyos-current-indicator {
-  animation: bodyos-current-indicator 2s ease-in-out infinite;
-}
-
-.bodyos-current-dot {
-  animation: bodyos-current-dot 1.8s ease-in-out infinite;
-}
-
 .bodyos-action-dot {
   animation: bodyos-action-dot 1.8s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
