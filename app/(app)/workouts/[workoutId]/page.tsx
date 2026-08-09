@@ -1,3 +1,4 @@
+// app/workouts/[workoutId]/page.tsx
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
@@ -13,9 +14,7 @@ type WorkoutPageProps = {
   }>;
 };
 
-export default async function WorkoutPage({
-  params,
-}: WorkoutPageProps) {
+export default async function WorkoutPage({ params }: WorkoutPageProps) {
   const user = await getSessionUser();
 
   if (!user) {
@@ -56,10 +55,6 @@ export default async function WorkoutPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
-      {/* ------------------------------------------------------------------ */}
-      {/* Header                                                             */}
-      {/* ------------------------------------------------------------------ */}
-
       <header className="pt-6 sm:pt-8">
         <p
           className="text-xs font-semibold uppercase tracking-[0.08em]"
@@ -111,111 +106,253 @@ export default async function WorkoutPage({
         </div>
       </header>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Planned                                                            */}
-      {/* ------------------------------------------------------------------ */}
-
       {workout.status === "PLANNED" && (
         <section className="mt-7">
-          {/* Summary */}
-
+          {/* HERO */}
           <div
-            className="rounded-[24px] border p-5"
+            className="
+        relative
+        overflow-hidden
+        rounded-[30px]
+        border
+        px-5
+        py-6
+      "
             style={{
               backgroundColor: "var(--card)",
               borderColor: "var(--border)",
             }}
           >
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-start justify-between gap-5">
               <div className="min-w-0">
-                <p
-                  className="text-xs font-medium"
+                <div
+                  className="
+              mb-3
+              flex
+              items-center
+              gap-2
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.12em]
+            "
                   style={{
-                    color: "var(--muted)",
+                    color: "var(--accent)",
                   }}
                 >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{
+                      backgroundColor: "var(--accent)",
+                    }}
+                  />
                   Сегодня
-                </p>
+                </div>
 
-                <p
-                  className="mt-1 truncate text-lg font-bold tracking-[-0.025em]"
+                <h2
+                  className="
+              text-[27px]
+              font-bold
+              leading-[1.05]
+              tracking-[-0.045em]
+            "
                   style={{
                     color: "var(--foreground)",
                   }}
                 >
                   {workout.exercise.name}
-                </p>
-              </div>
+                </h2>
 
-              <div className="shrink-0 text-right">
                 <p
-                  className="text-xs font-medium"
+                  className="mt-2 text-[14px]"
                   style={{
                     color: "var(--muted)",
                   }}
                 >
-                  Подходов
+                  Тренировка готова
                 </p>
+              </div>
 
-                <p
-                  className="mt-1 text-lg font-bold"
+              {/* SET COUNT */}
+              <div
+                className="
+            flex
+            h-[76px]
+            w-[76px]
+            shrink-0
+            flex-col
+            items-center
+            justify-center
+            rounded-[24px]
+          "
+                style={{
+                  backgroundColor: "var(--surface)",
+                }}
+              >
+                <span
+                  className="
+              text-[28px]
+              font-bold
+              leading-none
+              tracking-[-0.05em]
+            "
                   style={{
                     color: "var(--foreground)",
                   }}
                 >
                   {workout.sets.length}
-                </p>
+                </span>
+
+                <span
+                  className="
+              mt-1
+              text-[10px]
+              font-semibold
+              uppercase
+              tracking-[0.08em]
+            "
+                  style={{
+                    color: "var(--muted)",
+                  }}
+                >
+                  подходов
+                </span>
               </div>
             </div>
-          </div>
 
-          {/* Sets */}
-
-          <div className="mt-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h2
-                className="text-sm font-semibold"
-                style={{
-                  color: "var(--foreground)",
-                }}
-              >
-                План тренировки
-              </h2>
-
+            {/* META */}
+            <div
+              className="
+          mt-6
+          flex
+          items-center
+          justify-between
+          border-t
+          pt-4
+        "
+              style={{
+                borderColor: "var(--border)",
+              }}
+            >
               <span
-                className="text-xs"
+                className="text-xs font-medium"
                 style={{
                   color: "var(--muted)",
                 }}
               >
-                {workout.sets.length} подхода
+                Твой план на сегодня
+              </span>
+
+              <span
+                className="text-xs font-semibold"
+                style={{
+                  color: "var(--foreground)",
+                }}
+              >
+                {workout.sets.reduce((total, set) => total + set.targetReps, 0)}{" "}
+                повторений
+              </span>
+            </div>
+          </div>
+
+          {/* PLAN */}
+          <div className="mt-8">
+            <div className="mb-4 flex items-end justify-between px-1">
+              <div>
+                <h3
+                  className="
+              text-[21px]
+              font-bold
+              leading-none
+              tracking-[-0.04em]
+            "
+                  style={{
+                    color: "var(--foreground)",
+                  }}
+                >
+                  Подходы
+                </h3>
+
+                <p
+                  className="mt-1.5 text-xs"
+                  style={{
+                    color: "var(--muted)",
+                  }}
+                >
+                  Выполняй последовательно
+                </p>
+              </div>
+
+              <span
+                className="text-xs font-medium"
+                style={{
+                  color: "var(--muted)",
+                }}
+              >
+                {workout.sets.length} всего
               </span>
             </div>
 
-            <div className="space-y-2.5">
-              {workout.sets.map((set) => (
+            {/* SET LIST */}
+            <div
+              className="
+          overflow-hidden
+          rounded-[26px]
+          border
+        "
+              style={{
+                backgroundColor: "var(--card)",
+                borderColor: "var(--border)",
+              }}
+            >
+              {workout.sets.map((set, index) => (
                 <div
                   key={set.id}
-                  className="flex items-center justify-between rounded-[20px] border px-4 py-3.5"
+                  className="
+              flex
+              items-center
+              justify-between
+              px-4
+              py-4
+            "
                   style={{
-                    backgroundColor: "var(--card)",
-                    borderColor: "var(--border)",
+                    borderBottom:
+                      index !== workout.sets.length - 1
+                        ? "1px solid var(--border)"
+                        : undefined,
                   }}
                 >
-                  <div className="flex min-w-0 items-center gap-3.5">
+                  <div className="flex items-center gap-3.5">
                     <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
+                      className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-[14px]
+                  text-sm
+                  font-bold
+                "
                       style={{
-                        backgroundColor: "var(--surface)",
-                        color: "var(--muted)",
+                        backgroundColor:
+                          index === 0
+                            ? "color-mix(in srgb, var(--accent) 11%, transparent)"
+                            : "var(--surface)",
+                        color: index === 0 ? "var(--accent)" : "var(--muted)",
                       }}
                     >
                       {set.setNumber}
                     </div>
 
-                    <div className="min-w-0">
+                    <div>
                       <p
-                        className="text-sm font-semibold"
+                        className="
+                    text-[14px]
+                    font-semibold
+                    leading-none
+                  "
                         style={{
                           color: "var(--foreground)",
                         }}
@@ -224,19 +361,24 @@ export default async function WorkoutPage({
                       </p>
 
                       <p
-                        className="mt-0.5 text-xs"
+                        className="mt-1.5 text-[11px]"
                         style={{
                           color: "var(--muted)",
                         }}
                       >
-                        Целевой результат
+                        Целевой объём
                       </p>
                     </div>
                   </div>
 
-                  <div className="ml-4 flex shrink-0 items-baseline gap-1">
+                  <div className="flex items-baseline gap-1">
                     <span
-                      className="text-xl font-bold tracking-[-0.03em]"
+                      className="
+                  text-[26px]
+                  font-bold
+                  leading-none
+                  tracking-[-0.045em]
+                "
                       style={{
                         color: "var(--foreground)",
                       }}
@@ -258,50 +400,27 @@ export default async function WorkoutPage({
             </div>
           </div>
 
-          {/* Info */}
-
-          <div
-            className="mt-5 rounded-[20px] border px-4 py-3.5"
-            style={{
-              backgroundColor: "var(--surface)",
-              borderColor: "var(--border)",
-            }}
-          >
+          {/* ACTION */}
+          <div className="mt-7">
             <p
-              className="text-xs leading-5"
+              className="mb-3 px-1 text-xs leading-5"
               style={{
                 color: "var(--muted)",
               }}
             >
-              Выполняй подходы по порядку. После каждого
-              подхода приложение запустит время отдыха.
+              После каждого подхода приложение автоматически запустит отдых.
             </p>
-          </div>
 
-          {/* Start */}
-
-          <div className="mt-5">
             <StartWorkoutButton workoutId={workout.id} />
           </div>
         </section>
       )}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* In progress                                                        */}
-      {/* ------------------------------------------------------------------ */}
-
       {workout.status === "IN_PROGRESS" && (
         <section className="mt-5">
-          <WorkoutSession
-            workoutId={workout.id}
-            sets={workout.sets}
-          />
+          <WorkoutSession workoutId={workout.id} sets={workout.sets} />
         </section>
       )}
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Completed                                                          */}
-      {/* ------------------------------------------------------------------ */}
 
       {workout.status === "COMPLETED" && (
         <section className="mt-7">
@@ -363,10 +482,6 @@ export default async function WorkoutPage({
           </div>
         </section>
       )}
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Cancelled                                                          */}
-      {/* ------------------------------------------------------------------ */}
 
       {workout.status === "CANCELLED" && (
         <section className="mt-7">
@@ -433,4 +548,3 @@ export default async function WorkoutPage({
     </main>
   );
 }
-

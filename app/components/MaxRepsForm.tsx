@@ -1,12 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Minus, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Minus,
+  Plus,
+} from "lucide-react";
 
 type MaxRepsFormProps = {
   exerciseId: string;
-  previousMaxReps?: number | null;
 };
 
 const MIN_REPS = 1;
@@ -14,23 +22,31 @@ const MAX_REPS = 1000;
 
 export default function MaxRepsForm({
   exerciseId,
-  previousMaxReps = null,
 }: MaxRepsFormProps) {
   const router = useRouter();
 
-  const [maxReps, setMaxReps] = useState(previousMaxReps ?? 10);
-
+  const [maxReps, setMaxReps] = useState(10);
+  const [inputValue, setInputValue] = useState("10");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const changeReps = useCallback((amount: number) => {
-    setMaxReps((current) =>
-      Math.min(MAX_REPS, Math.max(MIN_REPS, current + amount)),
-    );
+    setMaxReps((current) => {
+      const next = Math.min(
+        MAX_REPS,
+        Math.max(MIN_REPS, current + amount),
+      );
+
+      setInputValue(String(next));
+
+      return next;
+    });
   }, []);
 
   const stopPress = useCallback(() => {
@@ -60,24 +76,42 @@ export default function MaxRepsForm({
 
           delay = Math.max(55, delay - 15);
 
-          intervalRef.current = setTimeout(repeat, delay);
+          intervalRef.current = setTimeout(
+            repeat,
+            delay,
+          );
         };
 
-        intervalRef.current = setTimeout(repeat, delay);
+        intervalRef.current = setTimeout(
+          repeat,
+          delay,
+        );
       }, 400);
     },
-    [changeReps, isLoading, stopPress],
+    [
+      changeReps,
+      isLoading,
+      stopPress,
+    ],
   );
 
   useEffect(() => {
     return () => stopPress();
   }, [stopPress]);
 
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleInputChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const rawValue = event.target.value;
 
+    // Разрешаем полностью очистить поле
     if (rawValue === "") {
-      setMaxReps(MIN_REPS);
+      setInputValue("");
+      return;
+    }
+
+    // Только цифры 0-9
+    if (!/^\d+$/.test(rawValue)) {
       return;
     }
 
@@ -87,181 +121,238 @@ export default function MaxRepsForm({
       return;
     }
 
-    setMaxReps(Math.min(MAX_REPS, Math.max(MIN_REPS, Math.floor(value))));
+    const clampedValue = Math.min(
+      MAX_REPS,
+      Math.max(MIN_REPS, Math.floor(value)),
+    );
+
+    setInputValue(String(clampedValue));
+    setMaxReps(clampedValue);
   }
 
   async function handleSubmit() {
     if (isLoading) return;
+
+    // Если поле оставили пустым — возвращаем минимальное значение
+    if (inputValue === "") {
+      setInputValue(String(MIN_REPS));
+      setMaxReps(MIN_REPS);
+      return;
+    }
 
     stopPress();
     setError("");
     setIsLoading(true);
 
     try {
-      const maxResponse = await fetch(`/api/exercises/${exerciseId}/max`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const maxResponse = await fetch(
+        `/api/exercises/${exerciseId}/max`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            maxReps,
+          }),
         },
-        body: JSON.stringify({
-          maxReps,
-        }),
-      });
+      );
 
-      const maxData = await maxResponse.json();
+      const maxData =
+        await maxResponse.json();
 
       if (!maxResponse.ok) {
-        setError(maxData.error ?? "Не удалось сохранить максимум");
+        setError(
+          maxData.error ??
+            "Не удалось сохранить максимум",
+        );
         return;
       }
 
-      const weekResponse = await fetch("/api/training-weeks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const weekResponse = await fetch(
+        "/api/training-weeks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            exerciseId,
+          }),
         },
-        body: JSON.stringify({
-          exerciseId,
-        }),
-      });
+      );
 
-      const weekData = await weekResponse.json();
+      const weekData =
+        await weekResponse.json();
 
       if (!weekResponse.ok) {
-        setError(weekData.error ?? "Не удалось создать программу");
+        setError(
+          weekData.error ??
+            "Не удалось создать программу",
+        );
         return;
       }
 
       if (!weekData.workoutId) {
-        setError("Первая тренировка не найдена");
+        setError("Тренировка не найдена");
         return;
       }
 
-      router.push(`/workouts/${weekData.workoutId}`);
+      router.push(
+        `/workouts/${weekData.workoutId}`,
+      );
     } catch {
-      setError("Не удалось подключиться к серверу");
+      setError(
+        "Не удалось подключиться к серверу",
+      );
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div
-      className="
-      flex
-      min-h-[calc(70dvh-50px)]
-      flex-col
-    "
-    >
-      {/* Центральная область */}
-      <div
-        className="
-        flex
-        flex-1
-        flex-col
-        items-center
-        justify-center
-      "
-      >
-        {/* Счётчик */}
-        <div className="flex items-center justify-center gap-1">
-          {/* Минус */}
+    <div className="flex h-full min-h-0 flex-col">
+      {/* COUNTER AREA */}
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
+        {/* COUNTER */}
+        <div className="flex items-center gap-6">
+          {/* MINUS */}
           <button
             type="button"
-            disabled={isLoading || maxReps <= MIN_REPS}
-            onPointerDown={() => startPress(-1)}
+            disabled={
+              isLoading ||
+              maxReps <= MIN_REPS
+            }
+            onPointerDown={() =>
+              startPress(-1)
+            }
             onPointerUp={stopPress}
             onPointerCancel={stopPress}
             onPointerLeave={stopPress}
-            aria-label="Уменьшить количество повторений"
+            aria-label="Уменьшить"
             className="
-            flex
-            h-12
-            w-12
-            shrink-0
-            items-center
-            justify-center
-            rounded-2xl
-            border
-            transition-all
-            active:scale-90
-            disabled:opacity-30
-          "
+              group
+              flex
+              h-[72px]
+              w-[72px]
+              shrink-0
+              items-center
+              justify-center
+              rounded-[24px]
+              border
+              transition-all
+              duration-150
+              active:scale-[0.91]
+              disabled:opacity-20
+            "
             style={{
-              borderColor: "var(--border)",
-              backgroundColor: "var(--background)",
+              borderColor:
+                "color-mix(in srgb, var(--foreground) 9%, transparent)",
+              backgroundColor:
+                "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
               touchAction: "none",
             }}
           >
             <Minus
-              size={20}
-              strokeWidth={2}
+              size={30}
+              strokeWidth={2.3}
+              className="
+                transition-transform
+                duration-150
+                group-active:scale-90
+              "
               style={{
                 color: "var(--foreground)",
               }}
             />
           </button>
 
-          {/* Значение */}
+          {/* NUMBER */}
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
-            min={MIN_REPS}
-            max={MAX_REPS}
-            value={maxReps}
+            pattern="[0-9]*"
+            value={inputValue}
             onChange={handleInputChange}
+            onKeyDown={(event) => {
+              if (
+                !/[0-9]/.test(event.key) &&
+                event.key !== "Backspace" &&
+                event.key !== "Delete" &&
+                event.key !== "ArrowLeft" &&
+                event.key !== "ArrowRight" &&
+                event.key !== "Tab" &&
+                event.key !== "Home" &&
+                event.key !== "End"
+              ) {
+                event.preventDefault();
+              }
+            }}
             disabled={isLoading}
-            aria-label="Максимальное количество повторений"
+            aria-label="Максимум повторений"
             className="
-            w-[clamp(100px,30vw,150px)]
-            appearance-none
-            bg-transparent
-            text-center
-            text-[clamp(68px,20vw,92px)]
-            font-bold
-            leading-none
-            tracking-[-0.09em]
-            outline-none
-            [appearance:textfield]
-            [&::-webkit-inner-spin-button]:appearance-none
-            [&::-webkit-outer-spin-button]:appearance-none
-          "
+              w-[210px]
+              appearance-none
+              bg-transparent
+              p-0
+              text-center
+              font-extrabold
+              outline-none
+              [appearance:textfield]
+            "
             style={{
               color: "var(--foreground)",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: "82px",
+              lineHeight: "0.85",
             }}
           />
 
-          {/* Плюс */}
+          {/* PLUS */}
           <button
             type="button"
-            disabled={isLoading || maxReps >= MAX_REPS}
-            onPointerDown={() => startPress(1)}
+            disabled={
+              isLoading ||
+              maxReps >= MAX_REPS
+            }
+            onPointerDown={() =>
+              startPress(1)
+            }
             onPointerUp={stopPress}
             onPointerCancel={stopPress}
             onPointerLeave={stopPress}
-            aria-label="Увеличить количество повторений"
+            aria-label="Увеличить"
             className="
-            flex
-            h-12
-            w-12
-            shrink-0
-            items-center
-            justify-center
-            rounded-2xl
-            border
-            transition-all
-            active:scale-90
-            disabled:opacity-30
-          "
+              group
+              flex
+              h-[72px]
+              w-[72px]
+              shrink-0
+              items-center
+              justify-center
+              rounded-[24px]
+              border
+              transition-all
+              duration-150
+              active:scale-[0.91]
+              disabled:opacity-20
+            "
             style={{
-              borderColor: "var(--border)",
-              backgroundColor: "var(--background)",
+              borderColor:
+                "color-mix(in srgb, var(--foreground) 9%, transparent)",
+              backgroundColor:
+                "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
               touchAction: "none",
             }}
           >
             <Plus
-              size={20}
-              strokeWidth={2}
+              size={30}
+              strokeWidth={2.3}
+              className="
+                transition-transform
+                duration-150
+                group-active:scale-90
+              "
               style={{
                 color: "var(--foreground)",
               }}
@@ -269,62 +360,33 @@ export default function MaxRepsForm({
           </button>
         </div>
 
-        {/* Подпись */}
-        <p
-          className="
-          mt-3
-          text-[13px]
-          font-medium
-        "
+        {/* UNIT */}
+        <span
+          className="mt-5 text-[16px] font-medium"
           style={{
             color: "var(--muted)",
           }}
         >
-          повторений за подход
-        </p>
+          повторений
+        </span>
 
-        {/* Предыдущий результат */}
-        <div className="mt-5 text-center">
-          <p
-            className="text-xs"
-            style={{
-              color: "var(--muted)",
-            }}
-          >
-            {previousMaxReps !== null ? (
-              <>
-                Предыдущий максимум{" "}
-                <span
-                  className="font-semibold"
-                  style={{
-                    color: "var(--foreground)",
-                  }}
-                >
-                  {previousMaxReps}
-                </span>
-              </>
-            ) : (
-              "Первый замер"
-            )}
-          </p>
-        </div>
-
-        {/* Ошибка */}
+        {/* ERROR */}
         {error && (
           <p
             className="
-            mx-auto
-            mt-4
-            max-w-[340px]
-            rounded-2xl
-            px-4
-            py-3
-            text-center
-            text-xs
-          "
+              mt-5
+              max-w-[340px]
+              rounded-[18px]
+              px-5
+              py-3.5
+              text-center
+              text-[14px]
+              leading-5
+            "
             style={{
               color: "#ef4444",
-              backgroundColor: "color-mix(in srgb, #ef4444 7%, transparent)",
+              backgroundColor:
+                "color-mix(in srgb, #ef4444 7%, transparent)",
             }}
           >
             {error}
@@ -332,41 +394,46 @@ export default function MaxRepsForm({
         )}
       </div>
 
-      {/* Кнопка */}
-      <div
-        className="
-        shrink-0
-        pb-2
-        pt-6
-      "
-      >
+      {/* CTA */}
+      <div className="shrink-0 pb-4 pt-4">
         <button
           type="button"
           onClick={handleSubmit}
           disabled={isLoading}
           className="
-          flex
-          h-14
-          w-full
-          items-center
-          justify-center
-          gap-2
-          rounded-2xl
-          px-5
-          text-[15px]
-          font-semibold
-          text-white
-          transition-all
-          active:scale-[0.98]
-          disabled:opacity-50
-        "
+            flex
+            h-[68px]
+            w-full
+            items-center
+            justify-center
+            gap-3
+            rounded-[20px]
+            px-5
+            text-[17px]
+            font-bold
+            tracking-[-0.01em]
+            transition-all
+            duration-150
+            active:scale-[0.98]
+            disabled:opacity-50
+          "
           style={{
             backgroundColor: "var(--accent)",
+            color: "#fff",
           }}
         >
-          <span>{isLoading ? "Готовим программу..." : "Продолжить"}</span>
+          <span>
+            {isLoading
+              ? "Готовим программу..."
+              : "Продолжить"}
+          </span>
 
-          {!isLoading && <ArrowRight size={18} strokeWidth={2} />}
+          {!isLoading && (
+            <ArrowRight
+              size={21}
+              strokeWidth={2.2}
+            />
+          )}
         </button>
       </div>
     </div>

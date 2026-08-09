@@ -1,64 +1,59 @@
+// app/components/AppHeader.tsx
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { UserRound } from "lucide-react";
 
-import { useTheme } from "@/app/providers/theme-provider";
-
 export default function AppHeader() {
-  const { dark, accent } = useTheme();
-
   return (
     <header
       className="sticky top-0 z-40 border-b backdrop-blur-xl"
       style={{
-        backgroundColor: dark
-          ? "rgba(9, 9, 11, 0.88)"
-          : "rgba(255, 255, 255, 0.88)",
-        borderColor: dark ? "#27272a" : "#f0f0f1",
+        backgroundColor:
+          "color-mix(in srgb, var(--background) 88%, transparent)",
+        borderColor: "var(--border)",
       }}
     >
-      <div className="mx-auto flex h-16 w-full max-w-xl items-center justify-between px-5">
+      <div className="mx-auto flex h-[68px] w-full max-w-xl items-center justify-between px-5">
         {/* Logo */}
         <Link
           href="/"
-          aria-label="BodyOS — главная"
-          className="flex items-center gap-2.5 rounded-xl transition-transform active:scale-[0.98]"
+          aria-label="Body OS — главная"
+          className="flex items-center gap-3 transition-opacity active:opacity-70"
         >
-          {/* Временный логотип */}
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-sm font-black tracking-tight shadow-sm"
+            className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[11px]"
             style={{
-              backgroundColor: dark ? "#fafafa" : "#18181b",
-              color: dark ? "#18181b" : "#ffffff",
+              backgroundColor: "var(--foreground)",
             }}
           >
-            B
+            <Image
+              src="/icons/favicon-32x32.png"
+              alt=""
+              width={32}
+              height={32}
+              className="h-7 w-7 object-contain"
+              priority
+            />
           </div>
 
           <div className="leading-none">
             <div
-              className="text-[16px] font-bold tracking-[-0.035em]"
+              className="text-[17px] font-bold tracking-[-0.04em]"
               style={{
-                color: dark ? "#fafafa" : "#18181b",
+                color: "var(--foreground)",
               }}
             >
-              BodyOS
+              Body OS
             </div>
 
             <div
-              className="mt-1 flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-[0.16em]"
+              className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em]"
               style={{
-                color: dark ? "#71717a" : "#a1a1aa",
+                color: "var(--muted)",
               }}
             >
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  backgroundColor: accent,
-                }}
-              />
-
               Fitness system
             </div>
           </div>
@@ -70,16 +65,12 @@ export default function AppHeader() {
           aria-label="Профиль"
           className="flex h-10 w-10 items-center justify-center rounded-full border transition-all active:scale-90"
           style={{
-            borderColor: dark ? "#3f3f46" : "#e4e4e7",
-            backgroundColor: dark ? "#18181b" : "#fafafa",
-            color: dark ? "#a1a1aa" : "#71717a",
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            color: "var(--muted)",
           }}
         >
-          <UserRound
-            size={19}
-            strokeWidth={1.9}
-            aria-hidden="true"
-          />
+          <UserRound size={19} strokeWidth={1.8} aria-hidden="true" />
         </Link>
       </div>
     </header>

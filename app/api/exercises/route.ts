@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/app/server/db";
 import { getSessionUser } from "@/app/server/auth/session";
 
@@ -17,10 +18,33 @@ export async function GET() {
       orderBy: {
         createdAt: "asc",
       },
+      include: {
+        userExercises: {
+          where: {
+            userId: user.id,
+          },
+          select: {
+            maxReps: true,
+            maxUpdatedAt: true,
+          },
+        },
+      },
+    });
+
+    const result = exercises.map((exercise) => {
+      const userExercise = exercise.userExercises[0];
+
+      return {
+        id: exercise.id,
+        name: exercise.name,
+        slug: exercise.slug,
+        maxReps: userExercise?.maxReps ?? null,
+        maxUpdatedAt: userExercise?.maxUpdatedAt ?? null,
+      };
     });
 
     return NextResponse.json({
-      exercises,
+      exercises: result,
     });
   } catch (error) {
     console.error("Exercises GET error:", error);

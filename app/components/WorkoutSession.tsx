@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, SkipForward } from "lucide-react";
+import { Check, ChevronRight, Plus, SkipForward } from "lucide-react";
+import WorkoutProgress from "./WorkoutProgress";
 
 type WorkoutSet = {
   id: string;
@@ -25,41 +26,29 @@ export default function WorkoutSession({
 }: WorkoutSessionProps) {
   const router = useRouter();
 
-  const [completedSets, setCompletedSets] =
-    useState<WorkoutSet[]>(sets);
+  const [completedSets, setCompletedSets] = useState<WorkoutSet[]>(sets);
 
   const [currentIndex, setCurrentIndex] = useState(() => {
-    const firstIncomplete = sets.findIndex(
-      (set) => !set.completed,
-    );
+    const firstIncomplete = sets.findIndex((set) => !set.completed);
 
-    return firstIncomplete === -1
-      ? sets.length
-      : firstIncomplete;
+    return firstIncomplete === -1 ? sets.length : firstIncomplete;
   });
 
   const [isResting, setIsResting] = useState(false);
-  const [restSeconds, setRestSeconds] =
-    useState(REST_SECONDS);
+  const [restSeconds, setRestSeconds] = useState(REST_SECONDS);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const currentSet = completedSets[currentIndex];
 
-  const isFinished =
-    currentIndex >= completedSets.length;
+  const isFinished = currentIndex >= completedSets.length;
 
   /*
-   * ------------------------------------------------------------------------
    * Таймер отдыха
-   * ------------------------------------------------------------------------
    */
-
   useEffect(() => {
-    if (!isResting) {
-      return;
-    }
+    if (!isResting) return;
 
     const timer = window.setInterval(() => {
       setRestSeconds((seconds) => {
@@ -78,11 +67,8 @@ export default function WorkoutSession({
   }, [isResting]);
 
   /*
-   * ------------------------------------------------------------------------
    * Автоматическое завершение отдыха
-   * ------------------------------------------------------------------------
    */
-
   useEffect(() => {
     if (!isResting || restSeconds !== 0) {
       return;
@@ -99,11 +85,8 @@ export default function WorkoutSession({
   }, [isResting, restSeconds]);
 
   /*
-   * ------------------------------------------------------------------------
    * Завершение подхода
-   * ------------------------------------------------------------------------
    */
-
   async function handleCompleteSet() {
     if (!currentSet || isLoading || isResting) {
       return;
@@ -123,9 +106,7 @@ export default function WorkoutSession({
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.error ?? "Не удалось сохранить подход",
-        );
+        setError(data.error ?? "Не удалось сохранить подход");
         return;
       }
 
@@ -152,19 +133,11 @@ export default function WorkoutSession({
       setRestSeconds(REST_SECONDS);
       setIsResting(true);
     } catch {
-      setError(
-        "Не удалось подключиться к серверу",
-      );
+      setError("Не удалось подключиться к серверу");
     } finally {
       setIsLoading(false);
     }
   }
-
-  /*
-   * ------------------------------------------------------------------------
-   * Управление отдыхом
-   * ------------------------------------------------------------------------
-   */
 
   function skipRest() {
     setIsResting(false);
@@ -176,43 +149,61 @@ export default function WorkoutSession({
   }
 
   /*
-   * ------------------------------------------------------------------------
    * Завершённая тренировка
-   * ------------------------------------------------------------------------
    */
-
   if (isFinished) {
     return (
-      <div className="flex min-h-[55vh] flex-col items-center justify-center">
+      <div
+        className="
+          flex
+          min-h-[65vh]
+          flex-col
+          items-center
+          justify-center
+          text-center
+        "
+      >
         <div
-          className="flex h-16 w-16 items-center justify-center rounded-full"
+          className="
+            flex
+            h-20
+            w-20
+            items-center
+            justify-center
+            rounded-[28px]
+          "
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--accent) 10%, transparent)",
-            boxShadow:
-              "0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent)",
+            border:
+              "1px solid color-mix(in srgb, var(--accent) 18%, transparent)",
           }}
         >
           <Check
-            size={28}
-            strokeWidth={2.5}
+            size={34}
+            strokeWidth={2.4}
             style={{
               color: "var(--accent)",
             }}
           />
         </div>
 
-        <p
-          className="mt-5 text-xl font-bold tracking-[-0.03em]"
+        <h2
+          className="
+            mt-6
+            text-[27px]
+            font-bold
+            tracking-[-0.04em]
+          "
           style={{
             color: "var(--foreground)",
           }}
         >
           Тренировка завершена
-        </p>
+        </h2>
 
         <p
-          className="mt-1.5 text-sm"
+          className="mt-2 text-sm"
           style={{
             color: "var(--muted)",
           }}
@@ -223,7 +214,21 @@ export default function WorkoutSession({
         <button
           type="button"
           onClick={() => router.refresh()}
-          className="mt-7 flex h-12 w-full max-w-sm items-center justify-center rounded-2xl text-sm font-semibold text-white transition-transform active:scale-[0.98]"
+          className="
+            mt-8
+            flex
+            h-[58px]
+            w-full
+            max-w-sm
+            items-center
+            justify-center
+            rounded-[20px]
+            text-[16px]
+            font-bold
+            text-white
+            transition-transform
+            active:scale-[0.98]
+          "
           style={{
             backgroundColor: "var(--accent)",
           }}
@@ -235,145 +240,251 @@ export default function WorkoutSession({
   }
 
   /*
-   * ------------------------------------------------------------------------
    * Экран отдыха
-   * ------------------------------------------------------------------------
    */
-
   if (isResting) {
-    const progress =
-      ((REST_SECONDS - restSeconds) /
-        REST_SECONDS) *
-      100;
+    const progress = ((REST_SECONDS - restSeconds) / REST_SECONDS) * 100;
 
-    const nextSetNumber =
-      currentSet?.setNumber ??
-      currentIndex + 1;
+    const nextSetNumber = currentSet?.setNumber ?? currentIndex + 1;
+
+    const minutes = Math.floor(restSeconds / 60);
+
+    const seconds = restSeconds % 60;
 
     return (
-      <div className="flex min-h-[60vh] flex-col">
-        {/* Header */}
+      <div
+        className="
+          flex
+          min-h-[calc(100dvh-300px)]
+          flex-col
+        "
+      >
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p
+              className="
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-[0.13em]
+              "
+              style={{
+                color: "var(--accent)",
+              }}
+            >
+              Восстановление
+            </p>
 
-        <div className="text-center">
-          <p
-            className="text-[11px] font-semibold uppercase tracking-[0.1em]"
+            <h2
+              className="
+                mt-1
+                text-[23px]
+                font-bold
+                tracking-[-0.04em]
+              "
+              style={{
+                color: "var(--foreground)",
+              }}
+            >
+              Отдых
+            </h2>
+          </div>
+
+          <div
+            className="
+              rounded-full
+              px-3
+              py-1.5
+              text-xs
+              font-semibold
+            "
             style={{
+              backgroundColor: "var(--surface)",
               color: "var(--muted)",
             }}
           >
-            Отдых
-          </p>
-
-          <p
-            className="mt-1 text-base font-semibold"
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            Следующий подход
-          </p>
+            Подход {nextSetNumber}
+          </div>
         </div>
 
-        {/* Timer */}
-
-        <div className="flex flex-1 items-center justify-center py-6">
+        {/* TIMER */}
+        <div className="flex flex-1 items-center justify-center">
           <div
-            className="relative flex h-52 w-52 items-center justify-center rounded-full"
+            className="
+              relative
+              flex
+              h-[270px]
+              w-[270px]
+              items-center
+              justify-center
+              rounded-full
+            "
             style={{
               background: `conic-gradient(
                 var(--accent) ${progress}%,
                 var(--surface) ${progress}% 100%
               )`,
-              boxShadow:
-                "0 12px 36px color-mix(in srgb, var(--accent) 7%, transparent)",
             }}
           >
             <div
-              className="absolute inset-[6px] rounded-full"
+              className="
+                absolute
+                inset-[7px]
+                rounded-full
+              "
               style={{
                 backgroundColor: "var(--card)",
               }}
             />
 
-            <div className="relative flex flex-col items-center justify-center">
-              <span
-                className="text-[46px] font-bold leading-none tracking-[-0.06em] tabular-nums"
+            <div className="relative text-center">
+              <div
+                className="
+                  text-[64px]
+                  font-bold
+                  leading-none
+                  tracking-[-0.07em]
+                  tabular-nums
+                "
                 style={{
                   color: "var(--foreground)",
                 }}
               >
-                {Math.floor(restSeconds / 60)
-                  .toString()
-                  .padStart(2, "0")}
-                :
-                {(restSeconds % 60)
-                  .toString()
-                  .padStart(2, "0")}
-              </span>
+                {minutes.toString().padStart(2, "0")}:
+                {seconds.toString().padStart(2, "0")}
+              </div>
 
-              <span
-                className="mt-2 text-xs font-medium"
+              <div
+                className="mt-3 text-xs font-medium"
                 style={{
                   color: "var(--muted)",
                 }}
               >
-                отдых
+                время отдыха
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* NEXT SET */}
+        <div
+          className="
+            rounded-[22px]
+            border
+            px-4
+            py-4
+          "
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p
+                className="text-xs"
+                style={{
+                  color: "var(--muted)",
+                }}
+              >
+                Следующий подход
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-[17px]
+                  font-bold
+                "
+                style={{
+                  color: "var(--foreground)",
+                }}
+              >
+                Подход {nextSetNumber}
+              </p>
+            </div>
+
+            <div className="text-right">
+              <span
+                className="
+                  text-[23px]
+                  font-bold
+                  tracking-[-0.04em]
+                "
+                style={{
+                  color: "var(--foreground)",
+                }}
+              >
+                {currentSet?.targetReps}
+              </span>
+
+              <span
+                className="ml-1 text-xs"
+                style={{
+                  color: "var(--muted)",
+                }}
+              >
+                раз
               </span>
             </div>
           </div>
         </div>
 
-        {/* Info */}
-
-        <div className="text-center">
-          <p
-            className="text-base font-semibold"
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            Отдыхай
-          </p>
-
-          <p
-            className="mt-1 text-sm"
-            style={{
-              color: "var(--muted)",
-            }}
-          >
-            Следующий подход · {nextSetNumber}
-          </p>
-        </div>
-
-        {/* Actions */}
-
-        <div className="mt-6 flex gap-3 pb-2">
+        {/* ACTIONS */}
+        <div className="mt-3 flex gap-3 pb-2">
           <button
             type="button"
             onClick={skipRest}
-            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border text-sm font-semibold transition-transform active:scale-[0.98]"
+            className="
+              flex
+              h-[54px]
+              flex-1
+              items-center
+              justify-center
+              gap-2
+              rounded-[19px]
+              border
+              text-sm
+              font-semibold
+              transition-transform
+              active:scale-[0.98]
+            "
             style={{
               backgroundColor: "var(--surface)",
               borderColor: "var(--border)",
               color: "var(--foreground)",
             }}
           >
-            <SkipForward size={16} />
-
+            <SkipForward size={17} />
             Пропустить
           </button>
 
           <button
             type="button"
             onClick={increaseRest}
-            className="h-12 rounded-2xl border px-5 text-sm font-semibold transition-transform active:scale-[0.98]"
+            className="
+              flex
+              h-[54px]
+              items-center
+              justify-center
+              gap-1.5
+              rounded-[19px]
+              border
+              px-5
+              text-sm
+              font-semibold
+              transition-transform
+              active:scale-[0.98]
+            "
             style={{
               backgroundColor: "var(--surface)",
               borderColor: "var(--border)",
               color: "var(--foreground)",
             }}
           >
-            +30 сек
+            <Plus size={16} />
+            30 сек
           </button>
         </div>
       </div>
@@ -381,141 +492,237 @@ export default function WorkoutSession({
   }
 
   /*
-   * ------------------------------------------------------------------------
    * Текущий подход
-   * ------------------------------------------------------------------------
    */
 
-  const completedCount = currentIndex;
+  const completedCount = completedSets.filter(
+    (set) => set.completed,
+  ).length;
 
   return (
-    <div className="flex min-h-[60vh] flex-col">
-      {/* Header */}
-
-      <div className="text-center">
-        <p
-          className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-          style={{
-            color: "var(--muted)",
-          }}
-        >
-          Подход
-        </p>
-
-        <p
-          className="mt-1 text-base font-semibold"
-          style={{
-            color: "var(--foreground)",
-          }}
-        >
-          {currentSet.setNumber} из{" "}
-          {completedSets.length}
-        </p>
-      </div>
-
-      {/* Set indicators */}
-
-      <div className="mt-5 flex items-center justify-center gap-1.5">
-        {completedSets.map((set, index) => {
-          const isCurrent =
-            index === currentIndex;
-
-          const isCompleted =
-            index < currentIndex;
-
-          return (
-            <div
-              key={set.id}
-              className={[
-                "h-1.5 rounded-full transition-all duration-300",
-                isCurrent
-                  ? "bodyos-current-indicator"
-                  : "",
-              ].join(" ")}
-              style={{
-                width: isCurrent ? 28 : 7,
-                backgroundColor:
-                  isCompleted || isCurrent
-                    ? "var(--accent)"
-                    : "var(--surface)",
-              }}
-            />
-          );
-        })}
-      </div>
-
-      {/* Main action */}
-
-      <div className="flex flex-1 items-center justify-center py-6">
-        <button
-          type="button"
-          onClick={handleCompleteSet}
-          disabled={isLoading}
-          aria-label={`Завершить подход ${currentSet.setNumber}`}
-          className="bodyos-current-set relative flex h-52 w-52 flex-col items-center justify-center rounded-full transition-transform active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-60"
-          style={{
-            backgroundColor: "var(--card)",
-            border:
-              "1px solid color-mix(in srgb, var(--accent) 20%, var(--border))",
-            boxShadow:
-              "0 12px 36px color-mix(in srgb, var(--accent) 7%, transparent)",
-          }}
-        >
-          <div
-            className="absolute inset-2 rounded-full border-2"
+    <div
+      className="
+        flex
+        min-h-[calc(100dvh-300px)]
+        flex-col
+      "
+    >
+      {/* HEADER */}
+      <div className="flex items-end justify-between">
+        <div>
+          <p
+            className="
+              text-[10px]
+              font-bold
+              uppercase
+              tracking-[0.13em]
+            "
             style={{
-              borderColor:
-                "color-mix(in srgb, var(--accent) 28%, transparent)",
+              color: "var(--accent)",
             }}
-          />
+          >
+            Текущий подход
+          </p>
 
-          <span
-            className="relative text-[72px] font-bold leading-none tracking-[-0.07em] tabular-nums"
+          <h2
+            className="
+              mt-1
+              text-[25px]
+              font-bold
+              tracking-[-0.045em]
+            "
             style={{
               color: "var(--foreground)",
             }}
           >
-            {currentSet.targetReps}
-          </span>
+            Подход {currentSet.setNumber}
+          </h2>
+        </div>
 
+        <div className="text-right">
           <span
-            className="relative mt-2 text-xs font-medium"
+            className="
+              text-[15px]
+              font-semibold
+            "
             style={{
               color: "var(--muted)",
             }}
           >
-            повторений
+            {currentSet.setNumber}
           </span>
-        </button>
+
+          <span
+            className="mx-1 text-sm"
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            /
+          </span>
+
+          <span
+            className="
+              text-[15px]
+              font-semibold
+            "
+            style={{
+              color: "var(--foreground)",
+            }}
+          >
+            {completedSets.length}
+          </span>
+        </div>
       </div>
 
-      {/* Bottom information */}
+      {/* PROGRESS */}
+      <WorkoutProgress
+        sets={completedSets}
+        currentIndex={currentIndex}
+        isResting={isResting}
+      />
 
-      <div className="pb-2 text-center">
-        <p
-          className="text-xs font-medium"
-          style={{
-            color: "var(--muted)",
-          }}
-        >
-          {completedCount} выполнено ·{" "}
-          {completedSets.length} всего
-        </p>
+      {/* MAIN */}
+      <div className="flex flex-1 items-center justify-center">
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={handleCompleteSet}
+            disabled={isLoading}
+            aria-label={`Завершить подход ${currentSet.setNumber}`}
+            className="
+              bodyos-current-set
+              relative
+              flex
+              h-[270px]
+              w-[270px]
+              flex-col
+              items-center
+              justify-center
+              rounded-full
+              transition-transform
+              active:scale-[0.96]
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+            "
+            style={{
+              backgroundColor: "var(--card)",
+              border:
+                "1px solid color-mix(in srgb, var(--accent) 18%, var(--border))",
+              boxShadow:
+                "0 16px 45px color-mix(in srgb, var(--accent) 7%, transparent)",
+            }}
+          >
+            <div
+              className="
+                absolute
+                inset-[8px]
+                rounded-full
+                border-2
+              "
+              style={{
+                borderColor:
+                  "color-mix(in srgb, var(--accent) 24%, transparent)",
+              }}
+            />
 
+            <span
+              className="
+                relative
+                text-[82px]
+                font-bold
+                leading-none
+                tracking-[-0.075em]
+                tabular-nums
+              "
+              style={{
+                color: "var(--foreground)",
+              }}
+            >
+              {currentSet.targetReps}
+            </span>
+
+            <span
+              className="
+                relative
+                mt-3
+                text-[13px]
+                font-medium
+              "
+              style={{
+                color: "var(--muted)",
+              }}
+            >
+              повторений
+            </span>
+          </button>
+
+          <p
+            className="
+              mt-6
+              text-sm
+              font-medium
+            "
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            Выполни подход и нажми на круг
+          </p>
+        </div>
+      </div>
+
+      {/* BOTTOM */}
+      <div className="pb-1">
         {error && (
           <div
-            className="mt-3 rounded-2xl border px-4 py-3 text-sm"
+            className="
+        mb-3
+        rounded-[18px]
+        border
+        px-4
+        py-3
+        text-center
+        text-sm
+      "
             style={{
-              backgroundColor:
-                "color-mix(in srgb, #ef4444 6%, transparent)",
-              borderColor:
-                "color-mix(in srgb, #ef4444 20%, transparent)",
+              backgroundColor: "color-mix(in srgb, #ef4444 6%, transparent)",
+              borderColor: "color-mix(in srgb, #ef4444 20%, transparent)",
               color: "#ef4444",
             }}
           >
             {error}
           </div>
         )}
+
+        <div className="flex items-center justify-center gap-2">
+          <span
+            className="text-xs font-medium"
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            Выполнено
+          </span>
+
+          <span
+            className="text-sm font-bold tabular-nums"
+            style={{
+              color: "var(--foreground)",
+            }}
+          >
+            {completedCount}
+          </span>
+
+          <span
+            className="text-xs"
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            из {completedSets.length}
+          </span>
+        </div>
       </div>
     </div>
   );

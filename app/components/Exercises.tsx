@@ -1,3 +1,4 @@
+// app/components/Exercises.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,13 +10,15 @@ type Exercise = {
   id: string;
   name: string;
   slug: string;
+  maxReps: number | null;
+  maxUpdatedAt: string | null;
 };
 
 const exerciseIcons: Record<string, string> = {
-  "pull-ups": "/pull-up.svg",
-  "push-ups": "/push-up.svg",
-  dips: "/dips.svg",
-  squats: "/squat.svg",
+  "pull-ups": "/exercises/pull-ups.png",
+  "push-ups": "/exercises/push-ups.png",
+  dips: "/exercises/dips.png",
+  squats: "/exercises/squats.png",
 };
 
 const exerciseDescriptions: Record<string, string> = {
@@ -59,35 +62,40 @@ export default function Exercises() {
 
   if (isLoading) {
     return (
-      <div className="border-y" style={{ borderColor: "var(--border)" }}>
+      <div className="space-y-3">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className={[
-              "flex min-h-[104px] items-center gap-4 px-4",
-              index !== 0 ? "border-t" : "",
-            ].join(" ")}
+            className="flex min-h-[124px] items-center gap-4 rounded-[24px] border p-4"
             style={{
+              backgroundColor: "var(--card)",
               borderColor: "var(--border)",
             }}
           >
             <div
-              className="h-14 w-14 shrink-0 animate-pulse"
+              className="h-[72px] w-[72px] shrink-0 animate-pulse rounded-[14px]"
               style={{
                 backgroundColor: "var(--surface)",
               }}
             />
 
-            <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
               <div
-                className="h-4 w-32 animate-pulse"
+                className="h-5 w-36 animate-pulse rounded-full"
                 style={{
                   backgroundColor: "var(--surface)",
                 }}
               />
 
               <div
-                className="h-3 w-48 max-w-full animate-pulse"
+                className="h-3.5 w-48 max-w-full animate-pulse rounded-full"
+                style={{
+                  backgroundColor: "var(--surface)",
+                }}
+              />
+
+              <div
+                className="h-3 w-28 animate-pulse rounded-full"
                 style={{
                   backgroundColor: "var(--surface)",
                 }}
@@ -95,7 +103,7 @@ export default function Exercises() {
             </div>
 
             <div
-              className="h-8 w-8 shrink-0 animate-pulse"
+              className="h-10 w-10 shrink-0 animate-pulse rounded-full"
               style={{
                 backgroundColor: "var(--surface)",
               }}
@@ -109,7 +117,7 @@ export default function Exercises() {
   if (error) {
     return (
       <div
-        className="border-y px-4 py-5 text-sm"
+        className="rounded-[22px] border px-5 py-5 text-sm"
         style={{
           backgroundColor: "var(--surface)",
           borderColor: "var(--border)",
@@ -124,7 +132,7 @@ export default function Exercises() {
   if (exercises.length === 0) {
     return (
       <div
-        className="border-y px-4 py-5 text-sm"
+        className="rounded-[22px] border px-5 py-5 text-sm"
         style={{
           backgroundColor: "var(--surface)",
           borderColor: "var(--border)",
@@ -137,13 +145,8 @@ export default function Exercises() {
   }
 
   return (
-    <div
-      className="border-y"
-      style={{
-        borderColor: "var(--border)",
-      }}
-    >
-      {exercises.map((exercise, index) => {
+    <div className="space-y-3">
+      {exercises.map((exercise) => {
         const icon = exerciseIcons[exercise.slug];
 
         const description =
@@ -158,52 +161,46 @@ export default function Exercises() {
               router.push(`/exercise/${exercise.id}`);
             }}
             className={[
-              "group relative flex w-full",
-              "min-h-[112px]",
-              "items-center gap-4",
-              "px-4 py-4",
+              "group flex w-full items-center gap-4",
+              "rounded-[24px] border p-4",
               "text-left",
-              "transition-colors duration-150",
-              "active:bg-[color-mix(in_srgb,var(--accent)_6%,var(--background))]",
-              "hover:bg-[color-mix(in_srgb,var(--accent)_4%,var(--background))]",
-              index !== 0 ? "border-t" : "",
+              "transition-all duration-150",
+              "hover:border-[color-mix(in_srgb,var(--accent)_25%,var(--border))]",
+              "hover:bg-[color-mix(in_srgb,var(--accent)_2%,var(--card))]",
+              "active:scale-[0.985]",
+              "focus-visible:outline-none",
+              "focus-visible:ring-2",
+              "focus-visible:ring-[var(--accent)]",
+              "focus-visible:ring-offset-2",
+              "motion-reduce:transition-none",
             ].join(" ")}
             style={{
+              backgroundColor: "var(--card)",
               borderColor: "var(--border)",
             }}
           >
-            {/* Акцентная точка */}
-            <span
-              className="absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2"
-              style={{
-                backgroundColor: "var(--accent)",
-              }}
-            />
-
-            {/* Иконка */}
+            {/* Изображение */}
             <div
-              className={[
-                "flex h-16 w-16 shrink-0",
-                "items-center justify-center",
-              ].join(" ")}
+              className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[14px]"
               style={{
                 backgroundColor:
-                  "color-mix(in srgb, var(--accent) 8%, var(--surface))",
+                  "color-mix(in srgb, var(--accent) 9%, var(--surface))",
               }}
             >
               {icon ? (
                 <Image
                   src={icon}
                   alt=""
-                  width={48}
-                  height={48}
-                  className="h-11 w-11 object-contain"
+                  width={256}
+                  height={256}
+                  quality={100}
+                  className="h-full w-full scale-[1.12] object-cover"
                   draggable={false}
                   aria-hidden="true"
                 />
               ) : (
                 <Dumbbell
-                  size={28}
+                  size={30}
                   strokeWidth={1.7}
                   style={{
                     color: "var(--accent)",
@@ -215,19 +212,17 @@ export default function Exercises() {
 
             {/* Информация */}
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h2
-                  className="truncate text-[16px] font-bold tracking-[-0.02em]"
-                  style={{
-                    color: "var(--foreground)",
-                  }}
-                >
-                  {exercise.name}
-                </h2>
-              </div>
+              <h2
+                className="truncate text-[18px] font-bold leading-tight tracking-[-0.025em]"
+                style={{
+                  color: "var(--foreground)",
+                }}
+              >
+                {exercise.name}
+              </h2>
 
               <p
-                className="mt-1.5 max-w-[280px] text-[12px] leading-[1.45]"
+                className="mt-2 text-[13px] leading-[1.45]"
                 style={{
                   color: "var(--muted)",
                 }}
@@ -235,30 +230,36 @@ export default function Exercises() {
                 {description}
               </p>
 
+              {/* Личный максимум */}
               <p
-                className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em]"
+                className="mt-2 text-[11px] font-semibold leading-none"
                 style={{
-                  color: "var(--accent)",
+                  color:
+                    exercise.maxReps !== null
+                      ? "var(--accent)"
+                      : "var(--subtle)",
                 }}
               >
-                Открыть программу
+                {exercise.maxReps !== null
+                  ? `Личный максимум · ${exercise.maxReps}`
+                  : "Максимум не установлен"}
               </p>
             </div>
 
-            {/* Навигация */}
-            <ChevronRight
-              size={20}
-              strokeWidth={1.7}
-              className={[
-                "shrink-0 transition-transform duration-150",
-                "group-hover:translate-x-0.5",
-                "group-active:translate-x-1",
-              ].join(" ")}
+            {/* Arrow */}
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-150 group-hover:translate-x-0.5 group-active:translate-x-0.5"
               style={{
+                backgroundColor: "var(--surface)",
                 color: "var(--muted)",
               }}
-              aria-hidden="true"
-            />
+            >
+              <ChevronRight
+                size={19}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+            </span>
           </button>
         );
       })}

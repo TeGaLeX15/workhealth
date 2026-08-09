@@ -1,3 +1,4 @@
+// app/training/page.tsx
 import { redirect } from "next/navigation";
 
 import { getSessionUser } from "@/app/server/auth/session";
@@ -11,10 +12,11 @@ export default async function TrainingPage() {
   }
 
   return (
-    <main className="py-6">
-      <header className="pt-2">
+    <div className="pt-7 pb-8">
+      {/* Header */}
+      <header>
         <p
-          className="text-sm font-semibold"
+          className="text-xs font-semibold uppercase tracking-[0.12em]"
           style={{
             color: "var(--accent)",
           }}
@@ -23,7 +25,7 @@ export default async function TrainingPage() {
         </p>
 
         <h1
-          className="mt-2 text-[30px] font-bold leading-tight tracking-[-0.04em]"
+          className="mt-2 text-[30px] font-bold leading-tight tracking-[-0.045em] sm:text-[34px]"
           style={{
             color: "var(--foreground)",
           }}
@@ -37,14 +39,15 @@ export default async function TrainingPage() {
             color: "var(--muted)",
           }}
         >
-          Выбери упражнение, чтобы посмотреть программу
-          и начать тренировку.
+          Выбери упражнение, чтобы открыть программу.
         </p>
       </header>
 
+      {/* Exercises */}
       <section className="mt-7">
         <Exercises />
       </section>
-    </main>
+    </div>
   );
 }
+

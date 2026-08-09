@@ -1,13 +1,9 @@
+// app/components/BottomNavigation.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  House,
-  Dumbbell,
-  ChartNoAxesColumn,
-  Settings,
-} from "lucide-react";
+import { House, Dumbbell, ChartNoAxesColumn, Settings } from "lucide-react";
 
 import { useTheme } from "@/app/providers/theme-provider";
 
@@ -41,70 +37,62 @@ export default function BottomNavigation() {
   return (
     <nav
       aria-label="Основная навигация"
-      className="fixed inset-x-0 bottom-0 z-50 w-full"
+      className="fixed inset-x-0 bottom-0 z-50 w-full border-t backdrop-blur-xl"
       style={{
         backgroundColor: dark
-          ? "rgba(9, 9, 11, 0.96)"
-          : "rgba(255, 255, 255, 0.96)",
-        borderTop: `1px solid ${
-          dark ? "#27272a" : "#e4e4e7"
-        }`,
-        paddingBottom:
-          "env(safe-area-inset-bottom)",
+          ? "rgba(9, 9, 11, 0.94)"
+          : "rgba(255, 255, 255, 0.94)",
+        borderColor: "var(--border)",
+        paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
-      <div className="mx-auto flex w-full max-w-xl">
+      {" "}
+      <div className="mx-auto flex h-18 w-full max-w-xl items-stretch px-3">
         {navigation.map((item) => {
           const isActive =
             item.href === "/"
               ? pathname === "/"
               : pathname.startsWith(item.href);
-
           const Icon = item.icon;
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              aria-current={
-                isActive ? "page" : undefined
-              }
+              aria-current={isActive ? "page" : undefined}
               className={[
-                "relative flex min-h-16 flex-1",
-                "flex-col items-center justify-center",
-                "gap-1",
-                "transition-colors duration-150",
-                "active:opacity-70",
+                "flex min-w-0 flex-1 flex-col items-center justify-center",
+                "transition-transform duration-150",
+                "active:scale-[0.96]",
                 "motion-reduce:transition-none",
               ].join(" ")}
               style={{
-                color: isActive
-                  ? accent
-                  : dark
-                    ? "#71717a"
-                    : "#a1a1aa",
+                color: isActive ? accent : "var(--muted)",
               }}
             >
-              {/* Active indicator */}
+              {/* Icon */}
               <span
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-0.5"
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
                 style={{
                   backgroundColor: isActive
-                    ? accent
+                    ? `color-mix(in srgb, var(--accent) 12%, transparent)`
                     : "transparent",
                 }}
-              />
+              >
+                <Icon
+                  size={21}
+                  strokeWidth={isActive ? 2.2 : 1.8}
+                  aria-hidden="true"
+                />
+              </span>
 
-              <Icon
-                size={21}
-                strokeWidth={
-                  isActive ? 2.25 : 1.8
-                }
-                aria-hidden="true"
-              />
-
-              <span className="text-[10px] font-semibold leading-none">
+              {/* Label */}
+              <span
+                className="my-1.5 text-[12px] font-semibold leading-none"
+                style={{
+                  color: isActive ? accent : "var(--muted)",
+                }}
+              >
                 {item.label}
               </span>
             </Link>

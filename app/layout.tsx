@@ -1,11 +1,8 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import AppHeader from "@/app/components/AppHeader";
-import BottomNavigation from "@/app/components/BottomNavigation";
 import { ThemeProvider } from "@/app/providers/theme-provider";
 
 const geistSans = Geist({
@@ -77,15 +74,7 @@ export default function RootLayout({
           color: "var(--foreground)",
         }}
       >
-        <ThemeProvider>
-          <AppHeader />
-
-          <main className="mx-auto w-full max-w-xl px-5 pb-24">
-            {children}
-          </main>
-
-          <BottomNavigation />
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
