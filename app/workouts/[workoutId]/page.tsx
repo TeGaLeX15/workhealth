@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { getSessionUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
-import StartWorkoutButton from "@/app/components/StartWorkoutButton";
+import WorkoutSession from "@/app/components/WorkoutSession";
 
 type WorkoutPageProps = {
   params: Promise<{
@@ -11,7 +11,9 @@ type WorkoutPageProps = {
   }>;
 };
 
-export default async function WorkoutPage({ params }: WorkoutPageProps) {
+export default async function WorkoutPage({
+  params,
+}: WorkoutPageProps) {
   const user = await getSessionUser();
 
   if (!user) {
@@ -42,7 +44,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-      <div className="mx-auto max-w-xl px-4 py-6">
+      <div className="mx-auto max-w-xl px-5 py-6">
         <Link
           href={`/exercise/${workout.exerciseId}`}
           className="text-sm text-zinc-500 transition hover:text-zinc-300"
@@ -50,7 +52,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
           ← Назад
         </Link>
 
-        <div className="mt-10">
+        <div className="mt-10 text-center">
           <p className="text-sm text-zinc-500">
             Неделя {workout.trainingWeek.weekNumber}
           </p>
@@ -59,49 +61,60 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
             Тренировка {workout.workoutNumber}
           </h1>
 
-          <p className="mt-2 text-lg text-zinc-400">{workout.exercise.name}</p>
+          <p className="mt-2 text-lg text-zinc-400">
+            {workout.exercise.name}
+          </p>
         </div>
 
-        <div className="mt-8 space-y-3">
-          {workout.sets.map((set) => (
-            <div
-              key={set.id}
-              className="flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-900 px-5 py-4"
+        {workout.status === "PLANNED" && (
+          <div className="mt-12 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-center">
+            <p className="text-zinc-300">
+              Сначала начни тренировку
+            </p>
+
+            <form
+              action={`/api/workouts/${workout.id}/start`}
+              method="POST"
+              className="mt-5"
             >
+              <button
+                type="submit"
+                className="h-12 w-full rounded-xl bg-white px-4 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+              >
+                Начать тренировку
+              </button>
+            </form>
+          </div>
+        )}
+
+        {workout.status === "IN_PROGRESS" && (
+          <WorkoutSession
+            workoutId={workout.id}
+            sets={workout.sets}
+          />
+        )}
+
+        {workout.status === "COMPLETED" && (
+          <div className="mt-12 text-center">
+            <div className="mx-auto flex h-64 w-64 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900">
               <div>
-                <p className="text-sm text-zinc-500">Подход {set.setNumber}</p>
+                <p className="text-6xl font-semibold">
+                  ✓
+                </p>
 
-                <p className="mt-1 text-2xl font-semibold">{set.targetReps}</p>
+                <p className="mt-4 text-sm text-zinc-400">
+                  Тренировка завершена
+                </p>
               </div>
-
-              <p className="text-sm text-zinc-500">повторений</p>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
-        <div className="mt-8">
-          {workout.status === "PLANNED" && (
-            <StartWorkoutButton workoutId={workout.id} />
-          )}
-
-          {workout.status === "IN_PROGRESS" && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-center text-sm text-zinc-400">
-              Тренировка начата
-            </div>
-          )}
-
-          {workout.status === "COMPLETED" && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-center text-sm text-zinc-400">
-              Тренировка завершена
-            </div>
-          )}
-
-          {workout.status === "CANCELLED" && (
-            <div className="rounded-xl border border-red-900/50 bg-red-950/30 px-4 py-3 text-center text-sm text-red-300">
-              Тренировка отменена
-            </div>
-          )}
-        </div>
+        {workout.status === "CANCELLED" && (
+          <div className="mt-12 rounded-2xl border border-red-900/50 bg-red-950/30 p-6 text-center text-red-300">
+            Тренировка отменена
+          </div>
+        )}
       </div>
     </main>
   );
