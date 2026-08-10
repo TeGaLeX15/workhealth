@@ -1,6 +1,10 @@
 // app/components/workout/PlannedWorkout.tsx
 import { getSessionUser } from "@/app/server/auth/session";
-import { getLocalDateString } from "@/app/lib/timezone/local-date";
+import {
+  getLocalDateString,
+  getDateColumnString,
+} from "@/app/lib/timezone/local-date";
+
 import StartWorkoutButton from "@/app/components/StartWorkoutButton";
 import WorkoutPlan from "./WorkoutPlan";
 
@@ -19,7 +23,10 @@ type PlannedWorkoutProps = {
   };
 };
 
-function getDateLabel(date: Date, timeZone: string) {
+function getDateLabel(
+  date: Date,
+  timeZone: string,
+) {
   const formatter = new Intl.DateTimeFormat("ru-RU", {
     timeZone,
     weekday: "long",
@@ -44,17 +51,41 @@ export default async function PlannedWorkout({
     0,
   );
 
-  const todayString = getLocalDateString(new Date(), user.timezone);
-  const scheduledDateString = getLocalDateString(
-    workout.scheduledDate,
+  /*
+   * Сегодня определяется относительно
+   * timezone пользователя.
+   *
+   * Например:
+   * America/Aruba → 2026-08-10
+   * Australia/Perth → 2026-08-11
+   */
+  const todayString = getLocalDateString(
+    new Date(),
     user.timezone,
   );
 
-  const isToday = scheduledDateString === todayString;
+  /*
+   * scheduledDate — Prisma @db.Date.
+   *
+   * Это календарная дата, поэтому НЕ пропускаем
+   * её через timezone пользователя.
+   *
+   * Например:
+   * 2026-08-10T00:00:00.000Z
+   * → "2026-08-10"
+   */
+  const scheduledDateString =
+    getDateColumnString(workout.scheduledDate);
+
+  const isToday =
+    scheduledDateString === todayString;
 
   const dateLabel = isToday
     ? "Сегодня"
-    : getDateLabel(workout.scheduledDate, user.timezone);
+    : getDateLabel(
+        workout.scheduledDate,
+        "UTC",
+      );
 
   const subtitle = isToday
     ? "Твой план на сегодня"
@@ -93,7 +124,9 @@ export default async function PlannedWorkout({
             tracking-[0.14em]
           "
           style={{
-            color: canStart ? "var(--accent)" : "var(--muted)",
+            color: canStart
+              ? "var(--accent)"
+              : "var(--muted)",
           }}
         >
           <span
@@ -121,10 +154,14 @@ export default async function PlannedWorkout({
               backgroundColor: canStart
                 ? "color-mix(in srgb, var(--accent) 8%, transparent)"
                 : "color-mix(in srgb, var(--muted) 8%, transparent)",
-              color: canStart ? "var(--accent)" : "var(--muted)",
+              color: canStart
+                ? "var(--accent)"
+                : "var(--muted)",
             }}
           >
-            {canStart ? "Готова" : "Запланирована"}
+            {canStart
+              ? "Готова"
+              : "Запланирована"}
           </span>
         </div>
 
@@ -206,7 +243,11 @@ export default async function PlannedWorkout({
         >
           <div className="flex items-center gap-2">
             <span
-              className="text-[14px] font-bold tabular-nums"
+              className="
+                text-[14px]
+                font-bold
+                tabular-nums
+              "
               style={{
                 color: "var(--foreground)",
               }}
@@ -215,7 +256,10 @@ export default async function PlannedWorkout({
             </span>
 
             <span
-              className="text-[12px] font-medium"
+              className="
+                text-[12px]
+                font-medium
+              "
               style={{
                 color: "var(--muted)",
               }}
@@ -232,7 +276,10 @@ export default async function PlannedWorkout({
           />
 
           <span
-            className="text-[12px] font-medium"
+            className="
+              text-[12px]
+              font-medium
+            "
             style={{
               color: "var(--muted)",
             }}
@@ -248,7 +295,9 @@ export default async function PlannedWorkout({
       {/* ACTION */}
       <div className="mt-5">
         {canStart ? (
-          <StartWorkoutButton workoutId={workout.id} />
+          <StartWorkoutButton
+            workoutId={workout.id}
+          />
         ) : (
           <div
             className="
@@ -270,7 +319,15 @@ export default async function PlannedWorkout({
           </div>
         )}
 
-        <div className="mt-3 flex items-center justify-center gap-2">
+        <div
+          className="
+            mt-3
+            flex
+            items-center
+            justify-center
+            gap-2
+          "
+        >
           <span
             className="h-1.5 w-1.5 rounded-full"
             style={{
@@ -281,7 +338,10 @@ export default async function PlannedWorkout({
           />
 
           <span
-            className="text-[11px] font-medium"
+            className="
+              text-[11px]
+              font-medium
+            "
             style={{
               color: "var(--muted)",
             }}
