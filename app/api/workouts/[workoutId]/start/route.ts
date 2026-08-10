@@ -91,10 +91,13 @@ export async function POST(
     }
 
     console.log("WORKOUT DATE DEBUG", {
+      now: new Date().toISOString(),
       workoutId: workout.id,
-      scheduledDate: workout.scheduledDate,
-      today,
+      scheduledDate: workout.scheduledDate.toISOString(),
+      todayString,
+      today: today.toISOString(),
       timezone: user.timezone,
+      nodeTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
     // ─── Future workout ────────────────────────────────────────────────
