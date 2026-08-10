@@ -7,6 +7,18 @@ import { createSession } from "@/app/server/auth/session";
 
 import { registerRequestSchema } from "@/app/lib/validation/auth";
 
+function isValidTimeZone(timeZone: string) {
+  try {
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+    }).format();
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -23,6 +35,12 @@ export async function POST(request: Request) {
     }
 
     const { email, password } = validation.data;
+
+    const timezone =
+      typeof body.timezone === "string" &&
+      isValidTimeZone(body.timezone)
+        ? body.timezone
+        : "Asia/Almaty";
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -48,6 +66,7 @@ export async function POST(request: Request) {
       data: {
         email,
         passwordHash,
+        timezone,
       },
       select: {
         id: true,

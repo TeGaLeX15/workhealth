@@ -24,8 +24,7 @@ export default function RegisterPage() {
 
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [passwordRepeatTouched, setPasswordRepeatTouched] =
-    useState(false);
+  const [passwordRepeatTouched, setPasswordRepeatTouched] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,8 +42,7 @@ export default function RegisterPage() {
 
   const emailError = fieldErrors.email?.[0] ?? "";
   const passwordError = fieldErrors.password?.[0] ?? "";
-  const passwordRepeatError =
-    fieldErrors.passwordRepeat?.[0] ?? "";
+  const passwordRepeatError = fieldErrors.passwordRepeat?.[0] ?? "";
 
   const isFormValid = validationResult.success;
 
@@ -71,6 +69,9 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
+      const timezone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -79,6 +80,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           email: validation.data.email,
           password: validation.data.password,
+          timezone,
         }),
       });
 
@@ -143,11 +145,7 @@ export default function RegisterPage() {
               </div>
             }
           >
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="space-y-5"
-            >
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <AuthInput
                 id="email"
                 label="Email"
@@ -215,8 +213,7 @@ export default function RegisterPage() {
                   style={{
                     backgroundColor:
                       "color-mix(in srgb, #ef4444 6%, transparent)",
-                    borderColor:
-                      "color-mix(in srgb, #ef4444 18%, transparent)",
+                    borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
                     color: "#ef4444",
                   }}
                 >
@@ -250,9 +247,7 @@ export default function RegisterPage() {
                     "0 9px 26px color-mix(in srgb, var(--accent) 18%, transparent)",
                 }}
               >
-                {isLoading
-                  ? "Создаём аккаунт..."
-                  : "Создать аккаунт"}
+                {isLoading ? "Создаём аккаунт..." : "Создать аккаунт"}
               </button>
             </form>
           </AuthCard>

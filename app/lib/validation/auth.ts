@@ -1,5 +1,4 @@
 // lib/validation/auth.ts
-
 import { z } from "zod";
 
 // ─── Shared fields ───────────────────────────────────────────────────────────
@@ -14,6 +13,10 @@ const emailSchema = z
 const passwordSchema = z
   .string()
   .min(1, "Введите пароль");
+
+const timezoneSchema = z
+  .string()
+  .min(1, "Некорректный часовой пояс");
 
 // ─── Login ───────────────────────────────────────────────────────────────────
 
@@ -54,11 +57,14 @@ export const registerSchema = registerFieldsSchema.refine(
 // ─── API request schemas ─────────────────────────────────────────────────────
 //
 // passwordRepeat нужен только клиенту для подтверждения пароля.
-// В API он не отправляется.
+// timezone передаётся браузером при регистрации.
 
-export const registerRequestSchema =
-  registerFieldsSchema.omit({
+export const registerRequestSchema = registerFieldsSchema
+  .omit({
     passwordRepeat: true,
+  })
+  .extend({
+    timezone: timezoneSchema,
   });
 
 // ─── Types ───────────────────────────────────────────────────────────────────

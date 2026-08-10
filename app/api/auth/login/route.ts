@@ -7,6 +7,18 @@ import { createSession } from "@/app/server/auth/session";
 
 import { loginSchema } from "@/app/lib/validation/auth";
 
+function isValidTimeZone(timeZone: string) {
+  try {
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+    }).format();
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -28,6 +40,25 @@ export async function POST(request: Request) {
       where: {
         email,
       },
+    });
+
+    console.log("LOGIN TIMEZONE DEBUG", {
+      clientTimezone:
+        typeof body.timezone === "string"
+          ? body.timezone
+          : null,
+
+      clientTimezoneValid:
+        typeof body.timezone === "string"
+          ? isValidTimeZone(body.timezone)
+          : false,
+
+      serverNow: new Date().toISOString(),
+
+      userTimezone: user?.timezone ?? null,
+
+      nodeTimezone: Intl.DateTimeFormat().resolvedOptions()
+        .timeZone,
     });
 
     if (!user) {
