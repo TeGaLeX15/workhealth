@@ -222,17 +222,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
 
     const background = dark ? "#09090b" : "#ffffff";
-
     const foreground = dark ? "#fafafa" : "#18181b";
 
     root.classList.toggle("dark", dark);
 
     root.style.setProperty("--accent", accentConfig.primary);
-
     root.style.setProperty("--accent-dark", accentConfig.dark);
 
     root.style.setProperty("--background", background);
-
     root.style.setProperty("--foreground", foreground);
 
     root.style.setProperty("--card", dark ? "#18181b" : "#ffffff");
@@ -247,20 +244,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     root.style.setProperty("--divider", dark ? "#27272a" : "#f4f4f5");
 
-    /* Browser UI */
     root.style.colorScheme = dark ? "dark" : "light";
-
-    /* Android / browser system bars */
-    const themeColor = dark ? "#09090b" : "#ffffff";
-
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", themeColor);
-
-    /* iOS PWA / browser */
-    document
-      .querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-      ?.setAttribute("content", dark ? "black" : "default");
   }, [dark, accentConfig]);
 
   const value: ThemeContextValue = {
