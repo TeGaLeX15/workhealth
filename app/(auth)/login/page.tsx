@@ -63,12 +63,17 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(validation.data),
+        body: JSON.stringify({
+          ...validation.data,
+          timezone,
+        }),
       });
 
       const data = await response.json();
@@ -130,11 +135,7 @@ export default function LoginPage() {
               </div>
             }
           >
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="space-y-5"
-            >
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <AuthInput
                 id="email"
                 label="Email"
@@ -221,8 +222,7 @@ export default function LoginPage() {
                   style={{
                     backgroundColor:
                       "color-mix(in srgb, #ef4444 6%, transparent)",
-                    borderColor:
-                      "color-mix(in srgb, #ef4444 18%, transparent)",
+                    borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
                     color: "#ef4444",
                   }}
                 >
