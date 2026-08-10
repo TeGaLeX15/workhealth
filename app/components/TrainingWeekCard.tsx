@@ -1,6 +1,6 @@
 // app/components/TrainingWeekCard.tsx
 import Link from "next/link";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Lock } from "lucide-react";
 
 type WorkoutSet = {
   id: string;
@@ -15,25 +15,40 @@ type WorkoutSet = {
 type Workout = {
   id: string;
   workoutNumber: number;
-  status: "PLANNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+  scheduledDate: Date;
+  status:
+    | "PLANNED"
+    | "IN_PROGRESS"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "SKIPPED";
   sets: WorkoutSet[];
 };
 
 type TrainingWeekCardProps = {
   weekNumber: number;
+  startDate: Date;
+  endDate: Date;
   workouts: Workout[];
+  currentWorkoutId: string | null;
 };
 
 function getStatusLabel(status: Workout["status"]) {
   switch (status) {
     case "PLANNED":
       return "Запланирована";
+
     case "IN_PROGRESS":
       return "В процессе";
+
     case "COMPLETED":
       return "Выполнена";
+
     case "CANCELLED":
       return "Отменена";
+
+    case "SKIPPED":
+      return "Пропущена";
   }
 }
 
@@ -58,6 +73,13 @@ function getStatusStyle(status: Workout["status"]) {
         backgroundColor:
           "color-mix(in srgb, #ef4444 8%, var(--surface))",
         color: "#ef4444",
+      };
+
+    case "SKIPPED":
+      return {
+        backgroundColor:
+          "color-mix(in srgb, var(--muted) 8%, var(--surface))",
+        color: "var(--muted)",
       };
 
     default:
@@ -104,15 +126,44 @@ function getWorkoutCardStyle(status: Workout["status"]) {
   }
 }
 
+function formatDateRange(startDate: Date, endDate: Date) {
+  const formatter = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+  });
+
+  return `${formatter.format(startDate)} — ${formatter.format(endDate)}`;
+}
+
+function formatWorkoutDate(date: Date) {
+  const formatter = new Intl.DateTimeFormat("ru-RU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+  return formatter.format(date).replace(/\.$/, "");
+}
+
+function getTotalReps(sets: WorkoutSet[]) {
+  return sets.reduce(
+    (total, set) => total + set.targetReps,
+    0,
+  );
+}
+
 export default function TrainingWeekCard({
   weekNumber,
+  startDate,
+  endDate,
   workouts,
+  currentWorkoutId,
 }: TrainingWeekCardProps) {
   return (
     <section>
-      {/* Week header */}
-      <div className="mb-3 flex items-center justify-between px-1">
-        <div>
+      {/* WEEK HEADER */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <p
             className="text-[10px] font-bold uppercase tracking-[0.14em]"
             style={{
@@ -122,18 +173,36 @@ export default function TrainingWeekCard({
             Тренировочная неделя
           </p>
 
-          <h3
-            className="mt-1 text-[20px] font-bold tracking-[-0.035em]"
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            Неделя {weekNumber}
-          </h3>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h3
+              className="text-[20px] font-bold tracking-[-0.035em]"
+              style={{
+                color: "var(--foreground)",
+              }}
+            >
+              Неделя {weekNumber}
+            </h3>
+
+            <span
+              className="text-[12px] font-medium"
+              style={{
+                color: "var(--muted)",
+              }}
+            >
+              {formatDateRange(startDate, endDate)}
+            </span>
+          </div>
         </div>
 
         <span
-          className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
+          className="
+            shrink-0
+            rounded-full
+            px-3
+            py-1.5
+            text-[11px]
+            font-semibold
+          "
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--muted) 7%, var(--surface))",
@@ -141,24 +210,17 @@ export default function TrainingWeekCard({
           }}
         >
           {workouts.length}{" "}
-          {workouts.length === 1 ? "тренировка" : "тренировки"}
+          {workouts.length === 1
+            ? "тренировка"
+            : workouts.length >= 2 && workouts.length <= 4
+              ? "тренировки"
+              : "тренировок"}
         </span>
       </div>
 
-      {/* Workouts */}
-      <div className="space-y-3">
+      {/* WORKOUTS */}
+      <div className="mt-4 space-y-3">
         {workouts.map((workout) => {
-          const completedSets = workout.sets.filter(
-            (set) => set.completed,
-          ).length;
-
-          const totalSets = workout.sets.length;
-
-          const progress =
-            totalSets > 0
-              ? Math.round((completedSets / totalSets) * 100)
-              : 0;
-
           const isInProgress =
             workout.status === "IN_PROGRESS";
 
@@ -168,8 +230,235 @@ export default function TrainingWeekCard({
           const isCancelled =
             workout.status === "CANCELLED";
 
-          const currentSetIndex = workout.sets.findIndex(
-            (set) => !set.completed,
+          const isSkipped =
+            workout.status === "SKIPPED";
+
+          const isCurrent =
+            workout.id === currentWorkoutId;
+
+          const isFuture =
+            workout.status === "PLANNED" && !isCurrent;
+
+          /*
+           * SKIPPED
+           */
+          if (isSkipped) {
+            return (
+              <div
+                key={workout.id}
+                className="
+                  flex
+                  min-h-[58px]
+                  items-center
+                  justify-between
+                  gap-3
+                  rounded-[18px]
+                  border
+                  px-4
+                  py-3
+                  opacity-60
+                "
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, var(--muted) 2%, var(--card))",
+                  borderColor:
+                    "color-mix(in srgb, var(--muted) 14%, var(--border))",
+                }}
+              >
+                <div className="min-w-0">
+                  <p
+                    className="
+                      text-[10px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.1em]
+                    "
+                    style={{
+                      color: "var(--muted)",
+                    }}
+                  >
+                    {formatWorkoutDate(workout.scheduledDate)}
+                  </p>
+
+                  <p
+                    className="
+                      mt-0.5
+                      text-[14px]
+                      font-semibold
+                      tracking-[-0.02em]
+                    "
+                    style={{
+                      color: "var(--foreground)",
+                    }}
+                  >
+                    Тренировка #{workout.workoutNumber}
+                  </p>
+                </div>
+
+                <span
+                  className="
+                    shrink-0
+                    rounded-full
+                    px-2.5
+                    py-1.5
+                    text-[10px]
+                    font-semibold
+                  "
+                  style={getStatusStyle("SKIPPED")}
+                >
+                  Пропущена
+                </span>
+              </div>
+            );
+          }
+
+          /*
+           * FUTURE
+           *
+           * Будущая тренировка:
+           * - нельзя открыть
+           * - есть дата
+           * - есть количество подходов
+           * - есть общий объём
+           */
+          if (isFuture) {
+            const totalReps = getTotalReps(workout.sets);
+
+            return (
+              <div
+                key={workout.id}
+                className="
+                  rounded-[20px]
+                  border
+                  px-4
+                  py-3.5
+                "
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, var(--muted) 2%, var(--card))",
+                  borderColor:
+                    "color-mix(in srgb, var(--muted) 10%, var(--border))",
+                }}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p
+                      className="
+                        text-[10px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.1em]
+                      "
+                      style={{
+                        color: "var(--muted)",
+                      }}
+                    >
+                      {formatWorkoutDate(workout.scheduledDate)}
+                    </p>
+
+                    <p
+                      className="
+                        mt-0.5
+                        text-[15px]
+                        font-bold
+                        tracking-[-0.02em]
+                      "
+                      style={{
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      Тренировка #{workout.workoutNumber}
+                    </p>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span
+                      className="
+                        rounded-full
+                        px-2.5
+                        py-1.5
+                        text-[10px]
+                        font-semibold
+                      "
+                      style={{
+                        backgroundColor:
+                          "color-mix(in srgb, var(--muted) 7%, var(--surface))",
+                        color: "var(--muted)",
+                      }}
+                    >
+                      Запланирована
+                    </span>
+
+                    <Lock
+                      size={15}
+                      strokeWidth={2}
+                      style={{
+                        color: "var(--muted)",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className="
+                    mt-3
+                    flex
+                    items-center
+                    gap-2
+                    text-[11px]
+                    font-medium
+                  "
+                  style={{
+                    color: "var(--muted)",
+                  }}
+                >
+                  <span>
+                    {workout.sets.length}{" "}
+                    {workout.sets.length === 1
+                      ? "подход"
+                      : workout.sets.length >= 2 &&
+                          workout.sets.length <= 4
+                        ? "подхода"
+                        : "подходов"}
+                  </span>
+
+                  <span
+                    className="h-1 w-1 rounded-full"
+                    style={{
+                      backgroundColor: "var(--border)",
+                    }}
+                  />
+
+                  <span>{totalReps} повторений</span>
+                </div>
+              </div>
+            );
+          }
+
+          /*
+           * ACTIVE / COMPLETED / CANCELLED
+           */
+
+          const completedSets = workout.sets.filter(
+            (set) => set.completed,
+          ).length;
+
+          const totalSets = workout.sets.length;
+
+          const progress =
+            totalSets > 0
+              ? Math.round(
+                  (completedSets / totalSets) * 100,
+                )
+              : 0;
+
+          const currentSetIndex =
+            workout.sets.findIndex(
+              (set) => !set.completed,
+            );
+
+          const workoutDate = formatWorkoutDate(
+            workout.scheduledDate,
           );
 
           return (
@@ -184,11 +473,13 @@ export default function TrainingWeekCard({
                 "focus-visible:outline-none",
                 "focus-visible:ring-2",
                 "focus-visible:ring-[var(--accent)]",
-                isCancelled ? "opacity-70" : "",
+                isCancelled ? "opacity-60" : "",
               ].join(" ")}
-              style={getWorkoutCardStyle(workout.status)}
+              style={getWorkoutCardStyle(
+                workout.status,
+              )}
             >
-              {/* Active indicator */}
+              {/* ACTIVE INDICATOR */}
               {isInProgress && (
                 <div
                   className="h-1 w-full"
@@ -198,38 +489,59 @@ export default function TrainingWeekCard({
                 />
               )}
 
-              {/* Header */}
+              {/* HEADER */}
               <div className="px-4 pb-3 pt-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p
-                      className="text-[10px] font-semibold uppercase tracking-[0.12em]"
+                      className="
+                        text-[10px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.12em]
+                      "
                       style={{
                         color: "var(--muted)",
                       }}
                     >
-                      Тренировка
+                      {workoutDate}
                     </p>
 
                     <h4
-                      className="mt-1 text-[19px] font-bold leading-tight tracking-[-0.03em]"
+                      className="
+                        mt-1
+                        text-[19px]
+                        font-bold
+                        leading-tight
+                        tracking-[-0.03em]
+                      "
                       style={{
                         color: "var(--foreground)",
                       }}
                     >
-                      #{workout.workoutNumber}
+                      Тренировка #{workout.workoutNumber}
                     </h4>
                   </div>
 
                   <span
-                    className="shrink-0 rounded-full px-2.5 py-1.5 text-[10px] font-semibold leading-none"
-                    style={getStatusStyle(workout.status)}
+                    className="
+                      shrink-0
+                      rounded-full
+                      px-2.5
+                      py-1.5
+                      text-[10px]
+                      font-semibold
+                      leading-none
+                    "
+                    style={getStatusStyle(
+                      workout.status,
+                    )}
                   >
                     {getStatusLabel(workout.status)}
                   </span>
                 </div>
 
-                {/* Progress */}
+                {/* PROGRESS */}
                 <div className="mt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-baseline gap-1.5">
@@ -265,14 +577,24 @@ export default function TrainingWeekCard({
                   </div>
 
                   <div
-                    className="mt-2 h-1.5 overflow-hidden rounded-full"
+                    className="
+                      mt-2
+                      h-1.5
+                      overflow-hidden
+                      rounded-full
+                    "
                     style={{
                       backgroundColor:
                         "color-mix(in srgb, var(--muted) 9%, var(--background))",
                     }}
                   >
                     <div
-                      className="h-full rounded-full transition-all duration-500"
+                      className="
+                        h-full
+                        rounded-full
+                        transition-all
+                        duration-500
+                      "
                       style={{
                         width: `${progress}%`,
                         backgroundColor: "var(--accent)",
@@ -282,9 +604,13 @@ export default function TrainingWeekCard({
                 </div>
               </div>
 
-              {/* Sets */}
+              {/* SETS */}
               <div
-                className="border-t px-4 py-3.5"
+                className="
+                  border-t
+                  px-4
+                  py-3.5
+                "
                 style={{
                   borderColor: "var(--border)",
                   backgroundColor:
@@ -314,32 +640,60 @@ export default function TrainingWeekCard({
                     return (
                       <div
                         key={set.id}
-                        className="relative flex min-h-[64px] min-w-0 flex-col items-center justify-center overflow-hidden rounded-[16px] border"
+                        className="
+                          relative
+                          flex
+                          min-h-[64px]
+                          min-w-0
+                          flex-col
+                          items-center
+                          justify-center
+                          overflow-hidden
+                          rounded-[16px]
+                          border
+                        "
                         style={{
                           borderColor: completed
                             ? "color-mix(in srgb, var(--accent) 25%, var(--border))"
                             : current
                               ? "color-mix(in srgb, var(--accent) 55%, var(--border))"
                               : "color-mix(in srgb, var(--border) 55%, transparent)",
+
                           backgroundColor: completed
                             ? "color-mix(in srgb, var(--accent) 8%, var(--surface))"
                             : current
                               ? "color-mix(in srgb, var(--accent) 14%, var(--surface))"
                               : "var(--surface)",
+
                           opacity: upcoming ? 0.55 : 1,
                         }}
                       >
                         {current && (
                           <span
-                            className="absolute left-2 right-2 top-0 h-0.5 rounded-full"
+                            className="
+                              absolute
+                              left-2
+                              right-2
+                              top-0
+                              h-0.5
+                              rounded-full
+                            "
                             style={{
-                              backgroundColor: "var(--accent)",
+                              backgroundColor:
+                                "var(--accent)",
                             }}
                           />
                         )}
 
                         <span
-                          className="flex h-4 items-center justify-center text-[11px] font-semibold"
+                          className="
+                            flex
+                            h-4
+                            items-center
+                            justify-center
+                            text-[11px]
+                            font-semibold
+                          "
                           style={{
                             color:
                               completed || current
@@ -354,7 +708,11 @@ export default function TrainingWeekCard({
                             />
                           ) : current ? (
                             <span
-                              className="h-2.5 w-2.5 rounded-full"
+                              className="
+                                h-2.5
+                                w-2.5
+                                rounded-full
+                              "
                               style={{
                                 backgroundColor:
                                   "var(--accent)",
@@ -366,7 +724,13 @@ export default function TrainingWeekCard({
                         </span>
 
                         <span
-                          className="mt-1 text-[17px] font-bold leading-none tracking-[-0.025em]"
+                          className="
+                            mt-1
+                            text-[17px]
+                            font-bold
+                            leading-none
+                            tracking-[-0.025em]
+                          "
                           style={{
                             color: current
                               ? "var(--accent)"
@@ -384,9 +748,16 @@ export default function TrainingWeekCard({
                 </div>
               </div>
 
-              {/* Bottom action */}
+              {/* BOTTOM ACTION */}
               <div
-                className="flex min-h-[52px] items-center justify-between border-t px-4"
+                className="
+                  flex
+                  min-h-[52px]
+                  items-center
+                  justify-between
+                  border-t
+                  px-4
+                "
                 style={{
                   borderColor: "var(--border)",
                 }}
@@ -404,7 +775,12 @@ export default function TrainingWeekCard({
 
                   {isInProgress && (
                     <span
-                      className="h-2 w-2 shrink-0 rounded-full"
+                      className="
+                        h-2
+                        w-2
+                        shrink-0
+                        rounded-full
+                      "
                       style={{
                         backgroundColor:
                           "var(--accent)",
@@ -434,18 +810,24 @@ export default function TrainingWeekCard({
                   </span>
                 </div>
 
-                {!isCompleted && !isCancelled && (
-                  <ChevronRight
-                    size={18}
-                    strokeWidth={1.8}
-                    className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
-                    style={{
-                      color: isInProgress
-                        ? "var(--accent)"
-                        : "var(--muted)",
-                    }}
-                  />
-                )}
+                {!isCompleted &&
+                  !isCancelled && (
+                    <ChevronRight
+                      size={18}
+                      strokeWidth={1.8}
+                      className="
+                        shrink-0
+                        transition-transform
+                        duration-200
+                        group-hover:translate-x-0.5
+                      "
+                      style={{
+                        color: isInProgress
+                          ? "var(--accent)"
+                          : "var(--muted)",
+                      }}
+                    />
+                  )}
               </div>
             </Link>
           );

@@ -80,6 +80,7 @@ export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
+  timezone: 'timezone',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -132,6 +133,7 @@ export const WorkoutScalarFieldEnum = {
   userId: 'userId',
   exerciseId: 'exerciseId',
   workoutNumber: 'workoutNumber',
+  scheduledDate: 'scheduledDate',
   status: 'status',
   createdAt: 'createdAt',
   completedAt: 'completedAt'

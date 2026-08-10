@@ -1,4 +1,6 @@
 // app/components/auth/AuthFooter.tsx
+import packageJson from "../../../package.json";
+
 export default function AuthFooter() {
   return (
     <footer
@@ -13,7 +15,7 @@ export default function AuthFooter() {
         color: "var(--subtle, var(--muted))",
       }}
     >
-      Body OS · версия 1.0.0
+      Body OS · версия {packageJson.version}
     </footer>
   );
 }

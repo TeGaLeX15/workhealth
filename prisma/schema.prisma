@@ -16,6 +16,7 @@ enum WorkoutStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+  SKIPPED
 }
 
 enum TrainingWeekStatus {
@@ -24,11 +25,14 @@ enum TrainingWeekStatus {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
+  id            String   @id @default(cuid())
+  email         String   @unique
   passwordHash  String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+
+  timezone      String   @default("Asia/Almaty")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   exercises     UserExercise[]
   workouts      Workout[]
@@ -39,10 +43,10 @@ model User {
 }
 
 model Exercise {
-  id            String         @id @default(cuid())
+  id            String   @id @default(cuid())
   name          String
-  slug          String         @unique
-  createdAt     DateTime       @default(now())
+  slug          String   @unique
+  createdAt     DateTime @default(now())
 
   userExercises UserExercise[]
   workouts      Workout[]
@@ -72,15 +76,16 @@ model TrainingWeek {
   exerciseId  String
   weekNumber  Int
   maxReps     Int
-  startDate   DateTime           @default(now())
-  endDate     DateTime?
+
+  startDate   DateTime           @db.Date
+  endDate     DateTime           @db.Date
+
   status      TrainingWeekStatus @default(ACTIVE)
   createdAt   DateTime           @default(now())
   completedAt DateTime?
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
-
   workouts Workout[]
 
   @@unique([userId, exerciseId, weekNumber])
@@ -94,29 +99,33 @@ model Workout {
   userId         String
   exerciseId     String
   workoutNumber  Int
-  status WorkoutStatus @default(PLANNED)
+
+  scheduledDate  DateTime      @db.Date
+
+  status         WorkoutStatus @default(PLANNED)
   createdAt      DateTime      @default(now())
   completedAt    DateTime?
 
   trainingWeek TrainingWeek @relation(fields: [trainingWeekId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise     Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
-
-  sets WorkoutSet[]
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise      Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  sets          WorkoutSet[]
 
   @@unique([trainingWeekId, workoutNumber])
-  @@index([userId, createdAt])
+  @@unique([userId, exerciseId, scheduledDate])
+  @@index([userId, scheduledDate])
+  @@index([userId, status])
   @@index([exerciseId])
   @@index([trainingWeekId])
 }
 
 model WorkoutSet {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   workoutId   String
   setNumber   Int
   targetReps  Int
   actualReps  Int?
-  completed   Boolean   @default(false)
+  completed   Boolean  @default(false)
   completedAt DateTime?
 
   workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)

@@ -220,7 +220,7 @@ export type TrainingWeekGroupByOutputType = {
   weekNumber: number
   maxReps: number
   startDate: Date
-  endDate: Date | null
+  endDate: Date
   status: $Enums.TrainingWeekStatus
   createdAt: Date
   completedAt: Date | null
@@ -256,7 +256,7 @@ export type TrainingWeekWhereInput = {
   weekNumber?: Prisma.IntFilter<"TrainingWeek"> | number
   maxReps?: Prisma.IntFilter<"TrainingWeek"> | number
   startDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
+  endDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   status?: Prisma.EnumTrainingWeekStatusFilter<"TrainingWeek"> | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
@@ -272,7 +272,7 @@ export type TrainingWeekOrderByWithRelationInput = {
   weekNumber?: Prisma.SortOrder
   maxReps?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  endDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -292,7 +292,7 @@ export type TrainingWeekWhereUniqueInput = Prisma.AtLeast<{
   weekNumber?: Prisma.IntFilter<"TrainingWeek"> | number
   maxReps?: Prisma.IntFilter<"TrainingWeek"> | number
   startDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
+  endDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   status?: Prisma.EnumTrainingWeekStatusFilter<"TrainingWeek"> | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
@@ -308,7 +308,7 @@ export type TrainingWeekOrderByWithAggregationInput = {
   weekNumber?: Prisma.SortOrder
   maxReps?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
-  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  endDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -329,7 +329,7 @@ export type TrainingWeekScalarWhereWithAggregatesInput = {
   weekNumber?: Prisma.IntWithAggregatesFilter<"TrainingWeek"> | number
   maxReps?: Prisma.IntWithAggregatesFilter<"TrainingWeek"> | number
   startDate?: Prisma.DateTimeWithAggregatesFilter<"TrainingWeek"> | Date | string
-  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"TrainingWeek"> | Date | string | null
+  endDate?: Prisma.DateTimeWithAggregatesFilter<"TrainingWeek"> | Date | string
   status?: Prisma.EnumTrainingWeekStatusWithAggregatesFilter<"TrainingWeek"> | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TrainingWeek"> | Date | string
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TrainingWeek"> | Date | string | null
@@ -339,8 +339,8 @@ export type TrainingWeekCreateInput = {
   id?: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -355,8 +355,8 @@ export type TrainingWeekUncheckedCreateInput = {
   exerciseId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -368,7 +368,7 @@ export type TrainingWeekUpdateInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -384,7 +384,7 @@ export type TrainingWeekUncheckedUpdateInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -397,8 +397,8 @@ export type TrainingWeekCreateManyInput = {
   exerciseId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -409,7 +409,7 @@ export type TrainingWeekUpdateManyMutationInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -422,7 +422,7 @@ export type TrainingWeekUncheckedUpdateManyInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -612,8 +612,8 @@ export type TrainingWeekCreateWithoutUserInput = {
   id?: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -626,8 +626,8 @@ export type TrainingWeekUncheckedCreateWithoutUserInput = {
   exerciseId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -670,7 +670,7 @@ export type TrainingWeekScalarWhereInput = {
   weekNumber?: Prisma.IntFilter<"TrainingWeek"> | number
   maxReps?: Prisma.IntFilter<"TrainingWeek"> | number
   startDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
-  endDate?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
+  endDate?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   status?: Prisma.EnumTrainingWeekStatusFilter<"TrainingWeek"> | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFilter<"TrainingWeek"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"TrainingWeek"> | Date | string | null
@@ -680,8 +680,8 @@ export type TrainingWeekCreateWithoutExerciseInput = {
   id?: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -694,8 +694,8 @@ export type TrainingWeekUncheckedCreateWithoutExerciseInput = {
   userId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -732,8 +732,8 @@ export type TrainingWeekCreateWithoutWorkoutsInput = {
   id?: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -747,8 +747,8 @@ export type TrainingWeekUncheckedCreateWithoutWorkoutsInput = {
   exerciseId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -775,7 +775,7 @@ export type TrainingWeekUpdateWithoutWorkoutsInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -790,7 +790,7 @@ export type TrainingWeekUncheckedUpdateWithoutWorkoutsInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -801,8 +801,8 @@ export type TrainingWeekCreateManyUserInput = {
   exerciseId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -813,7 +813,7 @@ export type TrainingWeekUpdateWithoutUserInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -827,7 +827,7 @@ export type TrainingWeekUncheckedUpdateWithoutUserInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -840,7 +840,7 @@ export type TrainingWeekUncheckedUpdateManyWithoutUserInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -851,8 +851,8 @@ export type TrainingWeekCreateManyExerciseInput = {
   userId: string
   weekNumber: number
   maxReps: number
-  startDate?: Date | string
-  endDate?: Date | string | null
+  startDate: Date | string
+  endDate: Date | string
   status?: $Enums.TrainingWeekStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -863,7 +863,7 @@ export type TrainingWeekUpdateWithoutExerciseInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -877,7 +877,7 @@ export type TrainingWeekUncheckedUpdateWithoutExerciseInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -890,7 +890,7 @@ export type TrainingWeekUncheckedUpdateManyWithoutExerciseInput = {
   weekNumber?: Prisma.IntFieldUpdateOperationsInput | number
   maxReps?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumTrainingWeekStatusFieldUpdateOperationsInput | $Enums.TrainingWeekStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1017,7 +1017,7 @@ export type $TrainingWeekPayload<ExtArgs extends runtime.Types.Extensions.Intern
     weekNumber: number
     maxReps: number
     startDate: Date
-    endDate: Date | null
+    endDate: Date
     status: $Enums.TrainingWeekStatus
     createdAt: Date
     completedAt: Date | null

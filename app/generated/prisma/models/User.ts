@@ -28,6 +28,7 @@ export type UserMinAggregateOutputType = {
   id: string | null
   email: string | null
   passwordHash: string | null
+  timezone: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type UserMaxAggregateOutputType = {
   id: string | null
   email: string | null
   passwordHash: string | null
+  timezone: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type UserCountAggregateOutputType = {
   id: number
   email: number
   passwordHash: number
+  timezone: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type UserMinAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  timezone?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type UserMaxAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  timezone?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type UserCountAggregateInputType = {
   id?: true
   email?: true
   passwordHash?: true
+  timezone?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type UserGroupByOutputType = {
   id: string
   email: string
   passwordHash: string
+  timezone: string
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type UserWhereInput = {
   id?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
+  timezone?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   exercises?: Prisma.UserExerciseListRelationFilter
@@ -192,6 +200,7 @@ export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   exercises?: Prisma.UserExerciseOrderByRelationAggregateInput
@@ -207,6 +216,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   passwordHash?: Prisma.StringFilter<"User"> | string
+  timezone?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   exercises?: Prisma.UserExerciseListRelationFilter
@@ -219,6 +229,7 @@ export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -233,6 +244,7 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
+  timezone?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -241,6 +253,7 @@ export type UserCreateInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseCreateNestedManyWithoutUserInput
@@ -253,6 +266,7 @@ export type UserUncheckedCreateInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseUncheckedCreateNestedManyWithoutUserInput
@@ -265,6 +279,7 @@ export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUpdateManyWithoutUserNestedInput
@@ -277,6 +292,7 @@ export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUncheckedUpdateManyWithoutUserNestedInput
@@ -289,6 +305,7 @@ export type UserCreateManyInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -297,6 +314,7 @@ export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -305,6 +323,7 @@ export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -313,6 +332,7 @@ export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -321,6 +341,7 @@ export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -329,6 +350,7 @@ export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -406,6 +428,7 @@ export type UserCreateWithoutExercisesInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
@@ -417,6 +440,7 @@ export type UserUncheckedCreateWithoutExercisesInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
@@ -444,6 +468,7 @@ export type UserUpdateWithoutExercisesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
@@ -455,6 +480,7 @@ export type UserUncheckedUpdateWithoutExercisesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
@@ -466,6 +492,7 @@ export type UserCreateWithoutTrainingWeeksInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseCreateNestedManyWithoutUserInput
@@ -477,6 +504,7 @@ export type UserUncheckedCreateWithoutTrainingWeeksInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseUncheckedCreateNestedManyWithoutUserInput
@@ -504,6 +532,7 @@ export type UserUpdateWithoutTrainingWeeksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUpdateManyWithoutUserNestedInput
@@ -515,6 +544,7 @@ export type UserUncheckedUpdateWithoutTrainingWeeksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUncheckedUpdateManyWithoutUserNestedInput
@@ -526,6 +556,7 @@ export type UserCreateWithoutWorkoutsInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseCreateNestedManyWithoutUserInput
@@ -537,6 +568,7 @@ export type UserUncheckedCreateWithoutWorkoutsInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseUncheckedCreateNestedManyWithoutUserInput
@@ -564,6 +596,7 @@ export type UserUpdateWithoutWorkoutsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUpdateManyWithoutUserNestedInput
@@ -575,6 +608,7 @@ export type UserUncheckedUpdateWithoutWorkoutsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUncheckedUpdateManyWithoutUserNestedInput
@@ -586,6 +620,7 @@ export type UserCreateWithoutSessionsInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseCreateNestedManyWithoutUserInput
@@ -597,6 +632,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   id?: string
   email: string
   passwordHash: string
+  timezone?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   exercises?: Prisma.UserExerciseUncheckedCreateNestedManyWithoutUserInput
@@ -624,6 +660,7 @@ export type UserUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUpdateManyWithoutUserNestedInput
@@ -635,6 +672,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   exercises?: Prisma.UserExerciseUncheckedUpdateManyWithoutUserNestedInput
@@ -704,6 +742,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  timezone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   exercises?: boolean | Prisma.User$exercisesArgs<ExtArgs>
@@ -717,6 +756,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  timezone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -725,6 +765,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  timezone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -733,11 +774,12 @@ export type UserSelectScalar = {
   id?: boolean
   email?: boolean
   passwordHash?: boolean
+  timezone?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "timezone" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   exercises?: boolean | Prisma.User$exercisesArgs<ExtArgs>
   workouts?: boolean | Prisma.User$workoutsArgs<ExtArgs>
@@ -760,6 +802,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     email: string
     passwordHash: string
+    timezone: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1192,6 +1235,7 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
+  readonly timezone: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

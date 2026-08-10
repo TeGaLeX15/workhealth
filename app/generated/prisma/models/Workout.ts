@@ -40,6 +40,7 @@ export type WorkoutMinAggregateOutputType = {
   userId: string | null
   exerciseId: string | null
   workoutNumber: number | null
+  scheduledDate: Date | null
   status: $Enums.WorkoutStatus | null
   createdAt: Date | null
   completedAt: Date | null
@@ -51,6 +52,7 @@ export type WorkoutMaxAggregateOutputType = {
   userId: string | null
   exerciseId: string | null
   workoutNumber: number | null
+  scheduledDate: Date | null
   status: $Enums.WorkoutStatus | null
   createdAt: Date | null
   completedAt: Date | null
@@ -62,6 +64,7 @@ export type WorkoutCountAggregateOutputType = {
   userId: number
   exerciseId: number
   workoutNumber: number
+  scheduledDate: number
   status: number
   createdAt: number
   completedAt: number
@@ -83,6 +86,7 @@ export type WorkoutMinAggregateInputType = {
   userId?: true
   exerciseId?: true
   workoutNumber?: true
+  scheduledDate?: true
   status?: true
   createdAt?: true
   completedAt?: true
@@ -94,6 +98,7 @@ export type WorkoutMaxAggregateInputType = {
   userId?: true
   exerciseId?: true
   workoutNumber?: true
+  scheduledDate?: true
   status?: true
   createdAt?: true
   completedAt?: true
@@ -105,6 +110,7 @@ export type WorkoutCountAggregateInputType = {
   userId?: true
   exerciseId?: true
   workoutNumber?: true
+  scheduledDate?: true
   status?: true
   createdAt?: true
   completedAt?: true
@@ -203,6 +209,7 @@ export type WorkoutGroupByOutputType = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date
   status: $Enums.WorkoutStatus
   createdAt: Date
   completedAt: Date | null
@@ -237,6 +244,7 @@ export type WorkoutWhereInput = {
   userId?: Prisma.StringFilter<"Workout"> | string
   exerciseId?: Prisma.StringFilter<"Workout"> | string
   workoutNumber?: Prisma.IntFilter<"Workout"> | number
+  scheduledDate?: Prisma.DateTimeFilter<"Workout"> | Date | string
   status?: Prisma.EnumWorkoutStatusFilter<"Workout"> | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFilter<"Workout"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"Workout"> | Date | string | null
@@ -252,6 +260,7 @@ export type WorkoutOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   exerciseId?: Prisma.SortOrder
   workoutNumber?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -264,6 +273,7 @@ export type WorkoutOrderByWithRelationInput = {
 export type WorkoutWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   trainingWeekId_workoutNumber?: Prisma.WorkoutTrainingWeekIdWorkoutNumberCompoundUniqueInput
+  userId_exerciseId_scheduledDate?: Prisma.WorkoutUserIdExerciseIdScheduledDateCompoundUniqueInput
   AND?: Prisma.WorkoutWhereInput | Prisma.WorkoutWhereInput[]
   OR?: Prisma.WorkoutWhereInput[]
   NOT?: Prisma.WorkoutWhereInput | Prisma.WorkoutWhereInput[]
@@ -271,6 +281,7 @@ export type WorkoutWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"Workout"> | string
   exerciseId?: Prisma.StringFilter<"Workout"> | string
   workoutNumber?: Prisma.IntFilter<"Workout"> | number
+  scheduledDate?: Prisma.DateTimeFilter<"Workout"> | Date | string
   status?: Prisma.EnumWorkoutStatusFilter<"Workout"> | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFilter<"Workout"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"Workout"> | Date | string | null
@@ -278,7 +289,7 @@ export type WorkoutWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   exercise?: Prisma.XOR<Prisma.ExerciseScalarRelationFilter, Prisma.ExerciseWhereInput>
   sets?: Prisma.WorkoutSetListRelationFilter
-}, "id" | "trainingWeekId_workoutNumber">
+}, "id" | "trainingWeekId_workoutNumber" | "userId_exerciseId_scheduledDate">
 
 export type WorkoutOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -286,6 +297,7 @@ export type WorkoutOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   exerciseId?: Prisma.SortOrder
   workoutNumber?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -305,6 +317,7 @@ export type WorkoutScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"Workout"> | string
   exerciseId?: Prisma.StringWithAggregatesFilter<"Workout"> | string
   workoutNumber?: Prisma.IntWithAggregatesFilter<"Workout"> | number
+  scheduledDate?: Prisma.DateTimeWithAggregatesFilter<"Workout"> | Date | string
   status?: Prisma.EnumWorkoutStatusWithAggregatesFilter<"Workout"> | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workout"> | Date | string
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Workout"> | Date | string | null
@@ -313,6 +326,7 @@ export type WorkoutScalarWhereWithAggregatesInput = {
 export type WorkoutCreateInput = {
   id?: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -328,6 +342,7 @@ export type WorkoutUncheckedCreateInput = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -337,6 +352,7 @@ export type WorkoutUncheckedCreateInput = {
 export type WorkoutUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -352,6 +368,7 @@ export type WorkoutUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -364,6 +381,7 @@ export type WorkoutCreateManyInput = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -372,6 +390,7 @@ export type WorkoutCreateManyInput = {
 export type WorkoutUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -383,6 +402,7 @@ export type WorkoutUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -403,12 +423,19 @@ export type WorkoutTrainingWeekIdWorkoutNumberCompoundUniqueInput = {
   workoutNumber: number
 }
 
+export type WorkoutUserIdExerciseIdScheduledDateCompoundUniqueInput = {
+  userId: string
+  exerciseId: string
+  scheduledDate: Date | string
+}
+
 export type WorkoutCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   trainingWeekId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   exerciseId?: Prisma.SortOrder
   workoutNumber?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -424,6 +451,7 @@ export type WorkoutMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   exerciseId?: Prisma.SortOrder
   workoutNumber?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -435,6 +463,7 @@ export type WorkoutMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   exerciseId?: Prisma.SortOrder
   workoutNumber?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -596,6 +625,7 @@ export type WorkoutUpdateOneRequiredWithoutSetsNestedInput = {
 export type WorkoutCreateWithoutUserInput = {
   id?: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -609,6 +639,7 @@ export type WorkoutUncheckedCreateWithoutUserInput = {
   trainingWeekId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -650,6 +681,7 @@ export type WorkoutScalarWhereInput = {
   userId?: Prisma.StringFilter<"Workout"> | string
   exerciseId?: Prisma.StringFilter<"Workout"> | string
   workoutNumber?: Prisma.IntFilter<"Workout"> | number
+  scheduledDate?: Prisma.DateTimeFilter<"Workout"> | Date | string
   status?: Prisma.EnumWorkoutStatusFilter<"Workout"> | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFilter<"Workout"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"Workout"> | Date | string | null
@@ -658,6 +690,7 @@ export type WorkoutScalarWhereInput = {
 export type WorkoutCreateWithoutExerciseInput = {
   id?: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -671,6 +704,7 @@ export type WorkoutUncheckedCreateWithoutExerciseInput = {
   trainingWeekId: string
   userId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -706,6 +740,7 @@ export type WorkoutUpdateManyWithWhereWithoutExerciseInput = {
 export type WorkoutCreateWithoutTrainingWeekInput = {
   id?: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -719,6 +754,7 @@ export type WorkoutUncheckedCreateWithoutTrainingWeekInput = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -754,6 +790,7 @@ export type WorkoutUpdateManyWithWhereWithoutTrainingWeekInput = {
 export type WorkoutCreateWithoutSetsInput = {
   id?: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -768,6 +805,7 @@ export type WorkoutUncheckedCreateWithoutSetsInput = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -792,6 +830,7 @@ export type WorkoutUpdateToOneWithWhereWithoutSetsInput = {
 export type WorkoutUpdateWithoutSetsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -806,6 +845,7 @@ export type WorkoutUncheckedUpdateWithoutSetsInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -816,6 +856,7 @@ export type WorkoutCreateManyUserInput = {
   trainingWeekId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -824,6 +865,7 @@ export type WorkoutCreateManyUserInput = {
 export type WorkoutUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -837,6 +879,7 @@ export type WorkoutUncheckedUpdateWithoutUserInput = {
   trainingWeekId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -848,6 +891,7 @@ export type WorkoutUncheckedUpdateManyWithoutUserInput = {
   trainingWeekId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -858,6 +902,7 @@ export type WorkoutCreateManyExerciseInput = {
   trainingWeekId: string
   userId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -866,6 +911,7 @@ export type WorkoutCreateManyExerciseInput = {
 export type WorkoutUpdateWithoutExerciseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -879,6 +925,7 @@ export type WorkoutUncheckedUpdateWithoutExerciseInput = {
   trainingWeekId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -890,6 +937,7 @@ export type WorkoutUncheckedUpdateManyWithoutExerciseInput = {
   trainingWeekId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -900,6 +948,7 @@ export type WorkoutCreateManyTrainingWeekInput = {
   userId: string
   exerciseId: string
   workoutNumber: number
+  scheduledDate: Date | string
   status?: $Enums.WorkoutStatus
   createdAt?: Date | string
   completedAt?: Date | string | null
@@ -908,6 +957,7 @@ export type WorkoutCreateManyTrainingWeekInput = {
 export type WorkoutUpdateWithoutTrainingWeekInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -921,6 +971,7 @@ export type WorkoutUncheckedUpdateWithoutTrainingWeekInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -932,6 +983,7 @@ export type WorkoutUncheckedUpdateManyWithoutTrainingWeekInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   exerciseId?: Prisma.StringFieldUpdateOperationsInput | string
   workoutNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumWorkoutStatusFieldUpdateOperationsInput | $Enums.WorkoutStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -974,6 +1026,7 @@ export type WorkoutSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   userId?: boolean
   exerciseId?: boolean
   workoutNumber?: boolean
+  scheduledDate?: boolean
   status?: boolean
   createdAt?: boolean
   completedAt?: boolean
@@ -990,6 +1043,7 @@ export type WorkoutSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   exerciseId?: boolean
   workoutNumber?: boolean
+  scheduledDate?: boolean
   status?: boolean
   createdAt?: boolean
   completedAt?: boolean
@@ -1004,6 +1058,7 @@ export type WorkoutSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   exerciseId?: boolean
   workoutNumber?: boolean
+  scheduledDate?: boolean
   status?: boolean
   createdAt?: boolean
   completedAt?: boolean
@@ -1018,12 +1073,13 @@ export type WorkoutSelectScalar = {
   userId?: boolean
   exerciseId?: boolean
   workoutNumber?: boolean
+  scheduledDate?: boolean
   status?: boolean
   createdAt?: boolean
   completedAt?: boolean
 }
 
-export type WorkoutOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trainingWeekId" | "userId" | "exerciseId" | "workoutNumber" | "status" | "createdAt" | "completedAt", ExtArgs["result"]["workout"]>
+export type WorkoutOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "trainingWeekId" | "userId" | "exerciseId" | "workoutNumber" | "scheduledDate" | "status" | "createdAt" | "completedAt", ExtArgs["result"]["workout"]>
 export type WorkoutInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   trainingWeek?: boolean | Prisma.TrainingWeekDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1056,6 +1112,7 @@ export type $WorkoutPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     userId: string
     exerciseId: string
     workoutNumber: number
+    scheduledDate: Date
     status: $Enums.WorkoutStatus
     createdAt: Date
     completedAt: Date | null
@@ -1491,6 +1548,7 @@ export interface WorkoutFieldRefs {
   readonly userId: Prisma.FieldRef<"Workout", 'String'>
   readonly exerciseId: Prisma.FieldRef<"Workout", 'String'>
   readonly workoutNumber: Prisma.FieldRef<"Workout", 'Int'>
+  readonly scheduledDate: Prisma.FieldRef<"Workout", 'DateTime'>
   readonly status: Prisma.FieldRef<"Workout", 'WorkoutStatus'>
   readonly createdAt: Prisma.FieldRef<"Workout", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"Workout", 'DateTime'>

@@ -2,11 +2,13 @@
 import { NextResponse } from "next/server";
 import { deleteSession } from "@/app/server/auth/session";
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     await deleteSession();
 
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.json({
+      success: true,
+    });
   } catch (error) {
     console.error("Logout error:", error);
 
@@ -14,7 +16,9 @@ export async function POST(request: Request) {
       {
         error: "Не удалось выйти из аккаунта",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }

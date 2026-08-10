@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Volume2, Dumbbell } from "lucide-react";
+import { Bell, Volume2 } from "lucide-react";
 
 import SettingsNavigationSection from "@/app/components/settings/SettingsNavigationSection";
 import SettingsNavigationRow from "@/app/components/settings/SettingsNavigationRow";
 import AppearanceSettings from "@/app/components/settings/AppearanceSettings";
 import AccountSettings from "@/app/components/settings/AccountSettings";
+import AuthFooter from "@/app/components/auth/AuthFooter";
 
 export default function SettingsPage() {
   return (
@@ -85,24 +86,7 @@ export default function SettingsPage() {
       <AccountSettings />
 
       {/* VERSION */}
-      <div
-        className="
-          flex
-          items-center
-          justify-center
-          gap-2
-          pb-1
-          pt-4
-          text-[11px]
-          font-medium
-        "
-        style={{
-          color: "var(--subtle)",
-        }}
-      >
-        <Dumbbell size={13} />
-        <span>BodyOS · версия 1.0.0</span>
-      </div>
+      <AuthFooter />
     </main>
   );
 }

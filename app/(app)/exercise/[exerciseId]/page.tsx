@@ -2,6 +2,11 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
+import {
+  dateStringToUtcDate,
+  getLocalDateString,
+} from "@/app/lib/timezone/local-date";
+
 import MaxRepsForm from "@/app/components/MaxRepsForm";
 import TrainingWeekCard from "@/app/components/TrainingWeekCard";
 import ActiveWorkoutCard from "@/app/components/ActiveWorkoutCard";
@@ -21,6 +26,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 
   const { exerciseId } = await params;
 
+  // ─── Exercise ────────────────────────────────────────────────────────────
   const exercise = await prisma.exercise.findUnique({
     where: {
       id: exerciseId,
@@ -31,6 +37,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     redirect("/training");
   }
 
+  // ─── User exercise ───────────────────────────────────────────────────────
   const userExercise = await prisma.userExercise.findUnique({
     where: {
       userId_exerciseId: {
@@ -42,11 +49,10 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 
   const maxReps = userExercise?.maxReps ?? null;
 
-  // ─── Initial max reps ────────────────────────────────────────────────────────
-
+  // ─── Initial max reps ────────────────────────────────────────────────────
   if (maxReps === null) {
     return (
-      <div className="flex min-h-[calc(100dvh-12rem)] flex-col">
+      <main className="flex min-h-[calc(100dvh-80px)] flex-col px-4 pb-4 pt-6">
         {/* Header */}
         <header className="shrink-0 text-center">
           <p
@@ -60,13 +66,13 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 
           <h1
             className="
-            mt-2
-            text-[32px]
-            font-bold
-            leading-none
-            tracking-[-0.05em]
-            sm:text-[38px]
-          "
+              mt-2
+              text-[32px]
+              font-bold
+              leading-none
+              tracking-[-0.05em]
+              sm:text-[38px]
+            "
             style={{
               color: "var(--foreground)",
             }}
@@ -76,12 +82,12 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 
           <p
             className="
-            mx-auto
-            mt-2.5
-            max-w-[300px]
-            text-[14px]
-            leading-5
-          "
+              mx-auto
+              mt-2.5
+              max-w-[300px]
+              text-[14px]
+              leading-5
+            "
             style={{
               color: "var(--muted)",
             }}
@@ -98,14 +104,14 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
         {/* Hint */}
         <p
           className="
-          mx-auto
-          max-w-[280px]
-          shrink-0
-          pb-3
-          text-center
-          text-[12px]
-          leading-5
-        "
+            mx-auto
+            max-w-[280px]
+            shrink-0
+            pb-3
+            text-center
+            text-[12px]
+            leading-5
+          "
           style={{
             color: "var(--muted)",
           }}
@@ -113,12 +119,31 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
           Не нужно угадывать. Укажи результат своего реального максимального
           подхода.
         </p>
-      </div>
+      </main>
     );
   }
 
-  // ─── Training data ───────────────────────────────────────────────────────
+  // ─── Current local date ──────────────────────────────────────────────────
+  const todayString = getLocalDateString(new Date(), user.timezone);
 
+  const today = dateStringToUtcDate(todayString);
+
+  // ─── Sync missed workouts ────────────────────────────────────────────────
+  await prisma.workout.updateMany({
+    where: {
+      userId: user.id,
+      exerciseId: exercise.id,
+      scheduledDate: {
+        lt: today,
+      },
+      status: "PLANNED",
+    },
+    data: {
+      status: "SKIPPED",
+    },
+  });
+
+  // ─── Training data ───────────────────────────────────────────────────────
   const workouts = await prisma.workout.findMany({
     where: {
       userId: user.id,
@@ -134,9 +159,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     },
     orderBy: [
       {
-        trainingWeek: {
-          weekNumber: "asc",
-        },
+        scheduledDate: "asc",
       },
       {
         workoutNumber: "asc",
@@ -144,13 +167,24 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     ],
   });
 
+  // ─── Current workout ─────────────────────────────────────────────────────
+  const currentWorkout =
+    workouts.find(
+      (workout) =>
+        workout.status === "IN_PROGRESS" || workout.status === "PLANNED",
+    ) ?? null;
+
+  // ─── Active workout ──────────────────────────────────────────────────────
   const activeWorkout =
     workouts.find((workout) => workout.status === "IN_PROGRESS") ?? null;
 
+  // ─── Group workouts by training week ─────────────────────────────────────
   const weeks = new Map<
     string,
     {
       weekNumber: number;
+      startDate: Date;
+      endDate: Date;
       workouts: typeof workouts;
     }
   >();
@@ -161,6 +195,8 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     if (!weeks.has(weekId)) {
       weeks.set(weekId, {
         weekNumber: workout.trainingWeek.weekNumber,
+        startDate: workout.trainingWeek.startDate,
+        endDate: workout.trainingWeek.endDate,
         workouts: [],
       });
     }
@@ -168,87 +204,109 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     weeks.get(weekId)!.workouts.push(workout);
   }
 
-  const weekList = Array.from(weeks.values());
+  const weekList = Array.from(weeks.values()).sort(
+    (a, b) => a.weekNumber - b.weekNumber,
+  );
 
   // ─── Exercise page ───────────────────────────────────────────────────────
-
   return (
-    <main className="pb-24">
+    <main>
       {/* Header */}
-      <header className="pt-2">
-        <div className="flex items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p
-              className="
-                mb-1
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-[0.1em]
-              "
-              style={{
-                color: "var(--muted)",
-              }}
-            >
-              Упражнение
-            </p>
+      <header className="text-center">
+        <p
+          className="
+            text-[10px]
+            font-semibold
+            uppercase
+            tracking-[0.12em]
+          "
+          style={{
+            color: "var(--muted)",
+          }}
+        >
+          Упражнение
+        </p>
 
-            <h1
-              className="
-                truncate
-                text-[30px]
-                font-bold
-                leading-none
-                tracking-[-0.045em]
-              "
-              style={{
-                color: "var(--foreground)",
-              }}
-            >
-              {exercise.name}
-            </h1>
-          </div>
+        <h1
+          className="
+            mx-auto
+            mt-2
+            max-w-[22rem]
+            text-[32px]
+            font-bold
+            leading-[1.02]
+            tracking-[-0.05em]
+            sm:text-[36px]
+          "
+          style={{
+            color: "var(--foreground)",
+          }}
+        >
+          {exercise.name}
+        </h1>
 
-          <div className="shrink-0 text-right">
-            <div
-              className="
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-[0.1em]
-              "
-              style={{
-                color: "var(--muted)",
-              }}
-            >
-              Твой максимум
-            </div>
+        <div
+          className="
+            mx-auto
+            mt-5
+            inline-flex
+            items-center
+            gap-2
+            rounded-full
+            border
+            px-4
+            py-2.5
+          "
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--accent) 7%, var(--card))",
+            borderColor: "color-mix(in srgb, var(--accent) 18%, var(--border))",
+          }}
+        >
+          <span
+            className="
+              text-[10px]
+              font-bold
+              uppercase
+              tracking-[0.1em]
+            "
+            style={{
+              color: "var(--accent)",
+            }}
+          >
+            Личный рекорд
+          </span>
 
-            <div className="mt-1 flex items-baseline justify-end gap-1.5">
-              <span
-                className="
-                  text-[24px]
-                  font-bold
-                  leading-none
-                  tracking-[-0.04em]
-                "
-                style={{
-                  color: "var(--foreground)",
-                }}
-              >
-                {maxReps}
-              </span>
+          <span
+            className="h-1 w-1 rounded-full"
+            style={{
+              backgroundColor: "var(--accent)",
+            }}
+          />
 
-              <span
-                className="text-xs font-medium"
-                style={{
-                  color: "var(--muted)",
-                }}
-              >
-                раз
-              </span>
-            </div>
-          </div>
+          <span
+            className="
+              text-[18px]
+              font-bold
+              leading-none
+              tracking-[-0.03em]
+              tabular-nums
+            "
+            style={{
+              color: "var(--foreground)",
+            }}
+          >
+            {maxReps}
+          </span>
+
+          <span
+            className="text-[11px] font-medium"
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            раз
+          </span>
         </div>
       </header>
 
@@ -270,7 +328,10 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
             <TrainingWeekCard
               key={week.weekNumber}
               weekNumber={week.weekNumber}
+              startDate={week.startDate}
+              endDate={week.endDate}
               workouts={week.workouts}
+              currentWorkoutId={currentWorkout?.id ?? null}
             />
           ))}
         </div>

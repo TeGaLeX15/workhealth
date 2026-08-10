@@ -1,20 +1,26 @@
+// app/api/workouts/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getSessionUser } from "@/app/server/auth/session";
 
 import {
-  generateWorkout,
-  isSupportedExercise,
-} from "@/app/lib/training/generate-workout";
-
-import type { ExerciseSlug } from "@/app/lib/training/types";
+  dateStringToUtcDate,
+  getLocalDateString,
+} from "@/app/lib/timezone/local-date";
 
 export async function POST(request: Request) {
   try {
     const user = await getSessionUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
+      return NextResponse.json(
+        {
+          error: "Не авторизован",
+        },
+        {
+          status: 401,
+        },
+      );
     }
 
     const body = await request.json();
@@ -24,145 +30,168 @@ export async function POST(request: Request) {
 
     if (!exerciseId) {
       return NextResponse.json(
-        { error: "Не указано упражнение" },
-        { status: 400 },
-      );
-    }
-
-    const exercise = await prisma.exercise.findUnique({
-      where: {
-        id: exerciseId,
-      },
-    });
-
-    if (!exercise) {
-      return NextResponse.json(
-        { error: "Упражнение не найдено" },
-        { status: 404 },
-      );
-    }
-
-    if (!isSupportedExercise(exercise.slug)) {
-      return NextResponse.json(
         {
-          error:
-            "Для этого упражнения генерация тренировки пока не поддерживается",
+          error: "Не указано упражнение",
         },
-        { status: 400 },
-      );
-    }
-
-    const exerciseSlug: ExerciseSlug = exercise.slug;
-
-    const userExercise = await prisma.userExercise.findUnique({
-      where: {
-        userId_exerciseId: {
-          userId: user.id,
-          exerciseId: exercise.id,
-        },
-      },
-    });
-
-    if (!userExercise || userExercise.maxReps === null) {
-      return NextResponse.json(
         {
-          error: "Сначала необходимо установить максимум для упражнения",
+          status: 400,
         },
-        { status: 400 },
       );
     }
 
-    const maxReps = userExercise.maxReps;
+    const todayString = getLocalDateString(new Date(), user.timezone);
 
-    const workout = await prisma.$transaction(async (tx) => {
-      let trainingWeek = await tx.trainingWeek.findFirst({
-        where: {
-          userId: user.id,
-          exerciseId: exercise.id,
-          status: "ACTIVE",
-        },
-        orderBy: {
-          weekNumber: "desc",
-        },
-      });
+    const today = dateStringToUtcDate(todayString);
 
-      if (!trainingWeek) {
-        const lastTrainingWeek = await tx.trainingWeek.findFirst({
-          where: {
-            userId: user.id,
-            exerciseId: exercise.id,
-          },
+    const trainingWeek = await prisma.trainingWeek.findFirst({
+      where: {
+        userId: user.id,
+        exerciseId,
+        status: "ACTIVE",
+      },
+      orderBy: {
+        weekNumber: "desc",
+      },
+      include: {
+        workouts: {
           orderBy: {
-            weekNumber: "desc",
+            scheduledDate: "asc",
           },
-        });
-
-        const nextWeekNumber = (lastTrainingWeek?.weekNumber ?? 0) + 1;
-
-        trainingWeek = await tx.trainingWeek.create({
-          data: {
-            userId: user.id,
-            exerciseId: exercise.id,
-            weekNumber: nextWeekNumber,
-            maxReps,
-            status: "ACTIVE",
-          },
-        });
-      }
-
-      const lastWorkout = await tx.workout.findFirst({
-        where: {
-          trainingWeekId: trainingWeek.id,
-        },
-        orderBy: {
-          workoutNumber: "desc",
-        },
-      });
-
-      const workoutNumber = (lastWorkout?.workoutNumber ?? 0) + 1;
-
-      const generatedWorkout = generateWorkout(
-        exerciseSlug,
-        trainingWeek.maxReps,
-      );
-
-      return tx.workout.create({
-        data: {
-          trainingWeekId: trainingWeek.id,
-          userId: user.id,
-          exerciseId: exercise.id,
-          workoutNumber,
-          status: "PLANNED",
-
-          sets: {
-            create: generatedWorkout.sets.map((set) => ({
-              setNumber: set.setNumber,
-              targetReps: set.targetReps,
-            })),
-          },
-        },
-
-        include: {
-          exercise: true,
-          trainingWeek: true,
-          sets: {
-            orderBy: {
-              setNumber: "asc",
+          include: {
+            exercise: true,
+            trainingWeek: true,
+            sets: {
+              orderBy: {
+                setNumber: "asc",
+              },
             },
           },
         },
-      });
+      },
     });
 
-    return NextResponse.json({ workout }, { status: 201 });
+    if (!trainingWeek) {
+      return NextResponse.json(
+        {
+          error: "Активная тренировочная неделя не найдена",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    const missedWorkouts = trainingWeek.workouts.filter(
+      (workout) =>
+        workout.scheduledDate < today && workout.status === "PLANNED",
+    );
+
+    if (missedWorkouts.length > 0) {
+      await prisma.workout.updateMany({
+        where: {
+          id: {
+            in: missedWorkouts.map((workout) => workout.id),
+          },
+          status: "PLANNED",
+        },
+        data: {
+          status: "SKIPPED",
+        },
+      });
+    }
+
+    const workouts = await prisma.workout.findMany({
+      where: {
+        trainingWeekId: trainingWeek.id,
+      },
+      orderBy: {
+        scheduledDate: "asc",
+      },
+      include: {
+        exercise: true,
+        trainingWeek: true,
+        sets: {
+          orderBy: {
+            setNumber: "asc",
+          },
+        },
+      },
+    });
+
+    const todayWorkout = workouts.find(
+      (workout) =>
+        workout.scheduledDate.getTime() === today.getTime() &&
+        workout.status !== "COMPLETED" &&
+        workout.status !== "CANCELLED" &&
+        workout.status !== "SKIPPED",
+    );
+
+    if (todayWorkout) {
+      return NextResponse.json({
+        workout: todayWorkout,
+        workouts,
+        trainingWeek,
+      });
+    }
+
+    const upcomingWorkout = workouts.find(
+      (workout) =>
+        workout.scheduledDate > today && workout.status === "PLANNED",
+    );
+
+    if (upcomingWorkout) {
+      return NextResponse.json({
+        workout: upcomingWorkout,
+        workouts,
+        trainingWeek,
+      });
+    }
+
+    const hasActiveWorkouts = workouts.some(
+      (workout) =>
+        workout.status === "PLANNED" || workout.status === "IN_PROGRESS",
+    );
+
+    if (!hasActiveWorkouts) {
+      await prisma.trainingWeek.update({
+        where: {
+          id: trainingWeek.id,
+        },
+        data: {
+          status: "COMPLETED",
+          completedAt: new Date(),
+        },
+      });
+
+      return NextResponse.json(
+        {
+          error: "Все тренировки этой недели завершены",
+          code: "TRAINING_WEEK_COMPLETED",
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: "Для сегодняшнего дня нет доступной тренировки",
+      },
+      {
+        status: 404,
+      },
+    );
   } catch (error) {
     console.error("Workout POST error:", error);
 
     return NextResponse.json(
       {
-        error: "Не удалось создать тренировку",
+        error: "Не удалось получить тренировку",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }

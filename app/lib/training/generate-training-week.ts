@@ -1,23 +1,32 @@
+// app/lib/training/generate-training-week.ts
 import { generateWorkout } from "./generate-workout";
-import type { ExerciseSlug } from "./types";
+import { getTrainingWeekSchedule } from "./schedule-training-week";
 
-const WORKOUTS_PER_WEEK = 3;
+import type { ExerciseSlug } from "./types";
 
 export function generateTrainingWeek(
   exercise: ExerciseSlug,
   maxReps: number,
+  now = new Date(),
+  timeZone = "Asia/Almaty",
 ) {
-  const workouts = [];
+  const schedule = getTrainingWeekSchedule(now, timeZone);
 
-  for (let i = 0; i < WORKOUTS_PER_WEEK; i++) {
-    workouts.push({
-      workoutNumber: i + 1,
-      sets: generateWorkout(exercise, maxReps).sets,
-    });
-  }
+  const workouts = schedule.scheduledDates.map((scheduledDate, index) => ({
+    workoutNumber: index + 1,
+
+    scheduledDate,
+
+    sets: generateWorkout(exercise, maxReps).sets,
+  }));
 
   return {
     maxReps,
+
+    startDate: schedule.startDate,
+
+    endDate: schedule.endDate,
+
     workouts,
   };
 }

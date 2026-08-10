@@ -13,7 +13,8 @@ export const WorkoutStatus = {
   PLANNED: 'PLANNED',
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  SKIPPED: 'SKIPPED'
 } as const
 
 export type WorkoutStatus = (typeof WorkoutStatus)[keyof typeof WorkoutStatus]

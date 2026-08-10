@@ -5,6 +5,7 @@ import WorkoutPlan from "./WorkoutPlan";
 type PlannedWorkoutProps = {
   workout: {
     id: string;
+    scheduledDate: Date;
     exercise: {
       name: string;
     };
@@ -16,14 +17,43 @@ type PlannedWorkoutProps = {
   };
 };
 
+function getDateLabel(date: Date) {
+  const formatter = new Intl.DateTimeFormat("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  return formatter.format(date);
+}
+
+function isSameDay(first: Date, second: Date) {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  );
+}
+
 export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
   const totalReps = workout.sets.reduce(
     (total, set) => total + set.targetReps,
     0,
   );
 
+  const today = new Date();
+  const scheduledDate = new Date(workout.scheduledDate);
+
+  const isToday = isSameDay(scheduledDate, today);
+
+  const dateLabel = isToday ? "Сегодня" : getDateLabel(scheduledDate);
+
+  const subtitle = isToday ? "Твой план на сегодня" : "Следующая тренировка";
+
+  const canStart = isToday;
+
   return (
-    <section className="mt-7">
+    <section className="pt-4">
       {/* HERO */}
       <div
         className="
@@ -42,29 +72,28 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
         }}
       >
         {/* TOP */}
-        <div className="flex items-center justify-between">
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-[0.14em]
-            "
+        <div
+          className="
+            flex
+            items-center
+            gap-2
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-[0.14em]
+          "
+          style={{
+            color: canStart ? "var(--accent)" : "var(--muted)",
+          }}
+        >
+          <span
+            className="h-1.5 w-1.5 rounded-full"
             style={{
-              color: "var(--accent)",
+              backgroundColor: canStart ? "var(--accent)" : "var(--muted)",
             }}
-          >
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{
-                backgroundColor: "var(--accent)",
-              }}
-            />
-            Сегодня
-          </div>
+          />
+
+          <span>{dateLabel}</span>
 
           <span
             className="
@@ -73,14 +102,17 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
               py-1
               text-[10px]
               font-semibold
+              normal-case
+              tracking-normal
             "
             style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--accent) 8%, transparent)",
-              color: "var(--accent)",
+              backgroundColor: canStart
+                ? "color-mix(in srgb, var(--accent) 8%, transparent)"
+                : "color-mix(in srgb, var(--muted) 8%, transparent)",
+              color: canStart ? "var(--accent)" : "var(--muted)",
             }}
           >
-            Готова
+            {canStart ? "Готова" : "Запланирована"}
           </span>
         </div>
 
@@ -111,7 +143,7 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
               color: "var(--muted)",
             }}
           >
-            Твой план на сегодня
+            {subtitle}
           </p>
         </div>
 
@@ -211,13 +243,34 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
 
       {/* ACTION */}
       <div className="mt-5">
-        <StartWorkoutButton workoutId={workout.id} />
+        {canStart ? (
+          <StartWorkoutButton workoutId={workout.id} />
+        ) : (
+          <div
+            className="
+              flex
+              h-14
+              w-full
+              items-center
+              justify-center
+              rounded-2xl
+              text-[15px]
+              font-semibold
+            "
+            style={{
+              backgroundColor: "var(--surface)",
+              color: "var(--muted)",
+            }}
+          >
+            Тренировка ещё не наступила
+          </div>
+        )}
 
         <div className="mt-3 flex items-center justify-center gap-2">
           <span
             className="h-1.5 w-1.5 rounded-full"
             style={{
-              backgroundColor: "var(--accent)",
+              backgroundColor: canStart ? "var(--accent)" : "var(--muted)",
             }}
           />
 
