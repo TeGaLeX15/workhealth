@@ -2,13 +2,13 @@
 import { NextResponse } from "next/server";
 import { deleteSession } from "@/app/server/auth/session";
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     await deleteSession();
 
-    return NextResponse.redirect(
-      new URL("/login", request.url),
-    );
+    return new NextResponse(null, {
+      status: 204,
+    });
   } catch (error) {
     console.error("Logout error:", error);
 

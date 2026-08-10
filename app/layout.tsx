@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -58,9 +59,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: LayoutProps<"/">) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ru"
@@ -68,7 +67,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="min-h-dvh"
+        className="min-h-dvh overflow-x-hidden"
         style={{
           backgroundColor: "var(--background)",
           color: "var(--foreground)",

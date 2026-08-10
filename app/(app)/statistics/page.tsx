@@ -1,6 +1,5 @@
-// app/statistics/page.tsx
+// app/(app)/statistics/page.tsx
 import { redirect } from "next/navigation";
-
 import { getSessionUser } from "@/app/server/auth/session";
 
 export default async function StatisticsPage() {
@@ -11,7 +10,7 @@ export default async function StatisticsPage() {
   }
 
   return (
-    <div className="pt-7 pb-8">
+    <>
       {/* Header */}
       <header>
         <p
@@ -38,8 +37,8 @@ export default async function StatisticsPage() {
             color: "var(--muted)",
           }}
         >
-          Здесь появится история тренировок, рекорды и
-          динамика твоих результатов.
+          Здесь появится история тренировок, рекорды и динамика твоих
+          результатов.
         </p>
       </header>
 
@@ -77,11 +76,10 @@ export default async function StatisticsPage() {
             color: "var(--muted)",
           }}
         >
-          Когда начнёшь тренироваться, Body OS будет
-          собирать результаты и показывать, как меняется
-          твоя форма.
+          Когда начнёшь тренироваться, Body OS будет собирать результаты и
+          показывать, как меняется твоя форма.
         </p>
       </section>
-    </div>
+    </>
   );
 }

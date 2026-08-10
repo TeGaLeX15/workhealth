@@ -3,7 +3,7 @@
   "short_name": "Body OS",
   "description": "Твоя система тренировок",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "#22c55e",
   "lang": "ru",

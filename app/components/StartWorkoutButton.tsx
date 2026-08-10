@@ -1,3 +1,4 @@
+// app/components/StartWorkoutButton.tsx
 "use client";
 
 import { useState } from "react";
@@ -16,6 +17,7 @@ export default function StartWorkoutButton({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Function to handle starting the workout
   async function handleStart() {
     if (isLoading) return;
 
@@ -23,28 +25,20 @@ export default function StartWorkoutButton({
     setError("");
 
     try {
-      const response = await fetch(
-        `/api/workouts/${workoutId}/start`,
-        {
-          method: "POST",
-        },
-      );
+      const response = await fetch(`/api/workouts/${workoutId}/start`, {
+        method: "POST",
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.error ??
-            "Не удалось начать тренировку",
-        );
+        setError(data.error ?? "Не удалось начать тренировку");
         return;
       }
 
       router.refresh();
     } catch {
-      setError(
-        "Не удалось подключиться к серверу",
-      );
+      setError("Не удалось подключиться к серверу");
     } finally {
       setIsLoading(false);
     }
@@ -57,8 +51,7 @@ export default function StartWorkoutButton({
           className="mb-3 rounded-xl px-3 py-2 text-center text-xs"
           style={{
             color: "#ef4444",
-            backgroundColor:
-              "color-mix(in srgb, #ef4444 7%, transparent)",
+            backgroundColor: "color-mix(in srgb, #ef4444 7%, transparent)",
           }}
         >
           {error}
@@ -76,11 +69,7 @@ export default function StartWorkoutButton({
       >
         {isLoading ? (
           <>
-            <LoaderCircle
-              size={18}
-              strokeWidth={2}
-              className="animate-spin"
-            />
+            <LoaderCircle size={18} strokeWidth={2} className="animate-spin" />
 
             <span>Начинаем...</span>
           </>
@@ -88,10 +77,7 @@ export default function StartWorkoutButton({
           <>
             <span>Начать тренировку</span>
 
-            <ArrowRight
-              size={18}
-              strokeWidth={2}
-            />
+            <ArrowRight size={18} strokeWidth={2} />
           </>
         )}
       </button>

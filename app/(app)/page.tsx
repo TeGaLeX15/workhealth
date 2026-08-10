@@ -1,6 +1,5 @@
-// app/page.tsx
+// app/(app)/page.tsx
 import { redirect } from "next/navigation";
-
 import { getSessionUser } from "@/app/server/auth/session";
 
 export default async function HomePage() {
@@ -11,7 +10,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="pt-7 pb-8">
+    <>
       {/* Header */}
       <header>
         <p
@@ -65,8 +64,7 @@ export default async function HomePage() {
             color: "var(--muted)",
           }}
         >
-          Здесь появится твоя сегодняшняя тренировка и
-          основные показатели.
+          Здесь появится твоя сегодняшняя тренировка и основные показатели.
         </p>
       </section>
 
@@ -86,9 +84,7 @@ export default async function HomePage() {
             color: "var(--accent)",
           }}
         >
-          <span className="text-[26px] font-light leading-none">
-            +
-          </span>
+          <span className="text-[26px] font-light leading-none">+</span>
         </div>
 
         <h2
@@ -106,10 +102,10 @@ export default async function HomePage() {
             color: "var(--muted)",
           }}
         >
-          Начни первую тренировку, и здесь постепенно
-          появятся твой прогресс, история и результаты.
+          Начни первую тренировку, и здесь постепенно появятся твой прогресс,
+          история и результаты.
         </p>
       </section>
-    </div>
+    </>
   );
 }

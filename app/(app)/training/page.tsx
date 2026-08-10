@@ -1,8 +1,7 @@
-// app/training/page.tsx
+// app/(app)/training/page.tsx
 import { redirect } from "next/navigation";
-
-import { getSessionUser } from "@/app/server/auth/session";
 import Exercises from "@/app/components/Exercises";
+import { getSessionUser } from "@/app/server/auth/session";
 
 export default async function TrainingPage() {
   const user = await getSessionUser();
@@ -12,7 +11,7 @@ export default async function TrainingPage() {
   }
 
   return (
-    <div className="pt-7 pb-8">
+    <>
       {/* Header */}
       <header>
         <p
@@ -47,7 +46,6 @@ export default async function TrainingPage() {
       <section className="mt-7">
         <Exercises />
       </section>
-    </div>
+    </>
   );
 }
-

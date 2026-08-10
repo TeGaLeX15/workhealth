@@ -1,30 +1,28 @@
+// app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+
 import { prisma } from "@/app/server/db";
 import { createSession } from "@/app/server/auth/session";
+
+import { loginSchema } from "@/app/lib/validation/auth";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const email =
-      typeof body.email === "string"
-        ? body.email.trim().toLowerCase()
-        : "";
+    const validation = loginSchema.safeParse(body);
 
-    const password =
-      typeof body.password === "string"
-        ? body.password
-        : "";
-
-    if (!email || !password) {
+    if (!validation.success) {
       return NextResponse.json(
         {
-          error: "Введите email и пароль",
+          error: "Некорректные данные",
         },
         { status: 400 },
       );
     }
+
+    const { email, password } = validation.data;
 
     const user = await prisma.user.findUnique({
       where: {

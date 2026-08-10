@@ -1,3 +1,4 @@
+// app/(auth)/layout.tsx
 export default function AuthLayout({
   children,
 }: {
@@ -14,9 +15,7 @@ export default function AuthLayout({
         py-8
       "
     >
-      <div className="w-full max-w-[500px]">
-        {children}
-      </div>
+      <div className="w-full max-w-[440px]">{children}</div>
     </main>
   );
 }

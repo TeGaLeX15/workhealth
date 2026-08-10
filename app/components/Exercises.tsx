@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronRight, Dumbbell } from "lucide-react";
 import Image from "next/image";
 
+// Types
 type Exercise = {
   id: string;
   name: string;
@@ -14,6 +15,7 @@ type Exercise = {
   maxUpdatedAt: string | null;
 };
 
+// Icons and descriptions
 const exerciseIcons: Record<string, string> = {
   "pull-ups": "/exercises/pull-ups.png",
   "push-ups": "/exercises/push-ups.png",
@@ -21,6 +23,7 @@ const exerciseIcons: Record<string, string> = {
   squats: "/exercises/squats.png",
 };
 
+// Descriptions for exercises
 const exerciseDescriptions: Record<string, string> = {
   "pull-ups": "Сила спины, рук и плечевого пояса",
   "push-ups": "Грудь, плечи и трицепс",
@@ -35,6 +38,7 @@ export default function Exercises() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Load exercises from the API
   useEffect(() => {
     async function loadExercises() {
       try {
@@ -43,9 +47,7 @@ export default function Exercises() {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(
-            data.error ?? "Не удалось загрузить упражнения",
-          );
+          setError(data.error ?? "Не удалось загрузить упражнения");
           return;
         }
 
@@ -60,6 +62,7 @@ export default function Exercises() {
     loadExercises();
   }, []);
 
+  // Render
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -114,6 +117,7 @@ export default function Exercises() {
     );
   }
 
+  // Error or empty state
   if (error) {
     return (
       <div
@@ -129,6 +133,7 @@ export default function Exercises() {
     );
   }
 
+  // No exercises available
   if (exercises.length === 0) {
     return (
       <div
@@ -144,14 +149,14 @@ export default function Exercises() {
     );
   }
 
+  // Render exercises
   return (
     <div className="space-y-3">
       {exercises.map((exercise) => {
         const icon = exerciseIcons[exercise.slug];
 
         const description =
-          exerciseDescriptions[exercise.slug] ??
-          "Тренировочная программа";
+          exerciseDescriptions[exercise.slug] ?? "Тренировочная программа";
 
         return (
           <button
@@ -179,7 +184,7 @@ export default function Exercises() {
               borderColor: "var(--border)",
             }}
           >
-            {/* Изображение */}
+            {/* Image */}
             <div
               className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[14px]"
               style={{
@@ -210,7 +215,7 @@ export default function Exercises() {
               )}
             </div>
 
-            {/* Информация */}
+            {/* Info */}
             <div className="min-w-0 flex-1">
               <h2
                 className="truncate text-[18px] font-bold leading-tight tracking-[-0.025em]"
@@ -230,7 +235,7 @@ export default function Exercises() {
                 {description}
               </p>
 
-              {/* Личный максимум */}
+              {/* Record */}
               <p
                 className="mt-2 text-[11px] font-semibold leading-none"
                 style={{
@@ -246,7 +251,7 @@ export default function Exercises() {
               </p>
             </div>
 
-            {/* Arrow */}
+            {/* Chevron */}
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-150 group-hover:translate-x-0.5 group-active:translate-x-0.5"
               style={{
@@ -254,11 +259,7 @@ export default function Exercises() {
                 color: "var(--muted)",
               }}
             >
-              <ChevronRight
-                size={19}
-                strokeWidth={1.8}
-                aria-hidden="true"
-              />
+              <ChevronRight size={19} strokeWidth={1.8} aria-hidden="true" />
             </span>
           </button>
         );

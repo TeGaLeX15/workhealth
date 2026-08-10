@@ -67,17 +67,24 @@ html {
   background: var(--background);
   color: var(--foreground);
 
-  color-scheme: light;
-
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 
   scroll-behavior: smooth;
+
+  /*
+   * PWA / mobile viewport
+   *
+   * Позволяет браузеру корректно учитывать
+   * системные области устройства.
+   */
+  min-height: 100dvh;
 }
 
 body {
-  min-height: 100%;
+  min-height: 100dvh;
   margin: 0;
+  overflow-x: clip;
 
   background: var(--background);
   color: var(--foreground);
@@ -89,6 +96,34 @@ body {
   transition:
     background-color 180ms ease,
     color 180ms ease;
+}
+
+/* ==========================================================================
+   PWA SAFE AREA
+   ========================================================================== */
+
+/*
+ * Используем safe-area через отдельные utility-классы,
+ * а не добавляем padding всему body.
+ *
+ * Это важно: padding на body может сломать
+ * вертикальную композицию страниц Body OS.
+ */
+
+.bodyos-safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.bodyos-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bodyos-safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.bodyos-safe-right {
+  padding-right: env(safe-area-inset-right);
 }
 
 /* ==========================================================================
@@ -170,11 +205,13 @@ input[type="number"]::-webkit-outer-spin-button {
 @keyframes bodyos-current-set {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
   }
 }
 
@@ -242,6 +279,58 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
+   BODY OS — WORKOUT PROGRESS
+   ========================================================================== */
+
+@keyframes workout-progress-current {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px
+        color-mix(in srgb, var(--accent) 7%, transparent),
+      0 0 14px
+        color-mix(in srgb, var(--accent) 22%, transparent),
+      0 0 30px
+        color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px
+        color-mix(in srgb, var(--accent) 12%, transparent),
+      0 0 24px
+        color-mix(in srgb, var(--accent) 42%, transparent),
+      0 0 48px
+        color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+}
+
+.workout-progress-current {
+  animation: workout-progress-current 1.8s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BODY OS — REST INDICATOR
+   ========================================================================== */
+
+@keyframes workout-rest-active {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.workout-rest-active {
+  animation: workout-rest-active 1.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
    ACCESSIBILITY
    ========================================================================== */
 
@@ -256,5 +345,10 @@ input[type="number"]::-webkit-outer-spin-button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .workout-progress-current,
+  .workout-rest-active {
+    animation: none;
   }
 }

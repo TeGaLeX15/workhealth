@@ -4,9 +4,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, Dumbbell, ChartNoAxesColumn, Settings } from "lucide-react";
-
 import { useTheme } from "@/app/providers/theme-provider";
 
+// Navigation items
 const navigation = [
   {
     href: "/",
@@ -56,6 +56,7 @@ export default function BottomNavigation() {
           const Icon = item.icon;
 
           return (
+            // Navigation link
             <Link
               key={item.href}
               href={item.href}

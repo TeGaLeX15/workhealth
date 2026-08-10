@@ -1,48 +1,28 @@
+// app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+
 import { prisma } from "@/app/server/db";
 import { createSession } from "@/app/server/auth/session";
+
+import { registerRequestSchema } from "@/app/lib/validation/auth";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const email =
-      typeof body.email === "string"
-        ? body.email.trim().toLowerCase()
-        : "";
+    const validation = registerRequestSchema.safeParse(body);
 
-    const password =
-      typeof body.password === "string"
-        ? body.password
-        : "";
-
-    if (!email || !password) {
+    if (!validation.success) {
       return NextResponse.json(
         {
-          error: "Введите email и пароль",
+          error: "Некорректные данные",
         },
         { status: 400 },
       );
     }
 
-    if (!email.includes("@")) {
-      return NextResponse.json(
-        {
-          error: "Введите корректный email",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        {
-          error: "Пароль должен содержать минимум 8 символов",
-        },
-        { status: 400 },
-      );
-    }
+    const { email, password } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -59,7 +39,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(
+      password,
+      12,
+    );
 
     const user = await prisma.user.create({
       data: {

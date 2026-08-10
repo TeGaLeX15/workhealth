@@ -36,6 +36,8 @@ export default function MaxRepsForm({
   const intervalRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ─── Counter ──────────────────────────────────────────────────────────────
+
   const changeReps = useCallback((amount: number) => {
     setMaxReps((current) => {
       const next = Math.min(
@@ -88,29 +90,25 @@ export default function MaxRepsForm({
         );
       }, 400);
     },
-    [
-      changeReps,
-      isLoading,
-      stopPress,
-    ],
+    [changeReps, isLoading, stopPress],
   );
 
   useEffect(() => {
     return () => stopPress();
   }, [stopPress]);
 
+  // ─── Input ────────────────────────────────────────────────────────────────
+
   function handleInputChange(
     event: React.ChangeEvent<HTMLInputElement>,
   ) {
     const rawValue = event.target.value;
 
-    // Разрешаем полностью очистить поле
     if (rawValue === "") {
       setInputValue("");
       return;
     }
 
-    // Только цифры 0-9
     if (!/^\d+$/.test(rawValue)) {
       return;
     }
@@ -130,15 +128,10 @@ export default function MaxRepsForm({
     setMaxReps(clampedValue);
   }
 
+  // ─── Submit ───────────────────────────────────────────────────────────────
+
   async function handleSubmit() {
     if (isLoading) return;
-
-    // Если поле оставили пустым — возвращаем минимальное значение
-    if (inputValue === "") {
-      setInputValue(String(MIN_REPS));
-      setMaxReps(MIN_REPS);
-      return;
-    }
 
     stopPress();
     setError("");
@@ -158,8 +151,7 @@ export default function MaxRepsForm({
         },
       );
 
-      const maxData =
-        await maxResponse.json();
+      const maxData = await maxResponse.json();
 
       if (!maxResponse.ok) {
         setError(
@@ -182,8 +174,7 @@ export default function MaxRepsForm({
         },
       );
 
-      const weekData =
-        await weekResponse.json();
+      const weekData = await weekResponse.json();
 
       if (!weekResponse.ok) {
         setError(
@@ -211,231 +202,233 @@ export default function MaxRepsForm({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      {/* COUNTER AREA */}
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
-        {/* COUNTER */}
-        <div className="flex items-center gap-6">
-          {/* MINUS */}
-          <button
-            type="button"
-            disabled={
-              isLoading ||
-              maxReps <= MIN_REPS
-            }
-            onPointerDown={() =>
-              startPress(-1)
-            }
-            onPointerUp={stopPress}
-            onPointerCancel={stopPress}
-            onPointerLeave={stopPress}
-            aria-label="Уменьшить"
+    <div className="flex flex-col">
+      {/* Counter */}
+      <div className="flex items-center justify-center gap-[clamp(14px,5vw,28px)]">
+        {/* Minus */}
+        <button
+          type="button"
+          disabled={
+            isLoading ||
+            maxReps <= MIN_REPS
+          }
+          onPointerDown={() =>
+            startPress(-1)
+          }
+          onPointerUp={stopPress}
+          onPointerCancel={stopPress}
+          onPointerLeave={stopPress}
+          aria-label="Уменьшить"
+          className="
+            group
+            flex
+            h-[clamp(56px,18vw,72px)]
+            w-[clamp(56px,18vw,72px)]
+            shrink-0
+            items-center
+            justify-center
+            rounded-[clamp(18px,6vw,24px)]
+            border
+            transition-all
+            duration-150
+            active:scale-[0.91]
+            disabled:opacity-20
+          "
+          style={{
+            borderColor:
+              "color-mix(in srgb, var(--foreground) 9%, transparent)",
+            backgroundColor:
+              "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
+            touchAction: "none",
+          }}
+        >
+          <Minus
+            size={30}
+            strokeWidth={2.3}
             className="
-              group
-              flex
-              h-[72px]
-              w-[72px]
-              shrink-0
-              items-center
-              justify-center
-              rounded-[24px]
-              border
-              transition-all
+              transition-transform
               duration-150
-              active:scale-[0.91]
-              disabled:opacity-20
-            "
-            style={{
-              borderColor:
-                "color-mix(in srgb, var(--foreground) 9%, transparent)",
-              backgroundColor:
-                "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
-              touchAction: "none",
-            }}
-          >
-            <Minus
-              size={30}
-              strokeWidth={2.3}
-              className="
-                transition-transform
-                duration-150
-                group-active:scale-90
-              "
-              style={{
-                color: "var(--foreground)",
-              }}
-            />
-          </button>
-
-          {/* NUMBER */}
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={(event) => {
-              if (
-                !/[0-9]/.test(event.key) &&
-                event.key !== "Backspace" &&
-                event.key !== "Delete" &&
-                event.key !== "ArrowLeft" &&
-                event.key !== "ArrowRight" &&
-                event.key !== "Tab" &&
-                event.key !== "Home" &&
-                event.key !== "End"
-              ) {
-                event.preventDefault();
-              }
-            }}
-            disabled={isLoading}
-            aria-label="Максимум повторений"
-            className="
-              w-[210px]
-              appearance-none
-              bg-transparent
-              p-0
-              text-center
-              font-extrabold
-              outline-none
-              [appearance:textfield]
+              group-active:scale-90
             "
             style={{
               color: "var(--foreground)",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: "82px",
-              lineHeight: "0.85",
             }}
           />
+        </button>
 
-          {/* PLUS */}
-          <button
-            type="button"
-            disabled={
-              isLoading ||
-              maxReps >= MAX_REPS
+        {/* Number */}
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={(event) => {
+            if (
+              !/[0-9]/.test(event.key) &&
+              event.key !== "Backspace" &&
+              event.key !== "Delete" &&
+              event.key !== "ArrowLeft" &&
+              event.key !== "ArrowRight" &&
+              event.key !== "Tab" &&
+              event.key !== "Home" &&
+              event.key !== "End"
+            ) {
+              event.preventDefault();
             }
-            onPointerDown={() =>
-              startPress(1)
-            }
-            onPointerUp={stopPress}
-            onPointerCancel={stopPress}
-            onPointerLeave={stopPress}
-            aria-label="Увеличить"
-            className="
-              group
-              flex
-              h-[72px]
-              w-[72px]
-              shrink-0
-              items-center
-              justify-center
-              rounded-[24px]
-              border
-              transition-all
-              duration-150
-              active:scale-[0.91]
-              disabled:opacity-20
-            "
-            style={{
-              borderColor:
-                "color-mix(in srgb, var(--foreground) 9%, transparent)",
-              backgroundColor:
-                "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
-              touchAction: "none",
-            }}
-          >
-            <Plus
-              size={30}
-              strokeWidth={2.3}
-              className="
-                transition-transform
-                duration-150
-                group-active:scale-90
-              "
-              style={{
-                color: "var(--foreground)",
-              }}
-            />
-          </button>
-        </div>
-
-        {/* UNIT */}
-        <span
-          className="mt-5 text-[16px] font-medium"
-          style={{
-            color: "var(--muted)",
           }}
-        >
-          повторений
-        </span>
-
-        {/* ERROR */}
-        {error && (
-          <p
-            className="
-              mt-5
-              max-w-[340px]
-              rounded-[18px]
-              px-5
-              py-3.5
-              text-center
-              text-[14px]
-              leading-5
-            "
-            style={{
-              color: "#ef4444",
-              backgroundColor:
-                "color-mix(in srgb, #ef4444 7%, transparent)",
-            }}
-          >
-            {error}
-          </p>
-        )}
-      </div>
-
-      {/* CTA */}
-      <div className="shrink-0 pb-4 pt-4">
-        <button
-          type="button"
-          onClick={handleSubmit}
           disabled={isLoading}
+          aria-label="Максимум повторений"
           className="
-            flex
-            h-[68px]
-            w-full
-            items-center
-            justify-center
-            gap-3
-            rounded-[20px]
-            px-5
-            text-[17px]
-            font-bold
-            tracking-[-0.01em]
-            transition-all
-            duration-150
-            active:scale-[0.98]
-            disabled:opacity-50
+            w-[clamp(150px,42vw,220px)]
+            appearance-none
+            bg-transparent
+            p-0
+            text-center
+            font-extrabold
+            outline-none
+            [appearance:textfield]
           "
           style={{
-            backgroundColor: "var(--accent)",
-            color: "#fff",
+            color: "var(--foreground)",
+            fontVariantNumeric: "tabular-nums",
+            fontSize: "clamp(52px,16vw,72px)",
+            lineHeight: "0.9",
+          }}
+        />
+
+        {/* Plus */}
+        <button
+          type="button"
+          disabled={
+            isLoading ||
+            maxReps >= MAX_REPS
+          }
+          onPointerDown={() =>
+            startPress(1)
+          }
+          onPointerUp={stopPress}
+          onPointerCancel={stopPress}
+          onPointerLeave={stopPress}
+          aria-label="Увеличить"
+          className="
+            group
+            flex
+            h-[clamp(56px,18vw,72px)]
+            w-[clamp(56px,18vw,72px)]
+            shrink-0
+            items-center
+            justify-center
+            rounded-[clamp(18px,6vw,24px)]
+            border
+            transition-all
+            duration-150
+            active:scale-[0.91]
+            disabled:opacity-20
+          "
+          style={{
+            borderColor:
+              "color-mix(in srgb, var(--foreground) 9%, transparent)",
+            backgroundColor:
+              "color-mix(in srgb, var(--foreground) 5%, var(--surface))",
+            touchAction: "none",
           }}
         >
-          <span>
-            {isLoading
-              ? "Готовим программу..."
-              : "Продолжить"}
-          </span>
-
-          {!isLoading && (
-            <ArrowRight
-              size={21}
-              strokeWidth={2.2}
-            />
-          )}
+          <Plus
+            size={30}
+            strokeWidth={2.3}
+            className="
+              transition-transform
+              duration-150
+              group-active:scale-90
+            "
+            style={{
+              color: "var(--foreground)",
+            }}
+          />
         </button>
       </div>
+
+      {/* Unit */}
+      <span
+        className="
+          mt-3
+          text-center
+          text-[15px]
+          font-medium
+        "
+        style={{
+          color: "var(--muted)",
+        }}
+      >
+        повторений
+      </span>
+
+      {/* Error */}
+      {error && (
+        <p
+          className="
+            mx-auto
+            mt-4
+            max-w-[340px]
+            rounded-[18px]
+            px-5
+            py-3
+            text-center
+            text-[14px]
+            leading-5
+          "
+          style={{
+            color: "#ef4444",
+            backgroundColor:
+              "color-mix(in srgb, #ef4444 7%, transparent)",
+          }}
+        >
+          {error}
+        </p>
+      )}
+
+      {/* CTA */}
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading || inputValue === ""}
+        className="
+          mt-6
+          flex
+          h-[clamp(56px,16vw,68px)]
+          w-full
+          items-center
+          justify-center
+          gap-3
+          rounded-[20px]
+          px-5
+          text-[16px]
+          font-bold
+          tracking-[-0.01em]
+          transition-all
+          duration-150
+          active:scale-[0.98]
+          disabled:opacity-50
+        "
+        style={{
+          backgroundColor: "var(--accent)",
+          color: "#fff",
+        }}
+      >
+        <span>
+          {isLoading
+            ? "Готовим программу..."
+            : "Продолжить"}
+        </span>
+
+        {!isLoading && (
+          <ArrowRight
+            size={21}
+            strokeWidth={2.2}
+          />
+        )}
+      </button>
     </div>
   );
 }
