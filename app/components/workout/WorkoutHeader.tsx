@@ -24,7 +24,7 @@ export default function WorkoutHeader({ workout }: WorkoutHeaderProps) {
   const isCancelled = workout.status === "CANCELLED";
 
   return (
-    <header className="pt-5 sm:pt-7">
+    <header>
       {/* TOP META */}
       <div className="flex items-center justify-between gap-3">
         <p

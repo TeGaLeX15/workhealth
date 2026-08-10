@@ -160,20 +160,22 @@ export default function WorkoutSession({
   // Resting screen
   if (isResting) {
     return (
-      <WorkoutRestScreen
-        currentSet={currentSet}
-        restSeconds={restSeconds}
-        restTotalSeconds={restTotalSeconds}
-        onSkip={skipRest}
-        onIncrease={increaseRest}
-      />
+    <WorkoutRestScreen
+      sets={completedSets}
+      currentIndex={currentIndex}
+      currentSet={currentSet}
+      restSeconds={restSeconds}
+      restTotalSeconds={restTotalSeconds}
+      onSkip={skipRest}
+      onIncrease={increaseRest}
+    />
     );
   }
 
   // Current set screen
   return (
     <div className="w-full">
-      <div className="mt-2 sm:mt-4">
+      <div className="mt-8 sm:mt-12">
         <WorkoutProgress
           sets={completedSets}
           currentIndex={currentIndex}

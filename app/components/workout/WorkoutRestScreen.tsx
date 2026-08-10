@@ -2,6 +2,7 @@
 "use client";
 
 import { Plus, SkipForward } from "lucide-react";
+import WorkoutProgress from "./WorkoutProgress";
 
 type WorkoutSet = {
   id: string;
@@ -12,6 +13,8 @@ type WorkoutSet = {
 };
 
 type WorkoutRestScreenProps = {
+  sets: WorkoutSet[];
+  currentIndex: number;
   currentSet: WorkoutSet;
   restSeconds: number;
   restTotalSeconds: number;
@@ -20,6 +23,7 @@ type WorkoutRestScreenProps = {
 };
 
 export default function WorkoutRestScreen({
+  sets,
   currentSet,
   restSeconds,
   restTotalSeconds,
@@ -33,61 +37,17 @@ export default function WorkoutRestScreen({
 
   return (
     <div className="w-full">
-      {/* HEADER */}
-
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p
-            className="
-              text-[10px]
-              font-bold
-              uppercase
-              tracking-[0.13em]
-            "
-            style={{
-              color: "var(--accent)",
-            }}
-          >
-            Восстановление
-          </p>
-
-          <h2
-            className="
-              mt-1
-              text-[24px]
-              font-bold
-              leading-none
-              tracking-[-0.045em]
-            "
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            Отдых
-          </h2>
-        </div>
-
-        <div
-          className="
-            shrink-0
-            rounded-full
-            px-3
-            py-1.5
-            text-[11px]
-            font-semibold
-          "
-          style={{
-            backgroundColor: "var(--surface)",
-            color: "var(--muted)",
-          }}
-        >
-          Дальше · {currentSet.targetReps}
-        </div>
-      </div>
+{/* PROGRESS */}
+<div className="mt-8 sm:mt-10">
+  <WorkoutProgress
+    sets={sets}
+    currentIndex={currentSet.setNumber - 1}
+    isResting={true}
+  />
+</div>
 
       {/* TIMER */}
-
-      <div className="flex justify-center py-8 sm:py-10">
+      <div className="flex justify-center py-12 sm:py-14">
         <div
           className="
             relative

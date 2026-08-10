@@ -26,7 +26,7 @@ export default function WorkoutProgress({
         <div className="flex w-fit max-w-full items-center overflow-visible">
           {sets.map((set, index) => {
             const isCompleted = index < currentIndex;
-            const isCurrent = index === currentIndex;
+            const isCurrent = !isResting && index === currentIndex;
 
             const isActiveRest = isResting && index === currentIndex - 1;
 

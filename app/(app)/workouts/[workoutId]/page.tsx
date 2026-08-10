@@ -47,7 +47,7 @@ export default async function WorkoutPage({
   }
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pb-8 sm:px-6">
+    <main>
       <WorkoutHeader workout={workout} />
 
       {workout.status === "PLANNED" && (
@@ -55,7 +55,7 @@ export default async function WorkoutPage({
       )}
 
       {workout.status === "IN_PROGRESS" && (
-        <section className="mt-6">
+        <section>
           <WorkoutSession
             workoutId={workout.id}
             sets={workout.sets}
