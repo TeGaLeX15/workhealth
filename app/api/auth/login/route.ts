@@ -30,11 +30,22 @@ export async function POST(request: Request) {
         {
           error: "Некорректные данные",
         },
-        { status: 400 },
+        {
+          status: 400,
+        },
       );
     }
 
     const { email, password } = validation.data;
+
+    // ─── Client timezone ─────────────────────────────────────────────
+
+    const clientTimezone =
+      typeof body.timezone === "string" && isValidTimeZone(body.timezone)
+        ? body.timezone
+        : null;
+
+    // ─── User ────────────────────────────────────────────────────────
 
     const user = await prisma.user.findUnique({
       where: {
@@ -42,47 +53,60 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log("LOGIN TIMEZONE DEBUG", {
-      clientTimezone:
-        typeof body.timezone === "string"
-          ? body.timezone
-          : null,
-
-      clientTimezoneValid:
-        typeof body.timezone === "string"
-          ? isValidTimeZone(body.timezone)
-          : false,
-
-      serverNow: new Date().toISOString(),
-
-      userTimezone: user?.timezone ?? null,
-
-      nodeTimezone: Intl.DateTimeFormat().resolvedOptions()
-        .timeZone,
-    });
-
     if (!user) {
       return NextResponse.json(
         {
           error: "Неверный email или пароль",
         },
-        { status: 401 },
+        {
+          status: 401,
+        },
       );
     }
 
-    const passwordValid = await bcrypt.compare(
-      password,
-      user.passwordHash,
-    );
+    // ─── Password ────────────────────────────────────────────────────
+
+    const passwordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!passwordValid) {
       return NextResponse.json(
         {
           error: "Неверный email или пароль",
         },
-        { status: 401 },
+        {
+          status: 401,
+        },
       );
     }
+
+    // ─── Timezone sync ───────────────────────────────────────────────
+    //
+    // Если timezone устройства отличается от сохранённого,
+    // обновляем timezone пользователя.
+    //
+
+    if (clientTimezone && clientTimezone !== user.timezone) {
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          timezone: clientTimezone,
+        },
+      });
+
+      user.timezone = clientTimezone;
+    }
+
+    console.log("LOGIN TIMEZONE DEBUG", {
+      clientTimezone,
+      clientTimezoneValid: Boolean(clientTimezone),
+      serverNow: new Date().toISOString(),
+      userTimezone: user.timezone,
+      nodeTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+
+    // ─── Session ────────────────────────────────────────────────────
 
     await createSession(user.id);
 
@@ -99,7 +123,9 @@ export async function POST(request: Request) {
       {
         error: "Не удалось войти в аккаунт",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }
