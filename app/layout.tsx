@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
@@ -59,7 +59,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "contain",
+  themeColor: "#ffffff",
+};
+
+export default function RootLayout({
+  children,
+}: LayoutProps<"/">) {
   return (
     <html
       lang="ru"

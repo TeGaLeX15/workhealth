@@ -299,6 +299,13 @@ useEffect(() => {
   );
 
   root.style.colorScheme = dark ? "dark" : "light";
+
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute(
+      "content",
+      dark ? "#09090b" : "#ffffff",
+    );
 }, [dark, accentConfig]);
 
   const value: ThemeContextValue = {
