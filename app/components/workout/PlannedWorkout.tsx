@@ -1,4 +1,6 @@
 // app/components/workout/PlannedWorkout.tsx
+import { getSessionUser } from "@/app/server/auth/session";
+import { getLocalDateString } from "@/app/lib/timezone/local-date";
 import StartWorkoutButton from "@/app/components/StartWorkoutButton";
 import WorkoutPlan from "./WorkoutPlan";
 
@@ -17,8 +19,9 @@ type PlannedWorkoutProps = {
   };
 };
 
-function getDateLabel(date: Date) {
+function getDateLabel(date: Date, timeZone: string) {
   const formatter = new Intl.DateTimeFormat("ru-RU", {
+    timeZone,
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -27,33 +30,40 @@ function getDateLabel(date: Date) {
   return formatter.format(date);
 }
 
-function isSameDay(first: Date, second: Date) {
-  return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate()
-  );
-}
+export default async function PlannedWorkout({
+  workout,
+}: PlannedWorkoutProps) {
+  const user = await getSessionUser();
 
-export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
+  if (!user) {
+    return null;
+  }
+
   const totalReps = workout.sets.reduce(
     (total, set) => total + set.targetReps,
     0,
   );
 
-  const today = new Date();
-  const scheduledDate = new Date(workout.scheduledDate);
+  const todayString = getLocalDateString(new Date(), user.timezone);
+  const scheduledDateString = getLocalDateString(
+    workout.scheduledDate,
+    user.timezone,
+  );
 
-  const isToday = isSameDay(scheduledDate, today);
+  const isToday = scheduledDateString === todayString;
 
-  const dateLabel = isToday ? "Сегодня" : getDateLabel(scheduledDate);
+  const dateLabel = isToday
+    ? "Сегодня"
+    : getDateLabel(workout.scheduledDate, user.timezone);
 
-  const subtitle = isToday ? "Твой план на сегодня" : "Следующая тренировка";
+  const subtitle = isToday
+    ? "Твой план на сегодня"
+    : "Следующая тренировка";
 
   const canStart = isToday;
 
   return (
-    <section className="pt-4">
+    <section>
       {/* HERO */}
       <div
         className="
@@ -89,7 +99,9 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
           <span
             className="h-1.5 w-1.5 rounded-full"
             style={{
-              backgroundColor: canStart ? "var(--accent)" : "var(--muted)",
+              backgroundColor: canStart
+                ? "var(--accent)"
+                : "var(--muted)",
             }}
           />
 
@@ -134,11 +146,7 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
           </h2>
 
           <p
-            className="
-              mt-2
-              text-[13px]
-              font-medium
-            "
+            className="mt-2 text-[13px] font-medium"
             style={{
               color: "var(--muted)",
             }}
@@ -198,11 +206,7 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
         >
           <div className="flex items-center gap-2">
             <span
-              className="
-                text-[14px]
-                font-bold
-                tabular-nums
-              "
+              className="text-[14px] font-bold tabular-nums"
               style={{
                 color: "var(--foreground)",
               }}
@@ -270,15 +274,14 @@ export default function PlannedWorkout({ workout }: PlannedWorkoutProps) {
           <span
             className="h-1.5 w-1.5 rounded-full"
             style={{
-              backgroundColor: canStart ? "var(--accent)" : "var(--muted)",
+              backgroundColor: canStart
+                ? "var(--accent)"
+                : "var(--muted)",
             }}
           />
 
           <span
-            className="
-              text-[11px]
-              font-medium
-            "
+            className="text-[11px] font-medium"
             style={{
               color: "var(--muted)",
             }}
