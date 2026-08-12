@@ -25,6 +25,13 @@
   /* Borders */
   --border: #e4e4e7;
   --divider: #f4f4f5;
+
+  /* Interaction */
+  --input-focus-ring: color-mix(
+    in srgb,
+    var(--accent) 20%,
+    transparent
+  );
 }
 
 /* ==========================================================================

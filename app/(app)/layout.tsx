@@ -1,7 +1,7 @@
 // app/(app)/layout.tsx
-import AppHeader from "@/app/components/AppHeader";
-import BottomNavigation from "@/app/components/BottomNavigation";
-import TimezoneSync from "@/app/components/TimezoneSync";
+import AppHeader from "@/app/components/app/AppHeader";
+import BottomNavigation from "@/app/components/app/BottomNavigation";
+import TimezoneSync from "@/app/components/app/TimezoneSync";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (

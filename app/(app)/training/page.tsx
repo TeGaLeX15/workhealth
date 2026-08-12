@@ -1,6 +1,6 @@
 // app/(app)/training/page.tsx
 import { redirect } from "next/navigation";
-import Exercises from "@/app/components/Exercises";
+import Exercises from "@/app/components/exercises/Exercises";
 import { getSessionUser } from "@/app/server/auth/session";
 
 export default async function TrainingPage() {

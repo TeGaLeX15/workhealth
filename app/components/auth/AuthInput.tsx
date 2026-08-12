@@ -1,11 +1,13 @@
 // app/components/auth/AuthInput.tsx
+import type { HTMLInputAutoCompleteAttribute } from "react";
+
 interface AuthInputProps {
   id: string;
   label: string;
   type?: "text" | "email";
   value: string;
   placeholder?: string;
-  autoComplete?: string;
+  autoComplete?: HTMLInputAutoCompleteAttribute;
   disabled?: boolean;
   required?: boolean;
   touched?: boolean;
@@ -28,7 +30,7 @@ export default function AuthInput({
   onChange,
   onBlur,
 }: AuthInputProps) {
-  const hasError = touched && !!error;
+  const hasError = touched && Boolean(error);
 
   return (
     <div>
@@ -58,6 +60,7 @@ export default function AuthInput({
         disabled={disabled}
         required={required}
         aria-invalid={hasError}
+        aria-describedby={hasError ? `${id}-error` : undefined}
         className="
           h-[60px]
           w-full
@@ -69,6 +72,7 @@ export default function AuthInput({
           transition
           placeholder:opacity-45
           focus:ring-2
+          focus:ring-[var(--input-focus-ring)]
           disabled:cursor-not-allowed
           disabled:opacity-50
         "
@@ -76,14 +80,12 @@ export default function AuthInput({
           backgroundColor: "var(--surface)",
           borderColor: hasError ? "#ef4444" : "var(--border)",
           color: "var(--foreground)",
-          // @ts-expect-error CSS custom property
-          "--tw-ring-color":
-            "color-mix(in srgb, var(--accent) 20%, transparent)",
         }}
       />
 
       {hasError && (
         <p
+          id={`${id}-error`}
           className="mt-2 text-[12px] font-medium"
           style={{
             color: "#ef4444",

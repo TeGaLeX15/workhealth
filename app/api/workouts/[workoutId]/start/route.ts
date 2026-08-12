@@ -1,7 +1,9 @@
 // app/api/workouts/[workoutId]/start/route.ts
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/app/server/db";
 import { getSessionUser } from "@/app/server/auth/session";
+
 import {
   dateStringToUtcDate,
   getLocalDateString,
@@ -18,6 +20,8 @@ export async function POST(
   },
 ) {
   try {
+    // ─── Authentication ────────────────────────────────────────────
+
     const user = await getSessionUser();
 
     if (!user) {
@@ -31,9 +35,23 @@ export async function POST(
       );
     }
 
+    // ─── Params ────────────────────────────────────────────────────
+
     const { workoutId } = await params;
 
-    // ─── Workout ───────────────────────────────────────────────────────
+    if (!workoutId) {
+      return NextResponse.json(
+        {
+          error: "Некорректный идентификатор тренировки",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    // ─── Workout ───────────────────────────────────────────────────
+
     const workout = await prisma.workout.findFirst({
       where: {
         id: workoutId,
@@ -52,11 +70,16 @@ export async function POST(
       );
     }
 
-    // ─── Status ────────────────────────────────────────────────────────
+    // ─── Status ────────────────────────────────────────────────────
+
     if (workout.status !== "PLANNED") {
       return NextResponse.json(
         {
-          error: "Эту тренировку нельзя начать",
+          error:
+            workout.status === "IN_PROGRESS"
+              ? "Тренировка уже начата"
+              : "Эту тренировку нельзя начать",
+          code: "WORKOUT_ALREADY_STARTED",
         },
         {
           status: 400,
@@ -64,11 +87,14 @@ export async function POST(
       );
     }
 
-    // ─── Current local date ────────────────────────────────────────────
+    // ─── Current local date ────────────────────────────────────────
+
     const todayString = getLocalDateString(new Date(), user.timezone);
+
     const today = dateStringToUtcDate(todayString);
 
-    // ─── Missed workout ────────────────────────────────────────────────
+    // ─── Missed workout ────────────────────────────────────────────
+
     if (workout.scheduledDate < today) {
       await prisma.workout.update({
         where: {
@@ -90,17 +116,8 @@ export async function POST(
       );
     }
 
-    console.log("WORKOUT DATE DEBUG", {
-      now: new Date().toISOString(),
-      workoutId: workout.id,
-      scheduledDate: workout.scheduledDate.toISOString(),
-      todayString,
-      today: today.toISOString(),
-      timezone: user.timezone,
-      nodeTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
+    // ─── Future workout ────────────────────────────────────────────
 
-    // ─── Future workout ────────────────────────────────────────────────
     if (workout.scheduledDate > today) {
       return NextResponse.json(
         {
@@ -113,7 +130,8 @@ export async function POST(
       );
     }
 
-    // ─── Sequential training check ─────────────────────────────────────
+    // ─── Sequential training check ────────────────────────────────
+
     const previousUnfinishedWorkout = await prisma.workout.findFirst({
       where: {
         userId: user.id,
@@ -165,7 +183,8 @@ export async function POST(
       );
     }
 
-    // ─── Start workout ─────────────────────────────────────────────────
+    // ─── Start workout ─────────────────────────────────────────────
+
     const updatedWorkout = await prisma.workout.update({
       where: {
         id: workout.id,

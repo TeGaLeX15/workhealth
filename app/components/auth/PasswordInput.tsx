@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import type { HTMLInputAutoCompleteAttribute } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 interface PasswordInputProps {
@@ -9,7 +10,7 @@ interface PasswordInputProps {
   label: string;
   value: string;
   placeholder?: string;
-  autoComplete?: string;
+  autoComplete?: HTMLInputAutoCompleteAttribute;
   disabled?: boolean;
   required?: boolean;
   minLength?: number;
@@ -35,7 +36,7 @@ export default function PasswordInput({
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
-  const hasError = touched && !!error;
+  const hasError = touched && Boolean(error);
 
   return (
     <div>
@@ -67,6 +68,7 @@ export default function PasswordInput({
           required={required}
           minLength={minLength}
           aria-invalid={hasError}
+          aria-describedby={hasError ? `${id}-error` : undefined}
           className="
             h-[60px]
             w-full
@@ -79,6 +81,7 @@ export default function PasswordInput({
             transition
             placeholder:opacity-45
             focus:ring-2
+            focus:ring-[var(--input-focus-ring)]
             disabled:cursor-not-allowed
             disabled:opacity-50
           "
@@ -86,9 +89,6 @@ export default function PasswordInput({
             backgroundColor: "var(--surface)",
             borderColor: hasError ? "#ef4444" : "var(--border)",
             color: "var(--foreground)",
-            // @ts-expect-error CSS custom property
-            "--tw-ring-color":
-              "color-mix(in srgb, var(--accent) 20%, transparent)",
           }}
         />
 
@@ -96,9 +96,7 @@ export default function PasswordInput({
           type="button"
           onClick={() => setShowPassword((value) => !value)}
           disabled={disabled}
-          aria-label={
-            showPassword ? "Скрыть пароль" : "Показать пароль"
-          }
+          aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
           className="
             absolute
             right-2
@@ -111,8 +109,8 @@ export default function PasswordInput({
             justify-center
             rounded-[14px]
             transition
-            hover:bg-black/[0.04]
             active:scale-90
+            disabled:cursor-not-allowed
           "
           style={{
             color: "var(--muted)",
@@ -128,6 +126,7 @@ export default function PasswordInput({
 
       {hasError && (
         <p
+          id={`${id}-error`}
           className="mt-2 text-[12px] font-medium"
           style={{
             color: "#ef4444",

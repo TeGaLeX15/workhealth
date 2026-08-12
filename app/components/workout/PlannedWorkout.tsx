@@ -4,7 +4,7 @@ import {
   getDateColumnString,
 } from "@/app/lib/timezone/local-date";
 
-import StartWorkoutButton from "@/app/components/StartWorkoutButton";
+import StartWorkoutButton from "@/app/components/workout/StartWorkoutButton";
 import WorkoutPlan from "./WorkoutPlan";
 
 type PlannedWorkoutProps = {

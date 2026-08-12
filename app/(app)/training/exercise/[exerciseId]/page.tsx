@@ -7,7 +7,7 @@ import {
   getLocalDateString,
 } from "@/app/lib/timezone/local-date";
 
-import MaxRepsForm from "@/app/components/MaxRepsForm";
+import MaxRepsForm from "@/app/components/exercises/max-reps/MaxRepsForm";
 import TrainingWeekCard from "@/app/components/TrainingWeekCard";
 import ActiveWorkoutCard from "@/app/components/workout/ActiveWorkoutCard";
 
@@ -52,9 +52,8 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
   // ─── Initial max reps ────────────────────────────────────────────────────
   if (maxReps === null) {
     return (
-      <main className="flex min-h-[calc(100dvh-80px)] flex-col px-4 pb-4 pt-6">
-        {/* Header */}
-        <header className="shrink-0 text-center">
+      <main className="px-4 pb-8 pt-8">
+        <header className="text-center">
           <p
             className="text-[11px] font-semibold uppercase tracking-[0.14em]"
             style={{
@@ -83,7 +82,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
           <p
             className="
               mx-auto
-              mt-2.5
+              mt-3
               max-w-[300px]
               text-[14px]
               leading-5
@@ -96,18 +95,15 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
           </p>
         </header>
 
-        {/* Max reps */}
-        <section className="flex min-h-0 flex-1 items-center justify-center py-4">
+        <section className="mx-auto mt-10 w-full max-w-[420px]">
           <MaxRepsForm exerciseId={exercise.id} />
         </section>
 
-        {/* Hint */}
         <p
           className="
             mx-auto
-            max-w-[280px]
-            shrink-0
-            pb-3
+            mt-7
+            max-w-[300px]
             text-center
             text-[12px]
             leading-5

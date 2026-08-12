@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { House, Dumbbell, ChartNoAxesColumn, Settings } from "lucide-react";
 import { useTheme } from "@/app/providers/theme-provider";
 
-// Navigation items
 const navigation = [
   {
     href: "/",
@@ -32,52 +31,89 @@ const navigation = [
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  const { dark, accent } = useTheme();
+  const { accent } = useTheme();
+
+  // Hide global navigation during an active workout.
+  const isActiveWorkout = pathname.startsWith("/workout/");
+
+  if (isActiveWorkout) {
+    return null;
+  }
 
   return (
     <nav
       aria-label="Основная навигация"
-      className="fixed inset-x-0 bottom-0 z-50 w-full border-t backdrop-blur-xl"
+      className="
+        fixed
+        inset-x-0
+        bottom-0
+        z-50
+        w-full
+        border-t
+        backdrop-blur-xl
+      "
       style={{
-        backgroundColor: dark
-          ? "rgba(9, 9, 11, 0.94)"
-          : "rgba(255, 255, 255, 0.94)",
+        backgroundColor:
+          "color-mix(in srgb, var(--background) 94%, transparent)",
         borderColor: "var(--border)",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
-      {" "}
-      <div className="mx-auto flex h-18 w-full max-w-xl items-stretch px-3">
+      <div
+        className="
+          mx-auto
+          flex
+          h-[64px]
+          w-full
+          max-w-xl
+          items-stretch
+          px-3
+        "
+      >
         {navigation.map((item) => {
           const isActive =
             item.href === "/"
               ? pathname === "/"
               : pathname.startsWith(item.href);
+
           const Icon = item.icon;
 
           return (
-            // Navigation link
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={[
-                "flex min-w-0 flex-1 flex-col items-center justify-center",
-                "transition-transform duration-150",
-                "active:scale-[0.96]",
-                "motion-reduce:transition-none",
-              ].join(" ")}
+              className="
+                flex
+                min-w-0
+                flex-1
+                flex-col
+                items-center
+                justify-center
+                rounded-xl
+                transition-transform
+                duration-200
+                active:scale-[0.96]
+                motion-reduce:transition-none
+              "
               style={{
                 color: isActive ? accent : "var(--muted)",
               }}
             >
-              {/* Icon */}
+              {/* ICON */}
               <span
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200"
+                className="
+                  flex
+                  h-8
+                  w-10
+                  items-center
+                  justify-center
+                  transition-transform
+                  duration-200
+                  motion-reduce:transition-none
+                "
                 style={{
-                  backgroundColor: isActive
-                    ? `color-mix(in srgb, var(--accent) 12%, transparent)`
-                    : "transparent",
+                  transform: isActive ? "scale(1.04)" : "scale(1)",
                 }}
               >
                 <Icon
@@ -87,9 +123,14 @@ export default function BottomNavigation() {
                 />
               </span>
 
-              {/* Label */}
+              {/* LABEL */}
               <span
-                className="my-1.5 text-[12px] font-semibold leading-none"
+                className="
+                  mt-1.5
+                  text-[12px]
+                  font-semibold
+                  leading-none
+                "
                 style={{
                   color: isActive ? accent : "var(--muted)",
                 }}

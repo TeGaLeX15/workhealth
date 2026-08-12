@@ -14,7 +14,7 @@ export default function ActiveWorkoutAction({
   return (
     <div className="px-5 pb-5">
       <Link
-        href={`/workouts/${workoutId}`}
+        href={`/training/workouts/${workoutId}`}
         className="
           group
           flex

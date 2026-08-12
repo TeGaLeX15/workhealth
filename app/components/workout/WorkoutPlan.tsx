@@ -7,7 +7,7 @@ type WorkoutPlanProps = {
   }[];
 };
 
-const REST_SECONDS = 30;
+const REST_SECONDS = 60;
 
 export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
   return (
