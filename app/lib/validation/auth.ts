@@ -55,9 +55,6 @@ export const registerSchema = registerFieldsSchema.refine(
 );
 
 // ─── API request schemas ─────────────────────────────────────────────────────
-//
-// passwordRepeat нужен только клиенту для подтверждения пароля.
-// timezone передаётся браузером при регистрации.
 
 export const registerRequestSchema = registerFieldsSchema
   .omit({

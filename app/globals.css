@@ -40,6 +40,8 @@
 
   --color-accent: var(--accent);
   --color-accent-dark: var(--accent-dark);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
 
   --color-muted: var(--muted);
   --color-subtle: var(--subtle);

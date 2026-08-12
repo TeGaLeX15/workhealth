@@ -65,9 +65,7 @@ export const viewport: Viewport = {
   viewportFit: "contain",
 };
 
-export default function RootLayout({
-  children,
-}: LayoutProps<"/">) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ru"
@@ -87,22 +85,17 @@ export default function RootLayout({
           media="(prefers-color-scheme: dark)"
         />
 
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="default"
-        />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
 
       <body
-        className="min-h-dvh overflow-x-hidden"
+        className="min-h-dvh"
         style={{
           backgroundColor: "var(--background)",
           color: "var(--foreground)",
         }}
       >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

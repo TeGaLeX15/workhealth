@@ -1,8 +1,9 @@
+// app/server/auth/session.ts
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { prisma } from "@/app/server/db";
 
-const SESSION_COOKIE = "workhealth_session";
+const SESSION_COOKIE = "bodyos_session";
 const SESSION_DURATION = 1000 * 60 * 60 * 24 * 30;
 
 function hashToken(token: string) {
@@ -36,7 +37,6 @@ export async function createSession(userId: string) {
 
 export async function getSessionUser() {
   const cookieStore = await cookies();
-
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!token) {
@@ -50,7 +50,13 @@ export async function getSessionUser() {
       tokenHash,
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          timezone: true,
+        },
+      },
     },
   });
 
@@ -65,6 +71,8 @@ export async function getSessionUser() {
       },
     });
 
+    cookieStore.delete(SESSION_COOKIE);
+
     return null;
   }
 
@@ -73,7 +81,6 @@ export async function getSessionUser() {
 
 export async function deleteSession() {
   const cookieStore = await cookies();
-
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (token) {

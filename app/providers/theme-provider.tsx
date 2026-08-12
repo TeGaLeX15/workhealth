@@ -3,52 +3,126 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 
-export type AccentKey = "green" | "blue" | "purple" | "orange" | "red";
+export type AccentKey =
+  | "green"
+  | "blue"
+  | "purple"
+  | "orange"
+  | "red"
+  | "teal"
+  | "pink"
+  | "indigo"
+  | "amber"
+  | "cyan";
 
-export const ACCENTS: Record<
-  AccentKey,
-  {
-    label: string;
-    primary: string;
-    dark: string;
-  }
-> = {
+type AccentConfig = {
+  label: string;
+  primary: string;
+  dark: string;
+  softLight: string;
+  softDark: string;
+  contrast: string;
+};
+
+export const ACCENTS: Record<AccentKey, AccentConfig> = {
   green: {
     label: "Зелёный",
     primary: "#22c55e",
     dark: "#16a34a",
+    softLight: "#dcfce7",
+    softDark: "#14532d",
+    contrast: "#ffffff",
   },
 
   blue: {
     label: "Синий",
     primary: "#3b82f6",
     dark: "#2563eb",
+    softLight: "#dbeafe",
+    softDark: "#1e3a8a",
+    contrast: "#ffffff",
   },
 
   purple: {
     label: "Фиолетовый",
     primary: "#8b5cf6",
     dark: "#7c3aed",
+    softLight: "#ede9fe",
+    softDark: "#4c1d95",
+    contrast: "#ffffff",
   },
 
   orange: {
     label: "Оранжевый",
     primary: "#f97316",
     dark: "#ea580c",
+    softLight: "#ffedd5",
+    softDark: "#7c2d12",
+    contrast: "#ffffff",
   },
 
   red: {
     label: "Красный",
     primary: "#ef4444",
     dark: "#dc2626",
+    softLight: "#fee2e2",
+    softDark: "#7f1d1d",
+    contrast: "#ffffff",
+  },
+
+  teal: {
+    label: "Бирюзовый",
+    primary: "#14b8a6",
+    dark: "#0d9488",
+    softLight: "#ccfbf1",
+    softDark: "#134e4a",
+    contrast: "#ffffff",
+  },
+
+  pink: {
+    label: "Розовый",
+    primary: "#ec4899",
+    dark: "#db2777",
+    softLight: "#fce7f3",
+    softDark: "#831843",
+    contrast: "#ffffff",
+  },
+
+  indigo: {
+    label: "Индиго",
+    primary: "#6366f1",
+    dark: "#4f46e5",
+    softLight: "#e0e7ff",
+    softDark: "#312e81",
+    contrast: "#ffffff",
+  },
+
+  amber: {
+    label: "Янтарный",
+    primary: "#f59e0b",
+    dark: "#d97706",
+    softLight: "#fef3c7",
+    softDark: "#78350f",
+    contrast: "#ffffff",
+  },
+
+  cyan: {
+    label: "Циан",
+    primary: "#06b6d4",
+    dark: "#0891b2",
+    softLight: "#cffafe",
+    softDark: "#164e63",
+    contrast: "#ffffff",
   },
 };
 
@@ -58,9 +132,7 @@ const ACCENT_STORAGE_KEY = "bodyos-accent";
 const DEFAULT_THEME: ThemeMode = "system";
 const DEFAULT_ACCENT: AccentKey = "green";
 
-/* ==========================================================================
-   VALIDATION
-   ========================================================================== */
+/* ─── Validation ─────────────────────────────────────────────────────────── */
 
 function isThemeMode(value: unknown): value is ThemeMode {
   return value === "light" || value === "dark" || value === "system";
@@ -72,22 +144,29 @@ function isAccentKey(value: unknown): value is AccentKey {
     value === "blue" ||
     value === "purple" ||
     value === "orange" ||
-    value === "red"
+    value === "red" ||
+    value === "teal" ||
+    value === "pink" ||
+    value === "indigo" ||
+    value === "amber" ||
+    value === "cyan"
   );
 }
 
-/* ==========================================================================
-   LOCAL STORAGE
-   ========================================================================== */
+/* ─── Local storage ──────────────────────────────────────────────────────── */
 
 function getStoredTheme(): ThemeMode {
   if (typeof window === "undefined") {
     return DEFAULT_THEME;
   }
 
-  const value = window.localStorage.getItem(THEME_STORAGE_KEY);
+  try {
+    const value = window.localStorage.getItem(THEME_STORAGE_KEY);
 
-  return isThemeMode(value) ? value : DEFAULT_THEME;
+    return isThemeMode(value) ? value : DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
 }
 
 function getStoredAccent(): AccentKey {
@@ -95,14 +174,16 @@ function getStoredAccent(): AccentKey {
     return DEFAULT_ACCENT;
   }
 
-  const value = window.localStorage.getItem(ACCENT_STORAGE_KEY);
+  try {
+    const value = window.localStorage.getItem(ACCENT_STORAGE_KEY);
 
-  return isAccentKey(value) ? value : DEFAULT_ACCENT;
+    return isAccentKey(value) ? value : DEFAULT_ACCENT;
+  } catch {
+    return DEFAULT_ACCENT;
+  }
 }
 
-/* ==========================================================================
-   STORE
-   ========================================================================== */
+/* ─── Store ──────────────────────────────────────────────────────────────── */
 
 const listeners = new Set<() => void>();
 
@@ -119,20 +200,26 @@ function notifySettingsChanged() {
 }
 
 function saveTheme(theme: ThemeMode) {
-  window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage errors.
+  }
 
   notifySettingsChanged();
 }
 
 function saveAccent(accent: AccentKey) {
-  window.localStorage.setItem(ACCENT_STORAGE_KEY, accent);
+  try {
+    window.localStorage.setItem(ACCENT_STORAGE_KEY, accent);
+  } catch {
+    // Ignore storage errors.
+  }
 
   notifySettingsChanged();
 }
 
-/* ==========================================================================
-   SYSTEM THEME
-   ========================================================================== */
+/* ─── System theme ───────────────────────────────────────────────────────── */
 
 function subscribeSystemTheme(callback: () => void) {
   if (typeof window === "undefined") {
@@ -160,9 +247,7 @@ function getServerSystemTheme() {
   return false;
 }
 
-/* ==========================================================================
-   CONTEXT
-   ========================================================================== */
+/* ─── Context ────────────────────────────────────────────────────────────── */
 
 type ThemeContextValue = {
   themeMode: ThemeMode;
@@ -172,6 +257,8 @@ type ThemeContextValue = {
 
   accent: string;
   accentDark: string;
+  accentSoft: string;
+  accentContrast: string;
 
   setThemeMode: (theme: ThemeMode) => void;
   setAccentKey: (accent: AccentKey) => void;
@@ -179,9 +266,7 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-/* ==========================================================================
-   THEME PROVIDER
-   ========================================================================== */
+/* ─── Theme provider ────────────────────────────────────────────────────── */
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeMode = useSyncExternalStore(
@@ -206,17 +291,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const accentConfig = ACCENTS[accentKey] ?? ACCENTS.green;
 
-  const setThemeMode = (theme: ThemeMode) => {
+  const setThemeMode = useCallback((theme: ThemeMode) => {
     saveTheme(theme);
-  };
+  }, []);
 
-  const setAccentKey = (accent: AccentKey) => {
+  const setAccentKey = useCallback((accent: AccentKey) => {
     saveAccent(accent);
-  };
+  }, []);
 
-  /* ==========================================================================
-     DOM / SYSTEM UI SYNCHRONIZATION
-     ========================================================================== */
+  /* ─── DOM / system UI synchronization ─────────────────────────────────── */
 
   useEffect(() => {
     const root = document.documentElement;
@@ -228,46 +311,59 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     root.style.setProperty("--accent", accentConfig.primary);
     root.style.setProperty("--accent-dark", accentConfig.dark);
+    root.style.setProperty(
+      "--accent-soft",
+      dark ? accentConfig.softDark : accentConfig.softLight,
+    );
+    root.style.setProperty("--accent-contrast", accentConfig.contrast);
 
     root.style.setProperty("--background", background);
     root.style.setProperty("--foreground", foreground);
 
     root.style.setProperty("--card", dark ? "#18181b" : "#ffffff");
-
     root.style.setProperty("--surface", dark ? "#27272a" : "#f4f4f5");
-
     root.style.setProperty("--muted", dark ? "#a1a1aa" : "#71717a");
-
     root.style.setProperty("--subtle", dark ? "#71717a" : "#a1a1aa");
-
     root.style.setProperty("--border", dark ? "#27272a" : "#e4e4e7");
-
     root.style.setProperty("--divider", dark ? "#27272a" : "#f4f4f5");
 
     root.style.colorScheme = dark ? "dark" : "light";
+
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement("meta");
+      metaThemeColor.setAttribute("name", "theme-color");
+      document.head.appendChild(metaThemeColor);
+    }
+
+    metaThemeColor.setAttribute("content", background);
   }, [dark, accentConfig]);
 
-  const value: ThemeContextValue = {
-    themeMode,
-    accentKey,
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      themeMode,
+      accentKey,
 
-    dark,
+      dark,
 
-    accent: accentConfig.primary,
-    accentDark: accentConfig.dark,
+      accent: accentConfig.primary,
+      accentDark: accentConfig.dark,
+      accentSoft: dark ? accentConfig.softDark : accentConfig.softLight,
+      accentContrast: accentConfig.contrast,
 
-    setThemeMode,
-    setAccentKey,
-  };
+      setThemeMode,
+      setAccentKey,
+    }),
+    [themeMode, accentKey, dark, accentConfig, setThemeMode, setAccentKey],
+  );
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
-/* ==========================================================================
-   HOOK
-   ========================================================================== */
+/* ─── Hook ───────────────────────────────────────────────────────────────── */
 
 export function useTheme() {
   const context = useContext(ThemeContext);
