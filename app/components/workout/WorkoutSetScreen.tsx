@@ -23,13 +23,18 @@ export default function WorkoutSetScreen({
   onComplete,
 }: WorkoutSetScreenProps) {
   return (
-    <div className="flex justify-center py-8 sm:py-10">
+    <div className="flex justify-center pt-10 pb-8 sm:pt-12 sm:pb-10">
       <div className="w-full text-center">
         <button
           type="button"
           onClick={onComplete}
           disabled={isLoading}
-          aria-label={`Завершить подход ${currentSet.setNumber}`}
+          aria-label={
+            isLoading
+              ? `Сохранение подхода ${currentSet.setNumber}`
+              : `Завершить подход ${currentSet.setNumber}`
+          }
+          aria-busy={isLoading}
           className="
             bodyos-current-set
             relative
@@ -43,31 +48,36 @@ export default function WorkoutSetScreen({
             items-center
             justify-center
             rounded-full
-            transition-transform
-            active:scale-[0.96]
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-[var(--accent)]
+            focus-visible:ring-offset-4
+            focus-visible:ring-offset-[var(--background)]
             disabled:cursor-not-allowed
             disabled:opacity-60
           "
           style={{
             backgroundColor: "var(--card)",
-            border:
-              "1px solid color-mix(in srgb, var(--accent) 18%, var(--border))",
-            boxShadow:
-              "0 18px 50px color-mix(in srgb, var(--accent) 8%, transparent)",
+            border: "5px solid var(--accent)",
           }}
         >
-          <div
+          {/* IDLE PULSE */}
+
+          <span
+            aria-hidden="true"
             className="
+              bodyos-current-set-pulse
+              pointer-events-none
               absolute
-              inset-[6px]
+              inset-[-4px]
               rounded-full
-              border-2
-              sm:inset-[8px]
             "
             style={{
-              borderColor: "color-mix(in srgb, var(--accent) 24%, transparent)",
+              border: "2px solid var(--accent)",
             }}
           />
+
+          {/* CONTENT */}
 
           <span
             className="
@@ -100,8 +110,9 @@ export default function WorkoutSetScreen({
           </span>
         </button>
 
-        {error && (
+        {error ? (
           <div
+            role="alert"
             className="
               mx-auto
               mt-4
@@ -112,6 +123,7 @@ export default function WorkoutSetScreen({
               py-3
               text-center
               text-xs
+              leading-relaxed
             "
             style={{
               backgroundColor: "color-mix(in srgb, #ef4444 6%, transparent)",
@@ -121,12 +133,10 @@ export default function WorkoutSetScreen({
           >
             {error}
           </div>
-        )}
-
-        {!error && (
+        ) : (
           <p
             className="
-              mt-4
+              mt-8
               text-[11px]
               font-medium
               sm:text-xs
@@ -135,7 +145,9 @@ export default function WorkoutSetScreen({
               color: "var(--muted)",
             }}
           >
-            Выполни подход и нажми на круг
+            {isLoading
+              ? "Сохраняем результат..."
+              : "Выполни подход и нажми на круг"}
           </p>
         )}
       </div>

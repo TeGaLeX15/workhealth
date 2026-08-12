@@ -2,12 +2,7 @@
 type WorkoutHeaderProps = {
   workout: {
     workoutNumber: number;
-    status:
-      | "PLANNED"
-      | "IN_PROGRESS"
-      | "COMPLETED"
-      | "CANCELLED"
-      | "SKIPPED";
+    status: "PLANNED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "SKIPPED";
     exercise: {
       name: string;
     };
@@ -25,22 +20,16 @@ const statusLabel = {
   SKIPPED: "Пропущена",
 };
 
-export default function WorkoutHeader({
-  workout,
-}: WorkoutHeaderProps) {
-  const isCompleted =
-    workout.status === "COMPLETED";
+export default function WorkoutHeader({ workout }: WorkoutHeaderProps) {
+  const isCompleted = workout.status === "COMPLETED";
+  const isCancelled = workout.status === "CANCELLED";
+  const isSkipped = workout.status === "SKIPPED";
 
-  const isCancelled =
-    workout.status === "CANCELLED";
-
-  const isSkipped =
-    workout.status === "SKIPPED";
+  const isUnavailable = isCancelled || isSkipped;
 
   return (
-    <header>
+    <header className="mb-5">
       {/* TOP META */}
-
       <div className="flex items-center justify-between gap-3">
         <p
           className="
@@ -68,13 +57,13 @@ export default function WorkoutHeader({
           style={{
             backgroundColor: isCompleted
               ? "color-mix(in srgb, var(--accent) 10%, transparent)"
-              : isCancelled || isSkipped
+              : isUnavailable
                 ? "color-mix(in srgb, #ef4444 8%, transparent)"
                 : "var(--surface)",
 
             color: isCompleted
               ? "var(--accent)"
-              : isCancelled || isSkipped
+              : isUnavailable
                 ? "#ef4444"
                 : "var(--muted)",
           }}
@@ -84,7 +73,6 @@ export default function WorkoutHeader({
       </div>
 
       {/* TITLE */}
-
       <div className="mt-3 text-center">
         <h1
           className="

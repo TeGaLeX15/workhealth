@@ -4,9 +4,6 @@ import { Check, Coffee, Dumbbell } from "lucide-react";
 type WorkoutSet = {
   id: string;
   setNumber: number;
-  targetReps: number;
-  actualReps: number | null;
-  completed: boolean;
 };
 
 type WorkoutProgressProps = {
@@ -22,20 +19,19 @@ export default function WorkoutProgress({
 }: WorkoutProgressProps) {
   return (
     <div className="w-full overflow-visible">
-      <div className="flex w-full justify-center px-2 overflow-visible">
+      <div className="flex w-full justify-center overflow-visible px-2">
         <div className="flex w-fit max-w-full items-center overflow-visible">
           {sets.map((set, index) => {
             const isCompleted = index < currentIndex;
             const isCurrent = !isResting && index === currentIndex;
-
-            const isActiveRest = isResting && index === currentIndex - 1;
+            const isRestingAfterSet = isResting && index === currentIndex - 1;
 
             return (
               <div key={set.id} className="flex shrink-0 items-center">
                 {/* SET */}
-                <div className="relative flex shrink-0 items-center justify-center">
+                <div className="flex shrink-0 items-center justify-center">
                   <div
-                    className={`
+                    className="
                       relative
                       flex
                       h-[38px]
@@ -44,22 +40,21 @@ export default function WorkoutProgress({
                       justify-center
                       rounded-full
                       border
-                      transition-all
-                      duration-300
                       sm:h-10
                       sm:w-10
-                      ${isCurrent ? "workout-progress-current scale-110" : ""}
-                    `}
+                    "
                     style={{
                       backgroundColor: isCompleted
                         ? "color-mix(in srgb, var(--accent) 12%, var(--card))"
                         : isCurrent
                           ? "color-mix(in srgb, var(--accent) 10%, var(--card))"
                           : "var(--surface)",
-
                       borderColor: isCurrent
                         ? "var(--accent)"
                         : "var(--border)",
+                      boxShadow: isCurrent
+                        ? "0 0 18px color-mix(in srgb, var(--accent) 18%, transparent)"
+                        : "none",
                     }}
                   >
                     {isCompleted ? (
@@ -85,7 +80,12 @@ export default function WorkoutProgress({
                         />
 
                         <span
-                          className="text-[7px] font-bold leading-none tabular-nums"
+                          className="
+                            text-[7px]
+                            font-bold
+                            leading-none
+                            tabular-nums
+                          "
                           style={{
                             color: "var(--foreground)",
                           }}
@@ -111,11 +111,10 @@ export default function WorkoutProgress({
                     "
                   >
                     <Coffee
-                      size={isActiveRest ? 14 : 11}
-                      strokeWidth={isActiveRest ? 2 : 1.7}
-                      className={isActiveRest ? "workout-rest-active" : ""}
+                      size={isRestingAfterSet ? 14 : 11}
+                      strokeWidth={isRestingAfterSet ? 2 : 1.7}
                       style={{
-                        color: isActiveRest
+                        color: isRestingAfterSet
                           ? "var(--accent)"
                           : isCompleted
                             ? "color-mix(in srgb, var(--muted) 70%, transparent)"

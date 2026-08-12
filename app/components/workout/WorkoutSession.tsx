@@ -83,9 +83,25 @@ export default function WorkoutSession({
     };
   }, [isResting, restSeconds]);
 
+  // Protect against an invalid/completed state
+  if (!currentSet) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center">
+        <p
+          className="text-sm"
+          style={{
+            color: "var(--muted)",
+          }}
+        >
+          Тренировка завершена
+        </p>
+      </div>
+    );
+  }
+
   // Complete set function
   async function handleCompleteSet() {
-    if (!currentSet || isLoading || isResting) {
+    if (isLoading || isResting) {
       return;
     }
 
@@ -148,25 +164,10 @@ export default function WorkoutSession({
     setRestTotalSeconds((seconds) => seconds + 30);
   }
 
-  // Resting screen
-  if (isResting) {
-    return (
-      <WorkoutRestScreen
-        sets={completedSets}
-        currentIndex={currentIndex}
-        currentSet={currentSet}
-        restSeconds={restSeconds}
-        restTotalSeconds={restTotalSeconds}
-        onSkip={skipRest}
-        onIncrease={increaseRest}
-      />
-    );
-  }
-
-  // Current set screen
   return (
     <div className="w-full">
-      <div className="mt-8 sm:mt-12">
+      {/* PROGRESS */}
+      <div className="mt-8 sm:mt-10">
         <WorkoutProgress
           sets={completedSets}
           currentIndex={currentIndex}
@@ -174,12 +175,23 @@ export default function WorkoutSession({
         />
       </div>
 
-      <WorkoutSetScreen
-        currentSet={currentSet}
-        isLoading={isLoading}
-        error={error}
-        onComplete={handleCompleteSet}
-      />
+      {/* CURRENT STATE */}
+      {isResting ? (
+        <WorkoutRestScreen
+          currentSet={currentSet}
+          restSeconds={restSeconds}
+          restTotalSeconds={restTotalSeconds}
+          onSkip={skipRest}
+          onIncrease={increaseRest}
+        />
+      ) : (
+        <WorkoutSetScreen
+          currentSet={currentSet}
+          isLoading={isLoading}
+          error={error}
+          onComplete={handleCompleteSet}
+        />
+      )}
     </div>
   );
 }

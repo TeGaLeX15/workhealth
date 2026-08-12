@@ -2,7 +2,6 @@
 "use client";
 
 import { Plus, SkipForward } from "lucide-react";
-import WorkoutProgress from "./WorkoutProgress";
 
 type WorkoutSet = {
   id: string;
@@ -13,8 +12,6 @@ type WorkoutSet = {
 };
 
 type WorkoutRestScreenProps = {
-  sets: WorkoutSet[];
-  currentIndex: number;
   currentSet: WorkoutSet;
   restSeconds: number;
   restTotalSeconds: number;
@@ -23,33 +20,32 @@ type WorkoutRestScreenProps = {
 };
 
 export default function WorkoutRestScreen({
-  sets,
   currentSet,
   restSeconds,
   restTotalSeconds,
   onSkip,
   onIncrease,
 }: WorkoutRestScreenProps) {
-  const progress = ((restTotalSeconds - restSeconds) / restTotalSeconds) * 100;
+  const progress =
+    restTotalSeconds > 0
+      ? ((restTotalSeconds - restSeconds) / restTotalSeconds) * 100
+      : 0;
 
   const minutes = Math.floor(restSeconds / 60);
   const seconds = restSeconds % 60;
 
+  const formattedTime = `${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
   return (
     <div className="w-full">
-{/* PROGRESS */}
-<div className="mt-8 sm:mt-10">
-  <WorkoutProgress
-    sets={sets}
-    currentIndex={currentSet.setNumber - 1}
-    isResting={true}
-  />
-</div>
-
       {/* TIMER */}
-      <div className="flex justify-center py-12 sm:py-14">
+
+      <div className="flex justify-center pt-10 pb-8 sm:pt-12 sm:pb-10">
         <div
           className="
+            bodyos-rest-timer
             relative
             flex
             h-[min(68vw,270px)]
@@ -60,25 +56,33 @@ export default function WorkoutRestScreen({
             justify-center
             rounded-full
           "
+          role="timer"
+          aria-label={`Время отдыха ${formattedTime}`}
+          aria-live="off"
           style={{
             background: `conic-gradient(
               var(--accent) ${progress}%,
-              var(--surface) ${progress}% 100%
+              color-mix(in srgb, var(--border) 65%, transparent) ${progress}% 100%
             )`,
             boxShadow:
-              "0 18px 50px color-mix(in srgb, var(--accent) 8%, transparent)",
+              "0 18px 50px color-mix(in srgb, var(--accent) 10%, transparent)",
           }}
         >
+          {/* INNER CIRCLE */}
+
           <div
+            aria-hidden="true"
             className="
               absolute
-              inset-[6px]
+              inset-[8px]
               rounded-full
             "
             style={{
               backgroundColor: "var(--card)",
             }}
           />
+
+          {/* TIMER CONTENT */}
 
           <div className="relative text-center">
             <div
@@ -93,8 +97,7 @@ export default function WorkoutRestScreen({
                 color: "var(--foreground)",
               }}
             >
-              {minutes.toString().padStart(2, "0")}:
-              {seconds.toString().padStart(2, "0")}
+              {formattedTime}
             </div>
 
             <div
@@ -187,10 +190,12 @@ export default function WorkoutRestScreen({
           type="button"
           onClick={onSkip}
           className="
+            bodyos-action-button
+            touch-manipulation
             flex
             h-[52px]
             min-w-0
-            flex-1
+            flex-[1.6]
             items-center
             justify-center
             gap-2
@@ -198,36 +203,45 @@ export default function WorkoutRestScreen({
             border
             text-[13px]
             font-semibold
-            transition-transform
-            active:scale-[0.98]
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-[var(--accent)]
+            focus-visible:ring-offset-2
+            focus-visible:ring-offset-[var(--background)]
           "
           style={{
-            backgroundColor: "var(--surface)",
-            borderColor: "var(--border)",
-            color: "var(--foreground)",
+            backgroundColor: "var(--accent)",
+            borderColor: "var(--accent)",
+            color: "var(--accent-foreground)",
           }}
         >
-          <SkipForward size={16} strokeWidth={2} />
-          Пропустить
+          <SkipForward size={16} strokeWidth={2.2} />
+          Закончить отдых
         </button>
 
         <button
           type="button"
           onClick={onIncrease}
+          aria-label="Добавить 30 секунд отдыха"
           className="
+            bodyos-action-button
+            touch-manipulation
             flex
             h-[52px]
+            w-[92px]
             shrink-0
             items-center
             justify-center
             gap-1.5
             rounded-[18px]
             border
-            px-4
             text-[13px]
             font-semibold
-            transition-transform
-            active:scale-[0.98]
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-[var(--accent)]
+            focus-visible:ring-offset-2
+            focus-visible:ring-offset-[var(--background)]
           "
           style={{
             backgroundColor: "var(--surface)",
@@ -235,7 +249,7 @@ export default function WorkoutRestScreen({
             color: "var(--foreground)",
           }}
         >
-          <Plus size={15} strokeWidth={2} />
+          <Plus size={15} strokeWidth={2.2} />
           30 сек
         </button>
       </div>

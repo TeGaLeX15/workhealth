@@ -1,3 +1,4 @@
+// app/(app)/workouts/[workoutId]/page.tsx
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
@@ -23,6 +24,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
   const { workoutId } = await params;
 
   // ─── Workout ───────────────────────────────────────────────────────────
+
   const workout = await prisma.workout.findFirst({
     where: {
       id: workoutId,
@@ -44,6 +46,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
   }
 
   // ─── Access control ────────────────────────────────────────────────────
+
   if (workout.status === "SKIPPED" || workout.status === "CANCELLED") {
     redirect("/training");
   }
@@ -53,11 +56,9 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       where: {
         userId: user.id,
         exerciseId: workout.exerciseId,
-
         status: {
           in: ["PLANNED", "IN_PROGRESS"],
         },
-
         OR: [
           {
             scheduledDate: {
@@ -91,22 +92,21 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
   }
 
   // ─── Render ─────────────────────────────────────────────────────────────
+
   return (
     <main className="mx-auto w-full">
-      {/* Header */}
       <WorkoutHeader workout={workout} />
 
-      {/* Planned */}
-      {workout.status === "PLANNED" && <PlannedWorkout workout={workout} />}
+      {workout.status === "PLANNED" && (
+        <PlannedWorkout workout={workout} timeZone={user.timezone} />
+      )}
 
-      {/* In progress */}
       {workout.status === "IN_PROGRESS" && (
         <section>
           <WorkoutSession workoutId={workout.id} sets={workout.sets} />
         </section>
       )}
 
-      {/* Completed */}
       {workout.status === "COMPLETED" && <CompletedWorkout workout={workout} />}
     </main>
   );

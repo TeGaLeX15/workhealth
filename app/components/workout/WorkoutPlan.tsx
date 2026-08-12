@@ -7,72 +7,42 @@ type WorkoutPlanProps = {
   }[];
 };
 
+const REST_SECONDS = 30;
+
 export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
-  const totalReps = sets.reduce((total, set) => total + set.targetReps, 0);
-
   return (
-    <div className="mt-6">
+    <section className="mt-7">
       {/* HEADER */}
-      <div className="mb-3 flex items-end justify-between px-1">
-        <div>
-          <h3
-            className="
-              text-[20px]
-              font-bold
-              leading-none
-              tracking-[-0.04em]
-            "
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            Подходы
-          </h3>
+      <div className="mb-3 px-1">
+        <h3
+          className="
+            text-[20px]
+            font-bold
+            leading-none
+            tracking-[-0.04em]
+          "
+          style={{
+            color: "var(--foreground)",
+          }}
+        >
+          План
+        </h3>
 
-          <p
-            className="
-              mt-1.5
-              text-[11px]
-              font-medium
-            "
-            style={{
-              color: "var(--muted)",
-            }}
-          >
-            План тренировки
-          </p>
-        </div>
-
-        <div className="flex items-baseline gap-1">
-          <span
-            className="
-              text-[18px]
-              font-bold
-              leading-none
-              tabular-nums
-            "
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            {totalReps}
-          </span>
-
-          <span
-            className="
-              text-[10px]
-              font-medium
-            "
-            style={{
-              color: "var(--muted)",
-            }}
-          >
-            повторений
-          </span>
-        </div>
+        <p
+          className="
+            mt-1.5
+            text-[11px]
+            font-medium
+          "
+          style={{
+            color: "var(--muted)",
+          }}
+        >
+          5 подходов · отдых между подходами
+        </p>
       </div>
 
-      {/* SET LIST */}
+      {/* SET PLAN */}
       <div
         className="
           overflow-hidden
@@ -84,112 +54,156 @@ export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
           borderColor: "var(--border)",
         }}
       >
-        {sets.map((set, index) => {
-          const isFirst = index === 0;
-          const isLast = index === sets.length - 1;
+        <div className="grid grid-cols-5">
+          {sets.map((set, index) => {
+            const isLast = index === sets.length - 1;
 
-          return (
-            <div
-              key={set.id}
-              className="
-                flex
-                min-h-[64px]
-                items-center
-                justify-between
-                px-4
-                py-3
-              "
-              style={{
-                borderBottom: !isLast ? "1px solid var(--border)" : undefined,
-              }}
-            >
-              {/* LEFT */}
-              <div className="flex items-center gap-3">
-                <div
-                  className="
-                    flex
-                    h-8
-                    w-8
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-[10px]
-                    text-[12px]
-                    font-bold
-                    tabular-nums
-                  "
-                  style={{
-                    backgroundColor: isFirst
-                      ? "color-mix(in srgb, var(--accent) 11%, transparent)"
-                      : "var(--surface)",
-                    color: isFirst ? "var(--accent)" : "var(--muted)",
-                  }}
-                >
-                  {set.setNumber}
-                </div>
-
-                <div>
-                  <p
+            return (
+              <div
+                key={set.id}
+                className="
+                  relative
+                  flex
+                  min-w-0
+                  flex-col
+                  items-center
+                  justify-center
+                  px-1
+                  py-5
+                "
+              >
+                {!isLast && (
+                  <span
+                    aria-hidden="true"
                     className="
-                      text-[14px]
-                      font-semibold
-                      leading-none
+                      absolute
+                      right-0
+                      top-1/2
+                      h-8
+                      w-px
+                      -translate-y-1/2
                     "
                     style={{
-                      color: "var(--foreground)",
+                      backgroundColor: "var(--border)",
                     }}
-                  >
-                    Подход {set.setNumber}
-                  </p>
+                  />
+                )}
+                
+                <div className="flex w-full items-center gap-1.5">
+                  <span
+                    className="h-px flex-1"
+                    style={{ backgroundColor: "var(--border)" }}
+                  />
 
-                  <p
-                    className="
-                      mt-1.5
-                      text-[10px]
-                      font-medium
-                    "
-                    style={{
-                      color: "var(--muted)",
-                    }}
+                  <span
+                    className="text-[9px] font-bold tabular-nums"
+                    style={{ color: "var(--muted)" }}
                   >
-                    Целевой объём
-                  </p>
+                    {set.setNumber}
+                  </span>
+
+                  <span
+                    className="h-px flex-1"
+                    style={{ backgroundColor: "var(--border)" }}
+                  />
                 </div>
-              </div>
 
-              {/* RIGHT */}
-              <div className="flex items-baseline gap-1.5">
-                <span
-                  className="
-                    text-[27px]
-                    font-bold
-                    leading-none
-                    tracking-[-0.055em]
-                    tabular-nums
-                  "
-                  style={{
-                    color: "var(--foreground)",
-                  }}
-                >
-                  {set.targetReps}
-                </span>
+              <span
+                className="
+                  mt-2
+                  text-[30px]
+                  font-bold
+                  leading-none
+                  tracking-[-0.07em]
+                  tabular-nums
+                "
+                style={{
+                  color: "var(--foreground)",
+                }}
+              >
+                {set.targetReps}
+              </span>
 
                 <span
                   className="
-                    text-[11px]
+                    mt-1
+                    text-[9px]
                     font-medium
+                    leading-none
                   "
                   style={{
                     color: "var(--muted)",
                   }}
                 >
-                  раз
+                  повторений
                 </span>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        {/* REST */}
+        <div
+          className="
+            flex
+            items-center
+            justify-center
+            gap-2
+            border-t
+            px-4
+            py-3
+          "
+          style={{
+            borderColor: "var(--border)",
+            backgroundColor: "var(--surface)",
+          }}
+        >
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{
+              backgroundColor: "var(--accent)",
+            }}
+            aria-hidden="true"
+          />
+
+          <span
+            className="
+              text-[11px]
+              font-medium
+            "
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            Отдых
+          </span>
+
+          <span
+            className="
+              text-[12px]
+              font-bold
+              tabular-nums
+            "
+            style={{
+              color: "var(--foreground)",
+            }}
+          >
+            {REST_SECONDS} сек
+          </span>
+
+          <span
+            className="
+              text-[11px]
+              font-medium
+            "
+            style={{
+              color: "var(--muted)",
+            }}
+          >
+            между подходами
+          </span>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

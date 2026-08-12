@@ -205,13 +205,11 @@ input[type="number"]::-webkit-outer-spin-button {
 @keyframes bodyos-current-set {
   0%,
   100% {
-    box-shadow:
-      0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
   }
 
   50% {
-    box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
   }
 }
 
@@ -286,22 +284,16 @@ input[type="number"]::-webkit-outer-spin-button {
   0%,
   100% {
     box-shadow:
-      0 0 0 4px
-        color-mix(in srgb, var(--accent) 7%, transparent),
-      0 0 14px
-        color-mix(in srgb, var(--accent) 22%, transparent),
-      0 0 30px
-        color-mix(in srgb, var(--accent) 8%, transparent);
+      0 0 0 4px color-mix(in srgb, var(--accent) 7%, transparent),
+      0 0 14px color-mix(in srgb, var(--accent) 22%, transparent),
+      0 0 30px color-mix(in srgb, var(--accent) 8%, transparent);
   }
 
   50% {
     box-shadow:
-      0 0 0 7px
-        color-mix(in srgb, var(--accent) 12%, transparent),
-      0 0 24px
-        color-mix(in srgb, var(--accent) 42%, transparent),
-      0 0 48px
-        color-mix(in srgb, var(--accent) 16%, transparent);
+      0 0 0 7px color-mix(in srgb, var(--accent) 12%, transparent),
+      0 0 24px color-mix(in srgb, var(--accent) 42%, transparent),
+      0 0 48px color-mix(in srgb, var(--accent) 16%, transparent);
   }
 }
 
@@ -349,6 +341,126 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .workout-progress-current,
   .workout-rest-active {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   BODY OS — CURRENT SET BUTTON
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   Idle pulse
+   --------------------------------------------------------- */
+
+@keyframes bodyos-current-set-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: scale(1.07);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------
+   Main button
+   --------------------------------------------------------- */
+
+.bodyos-current-set {
+  position: relative;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------
+   Pulse ring
+   --------------------------------------------------------- */
+
+.bodyos-current-set-pulse {
+  animation: bodyos-current-set-pulse 1.8s ease-out infinite;
+}
+
+/* ---------------------------------------------------------
+   Press
+   --------------------------------------------------------- */
+
+.bodyos-current-set:active {
+  transform: scale(0.93);
+  filter: brightness(0.96);
+}
+
+/* ---------------------------------------------------------
+   Reduced motion
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyos-current-set-pulse {
+    animation: none;
+  }
+
+  .bodyos-current-set {
+    transition: none;
+  }
+
+  .bodyos-current-set:active {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   BUTTON ACTIONS
+   ========================================================= */
+
+.bodyos-action-button {
+  will-change: transform, box-shadow, filter;
+
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bodyos-action-button:active {
+  transform: translateY(2px) scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyos-action-button {
+    transition: none;
+  }
+
+  .bodyos-action-button:active {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   REST TIMER
+   ========================================================= */
+
+.bodyos-rest-timer {
+  will-change: filter;
+  animation: bodyos-rest-timer-breathe 4s ease-in-out infinite;
+}
+
+@keyframes bodyos-rest-timer-breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.035);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyos-rest-timer {
     animation: none;
   }
 }
