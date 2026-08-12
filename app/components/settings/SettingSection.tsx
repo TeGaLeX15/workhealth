@@ -1,10 +1,10 @@
 // app/components/settings/SettingSection.tsx
-import React from "react";
+import type { ReactNode } from "react";
 
 type SettingSectionProps = {
   title: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function SettingSection({

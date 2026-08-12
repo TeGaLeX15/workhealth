@@ -18,11 +18,11 @@ export default function AuthCard({
     <section
       className="
         w-full
-        rounded-[30px]
+        rounded-[26px]
         border
-        p-6
+        p-5
         shadow-sm
-        sm:p-10
+        sm:p-6
       "
       style={{
         backgroundColor: "var(--card)",
@@ -31,13 +31,13 @@ export default function AuthCard({
           "0 18px 55px color-mix(in srgb, var(--foreground) 5%, transparent)",
       }}
     >
-      <div className="mb-7">
+      <div className="mb-6">
         <h2
           className="
-            text-[28px]
+            text-[26px]
             font-bold
             leading-tight
-            tracking-[-0.05em]
+            tracking-[-0.045em]
           "
           style={{
             color: "var(--foreground)",
@@ -48,9 +48,9 @@ export default function AuthCard({
 
         <p
           className="
-            mt-2.5
+            mt-2
             max-w-[480px]
-            text-[15px]
+            text-[14px]
             leading-6
           "
           style={{

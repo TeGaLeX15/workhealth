@@ -1,6 +1,7 @@
+// app/(app)/settings/notifications/page.tsx
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Bell } from "lucide-react";
 import Link from "next/link";
 
@@ -9,14 +10,25 @@ import { useTheme } from "@/app/providers/theme-provider";
 import SettingSection from "@/app/components/settings/SettingSection";
 import SettingToggle from "@/app/components/settings/SettingToggle";
 
+type NotificationSettings = {
+  enabled: boolean;
+  workoutReminder: boolean;
+  missedWorkout: boolean;
+  restTimer: boolean;
+  nextSet: boolean;
+  newMax: boolean;
+  goalReached: boolean;
+  weeklyReport: boolean;
+};
+
 export default function NotificationsSettingsPage() {
-  useLayoutEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const { accent } = useTheme();
 
-  const [notifications, setNotifications] = useState({
+  const [notifications, setNotifications] = useState<NotificationSettings>({
     enabled: true,
 
     workoutReminder: true,
@@ -31,12 +43,14 @@ export default function NotificationsSettingsPage() {
     weeklyReport: true,
   });
 
-  function toggleNotification(key: keyof typeof notifications) {
+  function toggleNotification(key: keyof NotificationSettings) {
     setNotifications((current) => ({
       ...current,
       [key]: !current[key],
     }));
   }
+
+  const notificationsDisabled = !notifications.enabled;
 
   return (
     <div
@@ -150,11 +164,7 @@ export default function NotificationsSettingsPage() {
       </header>
 
       {/* GENERAL */}
-
-      <SettingSection
-        title="Общие"
-        description="Основной контроль уведомлений"
-      >
+      <SettingSection title="Общие" description="Основной контроль уведомлений">
         <div
           className="
             w-full
@@ -181,7 +191,6 @@ export default function NotificationsSettingsPage() {
       </SettingSection>
 
       {/* WORKOUTS */}
-
       <SettingSection
         title="Тренировки"
         description="Напоминания о тренировочном плане"
@@ -203,32 +212,26 @@ export default function NotificationsSettingsPage() {
           <SettingToggle
             label="Напоминание о тренировке"
             description="Напомнить о запланированной тренировке"
-            enabled={
-              notifications.enabled && notifications.workoutReminder
-            }
+            enabled={notifications.enabled && notifications.workoutReminder}
             onChange={() => toggleNotification("workoutReminder")}
             accent={accent}
+            disabled={notificationsDisabled}
           />
 
           <SettingToggle
             label="Пропущенная тренировка"
             description="Напомнить, если тренировка не была завершена"
-            enabled={
-              notifications.enabled && notifications.missedWorkout
-            }
+            enabled={notifications.enabled && notifications.missedWorkout}
             onChange={() => toggleNotification("missedWorkout")}
             accent={accent}
+            disabled={notificationsDisabled}
             last
           />
         </div>
       </SettingSection>
 
       {/* REST */}
-
-      <SettingSection
-        title="Подходы"
-        description="События во время тренировки"
-      >
+      <SettingSection title="Подходы" description="События во время тренировки">
         <div
           className="
             w-full
@@ -249,6 +252,7 @@ export default function NotificationsSettingsPage() {
             enabled={notifications.enabled && notifications.restTimer}
             onChange={() => toggleNotification("restTimer")}
             accent={accent}
+            disabled={notificationsDisabled}
           />
 
           <SettingToggle
@@ -257,13 +261,13 @@ export default function NotificationsSettingsPage() {
             enabled={notifications.enabled && notifications.nextSet}
             onChange={() => toggleNotification("nextSet")}
             accent={accent}
+            disabled={notificationsDisabled}
             last
           />
         </div>
       </SettingSection>
 
       {/* PROGRESS */}
-
       <SettingSection
         title="Прогресс"
         description="Важные изменения твоих результатов"
@@ -288,6 +292,7 @@ export default function NotificationsSettingsPage() {
             enabled={notifications.enabled && notifications.newMax}
             onChange={() => toggleNotification("newMax")}
             accent={accent}
+            disabled={notificationsDisabled}
           />
 
           <SettingToggle
@@ -296,17 +301,14 @@ export default function NotificationsSettingsPage() {
             enabled={notifications.enabled && notifications.goalReached}
             onChange={() => toggleNotification("goalReached")}
             accent={accent}
+            disabled={notificationsDisabled}
             last
           />
         </div>
       </SettingSection>
 
       {/* REPORTS */}
-
-      <SettingSection
-        title="Отчёты"
-        description="Периодическая статистика"
-      >
+      <SettingSection title="Отчёты" description="Периодическая статистика">
         <div
           className="
             w-full
@@ -327,6 +329,7 @@ export default function NotificationsSettingsPage() {
             enabled={notifications.enabled && notifications.weeklyReport}
             onChange={() => toggleNotification("weeklyReport")}
             accent={accent}
+            disabled={notificationsDisabled}
             last
           />
         </div>

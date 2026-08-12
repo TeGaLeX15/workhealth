@@ -5,13 +5,6 @@ type SettingRowProps = {
   icon: ReactNode;
   label: string;
   value: string;
-  accent: string;
-  colors: {
-    border: string;
-    divider: string;
-    foreground: string;
-    muted: string;
-  };
   last?: boolean;
 };
 
@@ -19,8 +12,6 @@ export default function SettingRow({
   icon,
   label,
   value,
-  accent,
-  colors,
   last = false,
 }: SettingRowProps) {
   return (
@@ -30,7 +21,7 @@ export default function SettingRow({
         !last ? "border-b" : "",
       ].join(" ")}
       style={{
-        borderColor: colors.divider,
+        borderColor: "var(--divider)",
       }}
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -45,8 +36,9 @@ export default function SettingRow({
             rounded-xl
           "
           style={{
-            backgroundColor: `color-mix(in srgb, ${accent} 9%, transparent)`,
-            color: accent,
+            backgroundColor:
+              "color-mix(in srgb, var(--accent) 9%, transparent)",
+            color: "var(--accent)",
           }}
         >
           {icon}
@@ -55,7 +47,7 @@ export default function SettingRow({
         <span
           className="truncate text-[14px] font-semibold"
           style={{
-            color: colors.foreground,
+            color: "var(--foreground)",
           }}
         >
           {label}
@@ -65,7 +57,7 @@ export default function SettingRow({
       <span
         className="shrink-0 text-[13px] font-medium"
         style={{
-          color: colors.muted,
+          color: "var(--muted)",
         }}
       >
         {value}

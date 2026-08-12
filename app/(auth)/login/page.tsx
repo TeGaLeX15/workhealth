@@ -26,8 +26,6 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // ─── Validation ───────────────────────────────────────────────────────────
-
   const validationResult = loginSchema.safeParse({
     email,
     password,
@@ -41,8 +39,6 @@ export default function LoginPage() {
   const passwordError = fieldErrors.password?.[0] ?? "";
 
   const isFormValid = validationResult.success;
-
-  // ─── Submit ────────────────────────────────────────────────────────────────
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +79,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/");
+      router.replace("/");
       router.refresh();
     } catch {
       setError("Не удалось подключиться к серверу");
@@ -93,177 +89,168 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 sm:py-14">
-        <div className="w-full max-w-[500px]">
-          <AuthBrand />
+    <>
+      <AuthBrand />
 
-          <AuthCard
-            title="С возвращением"
-            description="Войди в аккаунт, чтобы продолжить тренировку и следить за своим прогрессом."
-            footer={
-              <div className="mt-7 flex items-center justify-center">
-                <span
-                  className="text-[14px]"
-                  style={{
-                    color: "var(--muted)",
-                  }}
-                >
-                  Нет аккаунта?
-                </span>
+      <AuthCard
+        title="С возвращением"
+        description="Войди в аккаунт, чтобы продолжить тренировку и следить за своим прогрессом."
+        footer={
+          <div className="mt-5 flex items-center justify-center">
+            <span
+              className="text-[13px]"
+              style={{
+                color: "var(--muted)",
+              }}
+            >
+              Нет аккаунта?
+            </span>
 
-                <Link
-                  href="/register"
-                  className="
-                    ml-1
-                    flex
-                    min-h-11
-                    items-center
-                    rounded-xl
-                    px-2
-                    text-[14px]
-                    font-semibold
-                    transition
-                    hover:opacity-70
-                  "
-                  style={{
-                    color: "var(--accent)",
-                  }}
-                >
-                  Создать
-                </Link>
-              </div>
-            }
-          >
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-              <AuthInput
-                id="email"
-                label="Email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(value) => {
-                  setEmail(value);
-                  setError("");
-                }}
-                onBlur={() => setEmailTouched(true)}
-                placeholder="you@example.com"
-                disabled={isLoading}
-                required
-                touched={emailTouched}
-                error={emailError}
-              />
+            <Link
+              href="/register"
+              className="
+                ml-1
+                flex
+                min-h-10
+                items-center
+                rounded-xl
+                px-2
+                text-[13px]
+                font-semibold
+                transition
+                hover:opacity-70
+              "
+              style={{
+                color: "var(--accent)",
+              }}
+            >
+              Создать
+            </Link>
+          </div>
+        }
+      >
+        <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+          <AuthInput
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(value) => {
+              setEmail(value);
+              setError("");
+            }}
+            onBlur={() => setEmailTouched(true)}
+            placeholder="you@example.com"
+            disabled={isLoading}
+            required
+            touched={emailTouched}
+            error={emailError}
+          />
 
-              <div>
-                <div className="mb-2.5 flex items-center justify-between gap-3">
-                  <span
-                    className="
-                      block
-                      text-[13px]
-                      font-semibold
-                    "
-                    style={{
-                      color: "var(--foreground)",
-                    }}
-                  >
-                    Пароль
-                  </span>
-
-                  <Link
-                    href="/forgot-password"
-                    className="
-                      -my-2
-                      flex
-                      min-h-11
-                      items-center
-                      rounded-xl
-                      px-2
-                      text-[13px]
-                      font-semibold
-                      transition
-                      hover:opacity-70
-                    "
-                    style={{
-                      color: "var(--accent)",
-                    }}
-                  >
-                    Забыли пароль?
-                  </Link>
-                </div>
-
-                <PasswordInput
-                  id="password"
-                  label=""
-                  value={password}
-                  onChange={(value) => {
-                    setPassword(value);
-                    setError("");
-                  }}
-                  onBlur={() => setPasswordTouched(true)}
-                  placeholder="Введите пароль"
-                  autoComplete="current-password"
-                  disabled={isLoading}
-                  required
-                  touched={passwordTouched}
-                  error={passwordError}
-                />
-              </div>
-
-              {error && (
-                <div
-                  className="
-                    rounded-[17px]
-                    border
-                    px-4
-                    py-3.5
-                    text-[13px]
-                    leading-5
-                  "
-                  style={{
-                    backgroundColor:
-                      "color-mix(in srgb, #ef4444 6%, transparent)",
-                    borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
-                    color: "#ef4444",
-                  }}
-                >
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={!isFormValid || isLoading}
-                className="
-                  mt-2
-                  flex
-                  h-[62px]
-                  w-full
-                  items-center
-                  justify-center
-                  rounded-[18px]
-                  text-[16px]
-                  font-bold
-                  text-white
-                  transition
-                  active:scale-[0.985]
-                  disabled:cursor-not-allowed
-                  disabled:opacity-45
-                  disabled:shadow-none
-                "
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span
+                className="block text-[13px] font-semibold"
                 style={{
-                  backgroundColor: "var(--accent)",
-                  boxShadow:
-                    "0 9px 26px color-mix(in srgb, var(--accent) 18%, transparent)",
+                  color: "var(--foreground)",
                 }}
               >
-                {isLoading ? "Входим..." : "Войти"}
-              </button>
-            </form>
-          </AuthCard>
-        </div>
-      </main>
+                Пароль
+              </span>
+
+              <Link
+                href="/forgot-password"
+                className="
+                  -my-2
+                  flex
+                  min-h-10
+                  items-center
+                  rounded-xl
+                  px-2
+                  text-[12px]
+                  font-semibold
+                  transition
+                  hover:opacity-70
+                "
+                style={{
+                  color: "var(--accent)",
+                }}
+              >
+                Забыли пароль?
+              </Link>
+            </div>
+
+            <PasswordInput
+              id="password"
+              label=""
+              value={password}
+              onChange={(value) => {
+                setPassword(value);
+                setError("");
+              }}
+              onBlur={() => setPasswordTouched(true)}
+              placeholder="Введите пароль"
+              autoComplete="current-password"
+              disabled={isLoading}
+              required
+              touched={passwordTouched}
+              error={passwordError}
+            />
+          </div>
+
+          {error && (
+            <div
+              className="
+                rounded-[15px]
+                border
+                px-3.5
+                py-3
+                text-[12px]
+                leading-5
+              "
+              style={{
+                backgroundColor: "color-mix(in srgb, #ef4444 6%, transparent)",
+                borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
+                color: "#ef4444",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={!isFormValid || isLoading}
+            className="
+              mt-1
+              flex
+              h-[52px]
+              w-full
+              items-center
+              justify-center
+              rounded-[16px]
+              text-[15px]
+              font-bold
+              text-white
+              transition
+              active:scale-[0.985]
+              disabled:cursor-not-allowed
+              disabled:opacity-45
+              disabled:shadow-none
+            "
+            style={{
+              backgroundColor: "var(--accent)",
+              boxShadow:
+                "0 7px 20px color-mix(in srgb, var(--accent) 18%, transparent)",
+            }}
+          >
+            {isLoading ? "Входим..." : "Войти"}
+          </button>
+        </form>
+      </AuthCard>
 
       <AuthFooter />
-    </div>
+    </>
   );
 }

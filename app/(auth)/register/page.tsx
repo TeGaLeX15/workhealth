@@ -28,8 +28,6 @@ export default function RegisterPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // ─── Validation ───────────────────────────────────────────────────────────
-
   const validationResult = registerSchema.safeParse({
     email,
     password,
@@ -45,8 +43,6 @@ export default function RegisterPage() {
   const passwordRepeatError = fieldErrors.passwordRepeat?.[0] ?? "";
 
   const isFormValid = validationResult.success;
-
-  // ─── Submit ────────────────────────────────────────────────────────────────
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -69,8 +65,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const timezone =
-        Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -87,9 +82,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.error ?? "Не удалось создать аккаунт",
-        );
+        setError(data.error ?? "Не удалось создать аккаунт");
         return;
       }
 
@@ -103,136 +96,133 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 sm:py-14">
-        <div className="w-full max-w-[500px]">
-          <AuthBrand />
+    <>
+      <AuthBrand />
 
-          <AuthCard
-            title="Создать аккаунт"
-            description="Создай аккаунт, чтобы сохранять тренировки и следить за своим прогрессом."
-            footer={
-              <div className="mt-7 flex items-center justify-center">
-                <span
-                  className="text-[14px]"
-                  style={{
-                    color: "var(--muted)",
-                  }}
-                >
-                  Уже есть аккаунт?
-                </span>
+      <AuthCard
+        title="Создать аккаунт"
+        description="Создай аккаунт, чтобы сохранять тренировки и следить за своим прогрессом."
+        footer={
+          <div className="mt-5 flex items-center justify-center">
+            <span
+              className="text-[13px]"
+              style={{
+                color: "var(--muted)",
+              }}
+            >
+              Уже есть аккаунт?
+            </span>
 
-                <Link
-                  href="/login"
-                  className="
+            <Link
+              href="/login"
+              className="
                     ml-1
                     flex
-                    min-h-11
+                    min-h-10
                     items-center
                     rounded-xl
                     px-2
-                    text-[14px]
+                    text-[13px]
                     font-semibold
                     transition
                     hover:opacity-70
                   "
-                  style={{
-                    color: "var(--accent)",
-                  }}
-                >
-                  Войти
-                </Link>
-              </div>
-            }
-          >
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-              <AuthInput
-                id="email"
-                label="Email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(value) => {
-                  setEmail(value);
-                  setError("");
-                }}
-                onBlur={() => setEmailTouched(true)}
-                placeholder="you@example.com"
-                disabled={isLoading}
-                required
-                touched={emailTouched}
-                error={emailError}
-              />
+              style={{
+                color: "var(--accent)",
+              }}
+            >
+              Войти
+            </Link>
+          </div>
+        }
+      >
+        <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+          <AuthInput
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(value) => {
+              setEmail(value);
+              setError("");
+            }}
+            onBlur={() => setEmailTouched(true)}
+            placeholder="you@example.com"
+            disabled={isLoading}
+            required
+            touched={emailTouched}
+            error={emailError}
+          />
 
-              <PasswordInput
-                id="password"
-                label="Пароль"
-                value={password}
-                onChange={(value) => {
-                  setPassword(value);
-                  setError("");
-                }}
-                onBlur={() => setPasswordTouched(true)}
-                placeholder="Минимум 8 символов"
-                autoComplete="new-password"
-                disabled={isLoading}
-                required
-                minLength={8}
-                touched={passwordTouched}
-                error={passwordError}
-              />
+          <PasswordInput
+            id="password"
+            label="Пароль"
+            value={password}
+            onChange={(value) => {
+              setPassword(value);
+              setError("");
+            }}
+            onBlur={() => setPasswordTouched(true)}
+            placeholder="Минимум 8 символов"
+            autoComplete="new-password"
+            disabled={isLoading}
+            required
+            minLength={8}
+            touched={passwordTouched}
+            error={passwordError}
+          />
 
-              <PasswordInput
-                id="passwordRepeat"
-                label="Повторите пароль"
-                value={passwordRepeat}
-                onChange={(value) => {
-                  setPasswordRepeat(value);
-                  setError("");
-                }}
-                onBlur={() => setPasswordRepeatTouched(true)}
-                placeholder="Введите пароль ещё раз"
-                autoComplete="new-password"
-                disabled={isLoading}
-                required
-                minLength={8}
-                touched={passwordRepeatTouched}
-                error={passwordRepeatError}
-              />
+          <PasswordInput
+            id="passwordRepeat"
+            label="Повторите пароль"
+            value={passwordRepeat}
+            onChange={(value) => {
+              setPasswordRepeat(value);
+              setError("");
+            }}
+            onBlur={() => setPasswordRepeatTouched(true)}
+            placeholder="Введите пароль ещё раз"
+            autoComplete="new-password"
+            disabled={isLoading}
+            required
+            minLength={8}
+            touched={passwordRepeatTouched}
+            error={passwordRepeatError}
+          />
 
-              {error && (
-                <div
-                  className="
-                    rounded-[17px]
+          {error && (
+            <div
+              className="
+                    rounded-[16px]
                     border
                     px-4
-                    py-3.5
+                    py-3
                     text-[13px]
                     leading-5
                   "
-                  style={{
-                    backgroundColor:
-                      "color-mix(in srgb, #ef4444 6%, transparent)",
-                    borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
-                    color: "#ef4444",
-                  }}
-                >
-                  {error}
-                </div>
-              )}
+              style={{
+                backgroundColor: "color-mix(in srgb, #ef4444 6%, transparent)",
+                borderColor: "color-mix(in srgb, #ef4444 18%, transparent)",
+                color: "#ef4444",
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-              <button
-                type="submit"
-                disabled={!isFormValid || isLoading}
-                className="
-                  mt-2
+          <button
+            type="submit"
+            disabled={!isFormValid || isLoading}
+            className="
+                  mt-1
                   flex
-                  h-[62px]
+                  h-[52px]
                   w-full
                   items-center
                   justify-center
-                  rounded-[18px]
-                  text-[16px]
+                  rounded-[16px]
+                  text-[15px]
                   font-bold
                   text-white
                   transition
@@ -241,20 +231,17 @@ export default function RegisterPage() {
                   disabled:opacity-45
                   disabled:shadow-none
                 "
-                style={{
-                  backgroundColor: "var(--accent)",
-                  boxShadow:
-                    "0 9px 26px color-mix(in srgb, var(--accent) 18%, transparent)",
-                }}
-              >
-                {isLoading ? "Создаём аккаунт..." : "Создать аккаунт"}
-              </button>
-            </form>
-          </AuthCard>
-        </div>
-      </main>
-
+            style={{
+              backgroundColor: "var(--accent)",
+              boxShadow:
+                "0 7px 20px color-mix(in srgb, var(--accent) 18%, transparent)",
+            }}
+          >
+            {isLoading ? "Создаём аккаунт..." : "Создать аккаунт"}
+          </button>
+        </form>
+      </AuthCard>
       <AuthFooter />
-    </div>
+    </>
   );
 }

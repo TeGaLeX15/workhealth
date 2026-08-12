@@ -6,6 +6,7 @@ type SettingToggleProps = {
   onChange: () => void;
   accent: string;
   last?: boolean;
+  disabled?: boolean;
 };
 
 export default function SettingToggle({
@@ -15,6 +16,7 @@ export default function SettingToggle({
   onChange,
   accent,
   last = false,
+  disabled = false,
 }: SettingToggleProps) {
   return (
     <div
@@ -49,17 +51,21 @@ export default function SettingToggle({
       <button
         type="button"
         onClick={onChange}
+        disabled={disabled}
         role="switch"
         aria-checked={enabled}
+        aria-label={label}
         className="
           relative
           h-7
           w-[46px]
           shrink-0
           rounded-full
-          transition-all
+          transition-[background-color,box-shadow]
           duration-200
           active:scale-95
+          disabled:cursor-not-allowed
+          disabled:opacity-50
         "
         style={{
           backgroundColor: enabled ? accent : "var(--surface)",
@@ -69,8 +75,10 @@ export default function SettingToggle({
         }}
       >
         <span
+          aria-hidden="true"
           className="
             absolute
+            left-1
             top-1
             h-5
             w-5
@@ -81,7 +89,7 @@ export default function SettingToggle({
             duration-200
           "
           style={{
-            left: enabled ? 22 : 4,
+            transform: enabled ? "translateX(18px)" : "translateX(0)",
           }}
         />
       </button>

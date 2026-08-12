@@ -1,40 +1,19 @@
 // app/(app)/page.tsx
-import { redirect } from "next/navigation";
-import { getSessionUser } from "@/app/server/auth/session";
+import PageHeader from "@/app/components/app/PageHeader";
 
-export default async function HomePage() {
-  const user = await getSessionUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
+export default function HomePage() {
   return (
     <>
-      {/* Header */}
-      <header>
-        <p
-          className="text-xs font-semibold uppercase tracking-[0.12em]"
-          style={{
-            color: "var(--accent)",
-          }}
-        >
-          Добро пожаловать
-        </p>
+      {/* HEADER */}
+      <PageHeader
+        eyebrow="Добро пожаловать"
+        title="Главная"
+        description="Твой прогресс, тренировки и основные показатели"
+      />
 
-        <h1
-          className="mt-2 text-[30px] font-bold leading-tight tracking-[-0.045em] sm:text-[34px]"
-          style={{
-            color: "var(--foreground)",
-          }}
-        >
-          Главная
-        </h1>
-      </header>
-
-      {/* Today */}
+      {/* EMPTY BLOCKS */}
       <section
-        className="mt-7 rounded-[26px] border p-5"
+        className="rounded-[26px] border p-5"
         style={{
           backgroundColor: "var(--card)",
           borderColor: "var(--border)",
@@ -42,35 +21,34 @@ export default async function HomePage() {
       >
         <p
           className="text-xs font-semibold uppercase tracking-[0.1em]"
-          style={{
-            color: "var(--muted)",
-          }}
+          style={{ color: "var(--muted)" }}
         >
           Сегодня
         </p>
 
         <h2
-          className="mt-2 text-[22px] font-bold leading-tight tracking-[-0.035em]"
-          style={{
-            color: "var(--foreground)",
-          }}
+          className="
+            mt-2
+            text-[22px]
+            font-bold
+            leading-tight
+            tracking-[-0.035em]
+          "
+          style={{ color: "var(--foreground)" }}
         >
           Всё готово к тренировке
         </h2>
 
         <p
           className="mt-2 max-w-[310px] text-sm leading-6"
-          style={{
-            color: "var(--muted)",
-          }}
+          style={{ color: "var(--muted)" }}
         >
-          Здесь появится твоя сегодняшняя тренировка и основные показатели.
+          Здесь появится твоя сегодняшняя тренировка и основные показатели
         </p>
       </section>
 
-      {/* Empty state */}
       <section
-        className="mt-10 rounded-[26px] border px-6 py-10 text-center"
+        className="mt-3 rounded-[26px] border px-6 py-10 text-center"
         style={{
           backgroundColor: "var(--card)",
           borderColor: "var(--border)",
@@ -89,21 +67,17 @@ export default async function HomePage() {
 
         <h2
           className="mt-5 text-lg font-bold tracking-[-0.025em]"
-          style={{
-            color: "var(--foreground)",
-          }}
+          style={{ color: "var(--foreground)" }}
         >
           Здесь пока пусто
         </h2>
 
         <p
           className="mx-auto mt-2 max-w-[290px] text-sm leading-6"
-          style={{
-            color: "var(--muted)",
-          }}
+          style={{ color: "var(--muted)" }}
         >
           Начни первую тренировку, и здесь постепенно появятся твой прогресс,
-          история и результаты.
+          история и результаты
         </p>
       </section>
     </>

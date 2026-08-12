@@ -3,10 +3,11 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
 
 type SettingsNavigationRowProps = {
   href: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   description: string;
   disabled?: boolean;
@@ -62,6 +63,7 @@ export default function SettingsNavigationRow({
       <ChevronRight
         size={18}
         strokeWidth={1.8}
+        aria-hidden="true"
         className="shrink-0"
         style={{
           color: "var(--subtle)",
@@ -73,6 +75,7 @@ export default function SettingsNavigationRow({
   if (disabled) {
     return (
       <div
+        aria-disabled="true"
         className="
           flex
           w-full
@@ -88,21 +91,21 @@ export default function SettingsNavigationRow({
   }
 
   return (
-<Link
-  href={href}
-  className="
-    flex
-    w-full
-    items-center
-    gap-4
-    py-4
-    text-left
-    transition-opacity
-    duration-200
-    active:opacity-60
-  "
->
-  {content}
-</Link>
+    <Link
+      href={href}
+      className="
+        flex
+        w-full
+        items-center
+        gap-4
+        py-4
+        text-left
+        transition-opacity
+        duration-200
+        active:opacity-60
+      "
+    >
+      {content}
+    </Link>
   );
 }

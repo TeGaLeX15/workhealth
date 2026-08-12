@@ -1,7 +1,7 @@
 // app/components/settings/AppearanceSettings.tsx
 "use client";
 
-import { Sun, Moon, Monitor, Check, Dumbbell } from "lucide-react";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme, ACCENTS } from "@/app/providers/theme-provider";
 import SettingSection from "@/app/components/settings/SettingSection";
 
@@ -10,7 +10,6 @@ export default function AppearanceSettings() {
 
   const accentConfig = ACCENTS[accentKey] ?? ACCENTS.green;
   const accent = accentConfig.primary;
-  const accentSoft = dark ? accentConfig.softDark : accentConfig.softLight;
 
   const colors = {
     card: dark ? "#18181b" : "#ffffff",
@@ -108,16 +107,25 @@ export default function AppearanceSettings() {
 
         <div
           className="border-t px-5 py-5"
-          style={{ borderColor: colors.divider }}
+          style={{
+            borderColor: colors.divider,
+          }}
         >
           <p
             className="text-[15px] font-bold tracking-[-0.02em]"
-            style={{ color: colors.foreground }}
+            style={{
+              color: colors.foreground,
+            }}
           >
             Акцентный цвет
           </p>
 
-          <p className="mt-1 text-[13px]" style={{ color: colors.muted }}>
+          <p
+            className="mt-1 text-[13px]"
+            style={{
+              color: colors.muted,
+            }}
+          >
             Основной цвет интерфейса
           </p>
 
@@ -173,125 +181,19 @@ export default function AppearanceSettings() {
           <div className="mt-4 flex items-center gap-2">
             <span
               className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: accent }}
+              style={{
+                backgroundColor: accent,
+              }}
             />
 
-            <p className="text-[13px] font-semibold" style={{ color: accent }}>
-              {accentConfig.label}
-            </p>
-          </div>
-
-          {/* PREVIEW */}
-
-          <div className="mt-6">
             <p
-              className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em]"
-              style={{ color: colors.muted }}
-            >
-              Предпросмотр
-            </p>
-
-            <div
-              className="overflow-hidden rounded-[20px] border p-4"
+              className="text-[13px] font-semibold"
               style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
+                color: accent,
               }}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
-                      style={{
-                        backgroundColor: accentSoft,
-                        color: accent,
-                      }}
-                    >
-                      <Dumbbell size={17} strokeWidth={2.2} />
-                    </div>
-
-                    <div className="min-w-0">
-                      <p
-                        className="truncate text-[14px] font-bold"
-                        style={{ color: colors.foreground }}
-                      >
-                        Сегодняшняя тренировка
-                      </p>
-
-                      <p
-                        className="mt-0.5 text-[11px]"
-                        style={{ color: colors.muted }}
-                      >
-                        3 упражнения · 12 подходов
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <span
-                  className="shrink-0 rounded-full px-2 py-1 text-[10px] font-bold"
-                  style={{
-                    backgroundColor: accentSoft,
-                    color: accent,
-                  }}
-                >
-                  75%
-                </span>
-              </div>
-
-              <div className="mt-4">
-                <div
-                  className="h-2 overflow-hidden rounded-full"
-                  style={{
-                    backgroundColor: dark ? "#3f3f46" : "#e4e4e7",
-                  }}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{
-                      width: "75%",
-                      backgroundColor: accent,
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[12px]" style={{ color: colors.muted }}>
-                    Следующее
-                  </p>
-
-                  <p
-                    className="mt-0.5 text-[13px] font-bold"
-                    style={{ color: colors.foreground }}
-                  >
-                    Подтягивания
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="
-                    shrink-0
-                    rounded-[13px]
-                    px-3.5
-                    py-2
-                    text-[12px]
-                    font-bold
-                    transition-transform
-                    active:scale-95
-                  "
-                  style={{
-                    backgroundColor: accent,
-                    color: accentConfig.contrast,
-                  }}
-                >
-                  Продолжить
-                </button>
-              </div>
-            </div>
+              {accentConfig.label}
+            </p>
           </div>
         </div>
       </div>
