@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import WorkoutProgress from "./WorkoutProgress";
 import WorkoutSetScreen from "./WorkoutSetScreen";
 import WorkoutRestScreen from "./WorkoutRestScreen";
-import WorkoutFinishedScreen from "./WorkoutFinishedScreen";
 
 type WorkoutSet = {
   id: string;
@@ -46,8 +45,6 @@ export default function WorkoutSession({
   const [error, setError] = useState("");
 
   const currentSet = completedSets[currentIndex];
-
-  const isFinished = currentIndex >= completedSets.length;
 
   // Rest timer effect
   useEffect(() => {
@@ -123,7 +120,6 @@ export default function WorkoutSession({
       );
 
       if (data.completed) {
-        setCurrentIndex(completedSets.length);
         router.refresh();
         return;
       }
@@ -152,23 +148,18 @@ export default function WorkoutSession({
     setRestTotalSeconds((seconds) => seconds + 30);
   }
 
-  // Finished screen
-  if (isFinished) {
-    return <WorkoutFinishedScreen onDone={() => router.refresh()} />;
-  }
-
   // Resting screen
   if (isResting) {
     return (
-    <WorkoutRestScreen
-      sets={completedSets}
-      currentIndex={currentIndex}
-      currentSet={currentSet}
-      restSeconds={restSeconds}
-      restTotalSeconds={restTotalSeconds}
-      onSkip={skipRest}
-      onIncrease={increaseRest}
-    />
+      <WorkoutRestScreen
+        sets={completedSets}
+        currentIndex={currentIndex}
+        currentSet={currentSet}
+        restSeconds={restSeconds}
+        restTotalSeconds={restTotalSeconds}
+        onSkip={skipRest}
+        onIncrease={increaseRest}
+      />
     );
   }
 

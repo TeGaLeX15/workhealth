@@ -9,9 +9,11 @@ type CancelledWorkoutProps = {
   };
 };
 
+const cancelledColor = "#ef4444";
+
 export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
   return (
-    <section className="mt-6">
+    <section className="mt-6" aria-labelledby="cancelled-workout-title">
       <div
         className="
           overflow-hidden
@@ -45,13 +47,14 @@ export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
             }}
           >
             <span
+              aria-hidden="true"
               className="
                 text-[28px]
                 font-semibold
                 leading-none
               "
               style={{
-                color: "#ef4444",
+                color: cancelledColor,
               }}
             >
               ×
@@ -67,13 +70,14 @@ export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
               tracking-[0.14em]
             "
             style={{
-              color: "#ef4444",
+              color: cancelledColor,
             }}
           >
             Недоступно
           </p>
 
           <h2
+            id="cancelled-workout-title"
             className="
               mt-1.5
               text-[26px]
@@ -103,7 +107,7 @@ export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
           </p>
         </div>
 
-        {/* INFO */}
+        {/* WORKOUT INFO */}
         <div
           className="
             mt-7
@@ -119,10 +123,7 @@ export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
         >
           <div className="flex items-center justify-between gap-4">
             <span
-              className="
-                text-[12px]
-                font-medium
-              "
+              className="text-[12px] font-medium"
               style={{
                 color: "var(--muted)",
               }}
@@ -132,7 +133,9 @@ export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
 
             <span
               className="
+                min-w-0
                 truncate
+                text-right
                 text-[13px]
                 font-semibold
               "

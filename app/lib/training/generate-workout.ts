@@ -1,13 +1,8 @@
+// app/lib/training/generate-workout.ts
 import { exerciseProfiles } from "./exercise-profiles";
-import type {
-  ExerciseSlug,
-  Workout,
-  WorkoutSet,
-} from "./types";
+import type { ExerciseSlug, Workout, WorkoutSet } from "./types";
 
-export function isSupportedExercise(
-  slug: string,
-): slug is ExerciseSlug {
+export function isSupportedExercise(slug: string): slug is ExerciseSlug {
   return slug in exerciseProfiles;
 }
 

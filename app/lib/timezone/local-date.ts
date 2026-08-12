@@ -1,15 +1,13 @@
 // app/lib/timezone/local-date.ts
+
 /**
- * Возвращает текущую календарную дату
- * в timezone пользователя.
+ * Returns the current calendar date
+ * in the user's timezone.
  *
- * Используется для определения:
- * "Какой сегодня день у пользователя?"
+ * Used to determine:
+ * "What day is it for the user?"
  */
-export function getLocalDateString(
-  date: Date,
-  timeZone: string,
-): string {
+export function getLocalDateString(date: Date, timeZone: string): string {
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -21,39 +19,30 @@ export function getLocalDateString(
 }
 
 /**
- * Преобразует календарную дату YYYY-MM-DD
- * в UTC-midnight Date.
+ * Converts a YYYY-MM-DD calendar date
+ * to a UTC-midnight Date.
  *
- * Используется для хранения @db.Date
- * и сравнений календарных дат.
+ * Used for storing @db.Date values
+ * and comparing calendar dates.
  */
-export function dateStringToUtcDate(
-  dateString: string,
-): Date {
+export function dateStringToUtcDate(dateString: string): Date {
   return new Date(`${dateString}T00:00:00.000Z`);
 }
 
 /**
- * Получает YYYY-MM-DD непосредственно
- * из Date, который представляет колонку
- * Prisma @db.Date.
+ * Returns a YYYY-MM-DD string directly
+ * from a Date representing a Prisma @db.Date column.
  *
- * ВАЖНО:
- * Здесь timezone пользователя НЕ используется.
+ * IMPORTANT:
+ * The user's timezone is NOT used here.
  *
- * @db.Date — это календарная дата:
- * 2026-08-10 означает именно 10 августа.
+ * @db.Date represents a calendar date:
+ * 2026-08-10 means exactly August 10.
  */
-export function getDateColumnString(
-  date: Date,
-): string {
+export function getDateColumnString(date: Date): string {
   const year = date.getUTCFullYear();
-  const month = String(
-    date.getUTCMonth() + 1,
-  ).padStart(2, "0");
-  const day = String(
-    date.getUTCDate(),
-  ).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }

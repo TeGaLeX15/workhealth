@@ -9,7 +9,7 @@ import {
 
 import MaxRepsForm from "@/app/components/MaxRepsForm";
 import TrainingWeekCard from "@/app/components/TrainingWeekCard";
-import ActiveWorkoutCard from "@/app/components/ActiveWorkoutCard";
+import ActiveWorkoutCard from "@/app/components/workout/ActiveWorkoutCard";
 
 type ExercisePageProps = {
   params: Promise<{

@@ -1,3 +1,4 @@
+// app/lib/training/exercise-profiles.ts
 import type { ExerciseProfile, ExerciseSlug } from "./types";
 
 export const exerciseProfiles: Record<ExerciseSlug, ExerciseProfile> = {

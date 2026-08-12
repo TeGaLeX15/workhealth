@@ -1,3 +1,4 @@
+// app/lib/training/schedule-training-week.ts
 const WORKOUTS_PER_WEEK = 3;
 const WORKOUT_INTERVAL_DAYS = 2;
 
@@ -7,10 +8,7 @@ type DateParts = {
   day: number;
 };
 
-function getDatePartsInTimeZone(
-  date: Date,
-  timeZone: string,
-): DateParts {
+function getDatePartsInTimeZone(date: Date, timeZone: string): DateParts {
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -20,26 +18,18 @@ function getDatePartsInTimeZone(
 
   const parts = formatter.formatToParts(date);
 
-  const year = Number(
-    parts.find((part) => part.type === "year")?.value,
-  );
+  const year = Number(parts.find((part) => part.type === "year")?.value);
 
-  const month = Number(
-    parts.find((part) => part.type === "month")?.value,
-  );
+  const month = Number(parts.find((part) => part.type === "month")?.value);
 
-  const day = Number(
-    parts.find((part) => part.type === "day")?.value,
-  );
+  const day = Number(parts.find((part) => part.type === "day")?.value);
 
   if (
     !Number.isInteger(year) ||
     !Number.isInteger(month) ||
     !Number.isInteger(day)
   ) {
-    throw new Error(
-      `Не удалось определить дату в timezone "${timeZone}"`,
-    );
+    throw new Error(`Failed to determine the date in timezone "${timeZone}"`);
   }
 
   return {
@@ -50,21 +40,13 @@ function getDatePartsInTimeZone(
 }
 
 function dateFromParts(parts: DateParts): Date {
-  return new Date(
-    Date.UTC(
-      parts.year,
-      parts.month - 1,
-      parts.day,
-    ),
-  );
+  return new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
 }
 
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
 
-  result.setUTCDate(
-    result.getUTCDate() + days,
-  );
+  result.setUTCDate(result.getUTCDate() + days);
 
   return result;
 }
@@ -73,40 +55,32 @@ export function getTrainingWeekSchedule(
   now = new Date(),
   timeZone = "Asia/Almaty",
 ) {
-  const localDateParts = getDatePartsInTimeZone(
-    now,
-    timeZone,
-  );
+  const localDateParts = getDatePartsInTimeZone(now, timeZone);
 
   const today = dateFromParts(localDateParts);
 
-  /*
-   * Новая программа всегда начинается сегодня.
+  /**
+   * A new training program always starts today.
    *
-   * Например, если пользователь создаёт программу
-   * во вторник:
+   * For example, if the user creates a program
+   * on Tuesday:
    *
-   * Вт — тренировка #1
-   * Ср — отдых
-   * Чт — тренировка #2
-   * Пт — отдых
-   * Сб — тренировка #3
-   * Вс — отдых
+   * Tue — workout #1
+   * Wed — rest
+   * Thu — workout #2
+   * Fri — rest
+   * Sat — workout #3
+   * Sun — rest
    *
-   * Неделя программы при этом остаётся
-   * полноценными 7 календарными днями:
-   * Вт → Пн.
+   * The program week still spans
+   * a full 7 calendar days:
+   * Tue → Mon.
    */
 
   const startDate = today;
 
-  const scheduledDates = Array.from(
-    { length: WORKOUTS_PER_WEEK },
-    (_, index) =>
-      addDays(
-        startDate,
-        index * WORKOUT_INTERVAL_DAYS,
-      ),
+  const scheduledDates = Array.from({ length: WORKOUTS_PER_WEEK }, (_, index) =>
+    addDays(startDate, index * WORKOUT_INTERVAL_DAYS),
   );
 
   const endDate = addDays(startDate, 6);
