@@ -2,6 +2,7 @@
 "use client";
 
 import { Plus, SkipForward } from "lucide-react";
+import RestTimer from "@/app/components/workout/RestTimer";
 
 type WorkoutSet = {
   id: string;
@@ -40,8 +41,10 @@ export default function WorkoutRestScreen({
 
   return (
     <div className="w-full">
-      {/* TIMER */}
+      {/* SOUND PLAYER */}
+      <RestTimer restSeconds={restSeconds} />
 
+      {/* TIMER */}
       <div className="flex justify-center pt-10 pb-8 sm:pt-12 sm:pb-10">
         <div
           className="
@@ -69,7 +72,6 @@ export default function WorkoutRestScreen({
           }}
         >
           {/* INNER CIRCLE */}
-
           <div
             aria-hidden="true"
             className="
@@ -83,7 +85,6 @@ export default function WorkoutRestScreen({
           />
 
           {/* TIMER CONTENT */}
-
           <div className="relative text-center">
             <div
               className="
@@ -117,7 +118,6 @@ export default function WorkoutRestScreen({
       </div>
 
       {/* NEXT SET */}
-
       <div
         className="
           rounded-[21px]
@@ -184,7 +184,6 @@ export default function WorkoutRestScreen({
       </div>
 
       {/* ACTIONS */}
-
       <div className="mt-3 flex gap-2.5">
         <button
           type="button"
