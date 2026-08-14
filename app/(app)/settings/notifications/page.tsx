@@ -1,7 +1,7 @@
 // app/(app)/settings/notifications/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ArrowLeft, Bell } from "lucide-react";
 import Link from "next/link";
 
@@ -10,16 +10,10 @@ import { useTheme } from "@/app/providers/theme-provider";
 import SettingSection from "@/app/components/settings/SettingSection";
 import SettingToggle from "@/app/components/settings/SettingToggle";
 
-type NotificationSettings = {
-  enabled: boolean;
-  workoutReminder: boolean;
-  missedWorkout: boolean;
-  restTimer: boolean;
-  nextSet: boolean;
-  newMax: boolean;
-  goalReached: boolean;
-  weeklyReport: boolean;
-};
+import {
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+} from "@/app/lib/notifications/useNotificationSettings";
 
 export default function NotificationsSettingsPage() {
   useEffect(() => {
@@ -28,23 +22,11 @@ export default function NotificationsSettingsPage() {
 
   const { accent } = useTheme();
 
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    enabled: true,
+  const notifications = useNotificationSettings();
+  const updateNotifications = useUpdateNotificationSettings();
 
-    workoutReminder: true,
-    missedWorkout: true,
-
-    restTimer: true,
-    nextSet: false,
-
-    newMax: true,
-    goalReached: true,
-
-    weeklyReport: true,
-  });
-
-  function toggleNotification(key: keyof NotificationSettings) {
-    setNotifications((current) => ({
+  function toggleNotification(key: keyof typeof notifications) {
+    updateNotifications((current) => ({
       ...current,
       [key]: !current[key],
     }));

@@ -1,13 +1,15 @@
 // app/components/workout/WorkoutSession.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import WorkoutProgress from "./WorkoutProgress";
 import WorkoutSetScreen from "./WorkoutSetScreen";
 import WorkoutRestScreen from "./WorkoutRestScreen";
 import RestTimer from "./RestTimer";
+
+import { useNotificationSettings } from "@/app/lib/notifications/useNotificationSettings";
 
 type WorkoutSet = {
   id: string;
@@ -29,6 +31,7 @@ export default function WorkoutSession({
   sets,
 }: WorkoutSessionProps) {
   const router = useRouter();
+  const notificationSettings = useNotificationSettings();
 
   const [completedSets, setCompletedSets] = useState<WorkoutSet[]>(sets);
 
@@ -85,17 +88,6 @@ export default function WorkoutSession({
       window.clearInterval(timer);
     };
   }, [isResting, restEndTime]);
-
-  /*
-   * Called by RestTimer after the finishing sound
-   * has successfully been started.
-   */
-  const handleRestComplete = useCallback(() => {
-    setIsResting(false);
-    setRestEndTime(null);
-    setRestSeconds(REST_SECONDS);
-    setRestTotalSeconds(REST_SECONDS);
-  }, []);
 
   /*
    * Protect against an invalid/completed state.
@@ -223,7 +215,10 @@ export default function WorkoutSession({
       <RestTimer
         restSeconds={restSeconds}
         isResting={isResting}
-        onComplete={handleRestComplete}
+        enabled={
+          notificationSettings.enabled &&
+          notificationSettings.restTimer
+        }
       />
 
       {/* PROGRESS */}
