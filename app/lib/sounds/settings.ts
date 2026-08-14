@@ -1,9 +1,11 @@
-// app/lib/sounds/settings.ts
 export type SoundSettings = {
   enabled: boolean;
 
   restCountdown: boolean;
   restComplete: boolean;
+
+  workoutComplete: boolean;
+  newMax: boolean;
 };
 
 export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
@@ -11,6 +13,9 @@ export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
 
   restCountdown: true,
   restComplete: true,
+
+  workoutComplete: true,
+  newMax: true,
 };
 
 const STORAGE_KEY = "bodyos_sound_settings";
@@ -31,7 +36,9 @@ function isSoundSettings(value: unknown): value is SoundSettings {
   return (
     typeof settings.enabled === "boolean" &&
     typeof settings.restCountdown === "boolean" &&
-    typeof settings.restComplete === "boolean"
+    typeof settings.restComplete === "boolean" &&
+    typeof settings.workoutComplete === "boolean" &&
+    typeof settings.newMax === "boolean"
   );
 }
 

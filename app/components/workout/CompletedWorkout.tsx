@@ -1,5 +1,10 @@
 // app/components/workout/CompletedWorkout.tsx
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
+
+import { useSoundSettings } from "@/app/lib/sounds/useSoundSettings";
 
 type CompletedWorkoutProps = {
   workout: {
@@ -13,11 +18,55 @@ type CompletedWorkoutProps = {
   };
 };
 
+const WORKOUT_COMPLETE_SOUND = "/sounds/workout-complete.mp3";
+
+const WORKOUT_COMPLETE_EVENT = "bodyos:workout-complete";
+
 export default function CompletedWorkout({ workout }: CompletedWorkoutProps) {
+  const soundSettings = useSoundSettings();
+
+  const playedRef = useRef(false);
+
   const totalReps = workout.sets.reduce(
     (total, set) => total + (set.actualReps ?? set.targetReps),
     0,
   );
+
+  useEffect(() => {
+    if (
+      playedRef.current ||
+      !soundSettings.enabled ||
+      !soundSettings.workoutComplete
+    ) {
+      return;
+    }
+
+    const workoutId = window.location.pathname.split("/").pop();
+
+    if (!workoutId) {
+      return;
+    }
+
+    const storageKey = `${WORKOUT_COMPLETE_EVENT}:${workoutId}`;
+
+    const shouldPlay = sessionStorage.getItem(storageKey);
+
+    if (shouldPlay !== "true") {
+      return;
+    }
+
+    sessionStorage.removeItem(storageKey);
+
+    playedRef.current = true;
+
+    const audio = new Audio(WORKOUT_COMPLETE_SOUND);
+
+    audio.volume = 1;
+
+    void audio.play().catch(() => {
+      // Browser may block playback.
+    });
+  }, [soundSettings.enabled, soundSettings.workoutComplete]);
 
   return (
     <section className="mt-6">

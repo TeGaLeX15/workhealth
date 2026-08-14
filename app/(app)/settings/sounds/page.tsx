@@ -15,7 +15,7 @@ import {
   useUpdateSoundSettings,
 } from "@/app/lib/sounds/useSoundSettings";
 
-type SoundToggleKey = "restCountdown" | "restComplete";
+type SoundToggleKey = "restCountdown" | "restComplete" | "workoutComplete";
 
 export default function SoundsSettingsPage() {
   useEffect(() => {
@@ -212,6 +212,15 @@ export default function SoundsSettingsPage() {
             description="Звуковой сигнал после завершения таймера"
             enabled={sounds.enabled && sounds.restComplete}
             onChange={() => toggleSound("restComplete")}
+            accent={accent}
+            disabled={soundsDisabled}
+          />
+
+          <SettingToggle
+            label="Завершение тренировки"
+            description="Финальный звук после последнего подхода"
+            enabled={sounds.enabled && sounds.workoutComplete}
+            onChange={() => toggleSound("workoutComplete")}
             accent={accent}
             disabled={soundsDisabled}
             last

@@ -26,6 +26,8 @@ type WorkoutSessionProps = {
 
 const REST_SECONDS = 60;
 
+const WORKOUT_COMPLETE_EVENT = "bodyos:workout-complete";
+
 export default function WorkoutSession({
   workoutId,
   sets,
@@ -140,6 +142,7 @@ export default function WorkoutSession({
 
       if (!response.ok) {
         setError(data.error ?? "Не удалось сохранить подход");
+
         return;
       }
 
@@ -157,9 +160,18 @@ export default function WorkoutSession({
 
       /*
        * Workout finished.
+       *
+       * Tell CompletedWorkout that this was
+       * an actual completion event.
        */
       if (data.completed) {
+        sessionStorage.setItem(
+          `${WORKOUT_COMPLETE_EVENT}:${workoutId}`,
+          "true",
+        );
+
         router.refresh();
+
         return;
       }
 
@@ -208,6 +220,7 @@ export default function WorkoutSession({
     });
 
     setRestSeconds((seconds) => seconds + 30);
+
     setRestTotalSeconds((seconds) => seconds + 30);
   }
 
