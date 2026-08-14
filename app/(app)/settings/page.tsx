@@ -21,7 +21,7 @@ export default function SettingsPage() {
       {/* THEME */}
       <AppearanceSettings />
 
-      {/* NOTIFICATIONS */}
+      {/* NOTIFICATIONS & SOUNDS */}
       <SettingSection
         title="Уведомления и звуки"
         description="Напоминания, тренировки и события"
@@ -45,7 +45,6 @@ export default function SettingsPage() {
           icon={<Volume2 size={19} />}
           label="Звуки"
           description="Настрой звуки таймера и тренировок"
-          disabled
         />
       </SettingSection>
 

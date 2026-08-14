@@ -1,8 +1,8 @@
-// app/(app)/settings/notifications/page.tsx
+// app/(app)/settings/sounds/page.tsx
 "use client";
 
 import { useEffect } from "react";
-import { ArrowLeft, Bell } from "lucide-react";
+import { ArrowLeft, Volume2 } from "lucide-react";
 import Link from "next/link";
 
 import { useTheme } from "@/app/providers/theme-provider";
@@ -11,26 +11,30 @@ import SettingSection from "@/app/components/settings/SettingSection";
 import SettingToggle from "@/app/components/settings/SettingToggle";
 
 import {
-  useNotificationSettings,
-  useUpdateNotificationSettings,
-} from "@/app/lib/notifications/useNotificationSettings";
+  useSoundSettings,
+  useUpdateSoundSettings,
+} from "@/app/lib/sounds/useSoundSettings";
 
-export default function NotificationsSettingsPage() {
+type SoundToggleKey = "restCountdown" | "restComplete";
+
+export default function SoundsSettingsPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const { accent } = useTheme();
 
-  const notifications = useNotificationSettings();
-  const updateNotifications = useUpdateNotificationSettings();
+  const sounds = useSoundSettings();
+  const updateSounds = useUpdateSoundSettings();
 
-  function toggleNotifications() {
-    updateNotifications((current) => ({
+  function toggleSound(key: SoundToggleKey) {
+    updateSounds((current) => ({
       ...current,
-      enabled: !current.enabled,
+      [key]: !current[key],
     }));
   }
+
+  const soundsDisabled = !sounds.enabled;
 
   return (
     <div
@@ -84,7 +88,7 @@ export default function NotificationsSettingsPage() {
               boxShadow: `0 8px 24px color-mix(in srgb, ${accent} 20%, transparent)`,
             }}
           >
-            <Bell
+            <Volume2
               size={20}
               strokeWidth={2.1}
               className="sm:h-[21px] sm:w-[21px]"
@@ -120,7 +124,7 @@ export default function NotificationsSettingsPage() {
                 color: "var(--foreground)",
               }}
             >
-              Уведомления
+              Звуки
             </h1>
           </div>
         </div>
@@ -139,12 +143,12 @@ export default function NotificationsSettingsPage() {
             color: "var(--muted)",
           }}
         >
-          Настрой уведомления, которые BodyOS будет отправлять тебе.
+          Настрой звуки, которые BodyOS использует во время тренировки.
         </p>
       </header>
 
       {/* GENERAL */}
-      <SettingSection title="Общие" description="Основной контроль уведомлений">
+      <SettingSection title="Общие" description="Основной контроль звуков">
         <div
           className="
             w-full
@@ -160,11 +164,56 @@ export default function NotificationsSettingsPage() {
           }}
         >
           <SettingToggle
-            label="Разрешить уведомления"
-            description="Включить все уведомления BodyOS"
-            enabled={notifications.enabled}
-            onChange={toggleNotifications}
+            label="Звуки"
+            description="Включить все звуки BodyOS"
+            enabled={sounds.enabled}
+            onChange={() =>
+              updateSounds((current) => ({
+                ...current,
+                enabled: !current.enabled,
+              }))
+            }
             accent={accent}
+            last
+          />
+        </div>
+      </SettingSection>
+
+      {/* WORKOUT */}
+      <SettingSection
+        title="Тренировка"
+        description="Звуковые события во время тренировки"
+      >
+        <div
+          className="
+            w-full
+            min-w-0
+            overflow-hidden
+            rounded-[22px]
+            border
+            sm:rounded-[24px]
+          "
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <SettingToggle
+            label="Обратный отсчёт"
+            description="Звуки последних секунд таймера отдыха"
+            enabled={sounds.enabled && sounds.restCountdown}
+            onChange={() => toggleSound("restCountdown")}
+            accent={accent}
+            disabled={soundsDisabled}
+          />
+
+          <SettingToggle
+            label="Окончание отдыха"
+            description="Звуковой сигнал после завершения таймера"
+            enabled={sounds.enabled && sounds.restComplete}
+            onChange={() => toggleSound("restComplete")}
+            accent={accent}
+            disabled={soundsDisabled}
             last
           />
         </div>

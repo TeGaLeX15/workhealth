@@ -1,41 +1,27 @@
-// app/lib/notifications/settings.ts
-export type NotificationSettings = {
+// app/lib/sounds/settings.ts
+export type SoundSettings = {
   enabled: boolean;
 
-  workoutReminder: boolean;
-  missedWorkout: boolean;
-
-  nextSet: boolean;
-
-  newMax: boolean;
-  goalReached: boolean;
-
-  weeklyReport: boolean;
+  restCountdown: boolean;
+  restComplete: boolean;
 };
 
-export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
+export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
   enabled: true,
 
-  workoutReminder: true,
-  missedWorkout: true,
-
-  nextSet: false,
-
-  newMax: true,
-  goalReached: true,
-
-  weeklyReport: true,
+  restCountdown: true,
+  restComplete: true,
 };
 
-const STORAGE_KEY = "bodyos_notification_settings";
+const STORAGE_KEY = "bodyos_sound_settings";
 
-let cachedSettings: NotificationSettings = DEFAULT_NOTIFICATION_SETTINGS;
+let cachedSettings: SoundSettings = DEFAULT_SOUND_SETTINGS;
 
 let initialized = false;
 
 const listeners = new Set<() => void>();
 
-function isNotificationSettings(value: unknown): value is NotificationSettings {
+function isSoundSettings(value: unknown): value is SoundSettings {
   if (!value || typeof value !== "object") {
     return false;
   }
@@ -44,12 +30,8 @@ function isNotificationSettings(value: unknown): value is NotificationSettings {
 
   return (
     typeof settings.enabled === "boolean" &&
-    typeof settings.workoutReminder === "boolean" &&
-    typeof settings.missedWorkout === "boolean" &&
-    typeof settings.nextSet === "boolean" &&
-    typeof settings.newMax === "boolean" &&
-    typeof settings.goalReached === "boolean" &&
-    typeof settings.weeklyReport === "boolean"
+    typeof settings.restCountdown === "boolean" &&
+    typeof settings.restComplete === "boolean"
   );
 }
 
@@ -69,28 +51,26 @@ function initializeSettings() {
 
     const parsed: unknown = JSON.parse(stored);
 
-    if (isNotificationSettings(parsed)) {
+    if (isSoundSettings(parsed)) {
       cachedSettings = parsed;
     }
   } catch {
-    cachedSettings = DEFAULT_NOTIFICATION_SETTINGS;
+    cachedSettings = DEFAULT_SOUND_SETTINGS;
   }
 }
 
-export function getNotificationSettings(): NotificationSettings {
+export function getSoundSettings(): SoundSettings {
   initializeSettings();
 
   return cachedSettings;
 }
 
-export function getServerNotificationSettings(): NotificationSettings {
-  return DEFAULT_NOTIFICATION_SETTINGS;
+export function getServerSoundSettings(): SoundSettings {
+  return DEFAULT_SOUND_SETTINGS;
 }
 
-export function updateNotificationSettings(
-  update:
-    | Partial<NotificationSettings>
-    | ((current: NotificationSettings) => NotificationSettings),
+export function updateSoundSettings(
+  update: Partial<SoundSettings> | ((current: SoundSettings) => SoundSettings),
 ) {
   initializeSettings();
 
@@ -117,7 +97,7 @@ export function updateNotificationSettings(
   });
 }
 
-export function subscribeToNotificationSettings(listener: () => void) {
+export function subscribeToSoundSettings(listener: () => void) {
   listeners.add(listener);
 
   function handleStorage(event: StorageEvent) {

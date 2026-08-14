@@ -6,7 +6,9 @@ import { useCallback, useEffect, useRef } from "react";
 type RestTimerProps = {
   restSeconds: number;
   isResting: boolean;
-  enabled: boolean;
+  countdownEnabled: boolean;
+  completeEnabled: boolean;
+  onComplete: () => void;
 };
 
 const COUNTDOWN_START = 1;
@@ -20,20 +22,32 @@ const COMPLETE_SOUND = "/sounds/rest-complete.mp3";
 export default function RestTimer({
   restSeconds,
   isResting,
-  enabled,
+  countdownEnabled,
+  completeEnabled,
+  onComplete,
 }: RestTimerProps) {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const countdownBufferRef = useRef<AudioBuffer | null>(null);
-
   const completeBufferRef = useRef<AudioBuffer | null>(null);
 
   const previousSecondsRef = useRef<number | null>(null);
-
   const completedRef = useRef(false);
-
   const isLoadingRef = useRef(false);
 
+  const onCompleteRef = useRef(onComplete);
+
+  /*
+   * Keep the latest completion callback without
+   * restarting the timer event effect.
+   */
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  /*
+   * Get or create the Web Audio context.
+   */
   const getAudioContext = useCallback(async () => {
     if (typeof window === "undefined") {
       return null;
@@ -64,6 +78,9 @@ export default function RestTimer({
     return context;
   }, []);
 
+  /*
+   * Load and decode a sound.
+   */
   const loadSound = useCallback(
     async (context: AudioContext, url: string): Promise<AudioBuffer> => {
       const response = await fetch(url);
@@ -79,8 +96,13 @@ export default function RestTimer({
     [],
   );
 
+  /*
+   * Prepare all rest sounds.
+   *
+   * Audio is loaded when at least one rest sound is enabled.
+   */
   const prepareAudio = useCallback(async () => {
-    if (!enabled) {
+    if (!countdownEnabled && !completeEnabled) {
       return;
     }
 
@@ -107,18 +129,20 @@ export default function RestTimer({
       ]);
 
       countdownBufferRef.current = countdownBuffer;
-
       completeBufferRef.current = completeBuffer;
     } catch {
       // Audio is optional.
     } finally {
       isLoadingRef.current = false;
     }
-  }, [enabled, getAudioContext, loadSound]);
+  }, [countdownEnabled, completeEnabled, getAudioContext, loadSound]);
 
+  /*
+   * Play a decoded sound.
+   */
   const playSound = useCallback(
     async (buffer: AudioBuffer | null) => {
-      if (!enabled || !buffer) {
+      if (!buffer) {
         return;
       }
 
@@ -134,27 +158,28 @@ export default function RestTimer({
       source.connect(context.destination);
       source.start(0);
     },
-    [enabled, getAudioContext],
+    [getAudioContext],
   );
 
   /*
-   * Prepare audio whenever the feature is enabled.
+   * Prepare audio whenever at least one sound is enabled.
    */
   useEffect(() => {
-    if (!enabled) {
+    if (!countdownEnabled && !completeEnabled) {
       return;
     }
 
     void prepareAudio();
-  }, [enabled, prepareAudio]);
+  }, [countdownEnabled, completeEnabled, prepareAudio]);
 
   /*
-   * Reset timer event state when resting ends.
+   * Handle timer events.
    */
   useEffect(() => {
     if (!isResting) {
       previousSecondsRef.current = null;
       completedRef.current = false;
+
       return;
     }
 
@@ -167,11 +192,12 @@ export default function RestTimer({
      */
     if (previousSeconds === null) {
       completedRef.current = false;
+
       return;
     }
 
     /*
-     * Completion event.
+     * Rest completed.
      */
     if (restSeconds === 0) {
       if (completedRef.current) {
@@ -180,13 +206,30 @@ export default function RestTimer({
 
       completedRef.current = true;
 
-      if (enabled) {
+      /*
+       * Completion sound.
+       */
+      if (completeEnabled) {
         void playSound(completeBufferRef.current);
-
-        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-          navigator.vibrate(VIBRATION_DURATION);
-        }
       }
+
+      /*
+       * Vibration belongs to the rest completion event.
+       *
+       * It is independent from sound settings.
+       */
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(VIBRATION_DURATION);
+      }
+
+      /*
+       * Move to the next set after the 0 state
+       * has been rendered and the completion event
+       * has been triggered.
+       */
+      window.setTimeout(() => {
+        onCompleteRef.current();
+      }, 0);
 
       return;
     }
@@ -195,13 +238,13 @@ export default function RestTimer({
      * Countdown: 3 → 2 → 1.
      */
     if (
-      enabled &&
+      countdownEnabled &&
       restSeconds >= COUNTDOWN_START &&
       restSeconds <= COUNTDOWN_END
     ) {
       void playSound(countdownBufferRef.current);
     }
-  }, [restSeconds, isResting, enabled, playSound]);
+  }, [restSeconds, isResting, countdownEnabled, completeEnabled, playSound]);
 
   /*
    * Release Web Audio resources on unmount.

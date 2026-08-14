@@ -1,7 +1,7 @@
 // app/components/workout/WorkoutSession.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import WorkoutProgress from "./WorkoutProgress";
@@ -9,7 +9,7 @@ import WorkoutSetScreen from "./WorkoutSetScreen";
 import WorkoutRestScreen from "./WorkoutRestScreen";
 import RestTimer from "./RestTimer";
 
-import { useNotificationSettings } from "@/app/lib/notifications/useNotificationSettings";
+import { useSoundSettings } from "@/app/lib/sounds/useSoundSettings";
 
 type WorkoutSet = {
   id: string;
@@ -31,7 +31,7 @@ export default function WorkoutSession({
   sets,
 }: WorkoutSessionProps) {
   const router = useRouter();
-  const notificationSettings = useNotificationSettings();
+  const soundSettings = useSoundSettings();
 
   const [completedSets, setCompletedSets] = useState<WorkoutSet[]>(sets);
 
@@ -71,13 +71,6 @@ export default function WorkoutSession({
       const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
 
       setRestSeconds(remainingSeconds);
-
-      /*
-       * Do NOT finish the rest here.
-       *
-       * RestTimer must first receive 0, play the finishing
-       * sound and then call handleRestComplete().
-       */
     };
 
     updateTimer();
@@ -88,6 +81,16 @@ export default function WorkoutSession({
       window.clearInterval(timer);
     };
   }, [isResting, restEndTime]);
+
+  /*
+   * Complete current rest.
+   */
+  const handleRestComplete = useCallback(() => {
+    setIsResting(false);
+    setRestEndTime(null);
+    setRestSeconds(REST_SECONDS);
+    setRestTotalSeconds(REST_SECONDS);
+  }, []);
 
   /*
    * Protect against an invalid/completed state.
@@ -215,10 +218,9 @@ export default function WorkoutSession({
       <RestTimer
         restSeconds={restSeconds}
         isResting={isResting}
-        enabled={
-          notificationSettings.enabled &&
-          notificationSettings.restTimer
-        }
+        countdownEnabled={soundSettings.enabled && soundSettings.restCountdown}
+        completeEnabled={soundSettings.enabled && soundSettings.restComplete}
+        onComplete={handleRestComplete}
       />
 
       {/* PROGRESS */}
