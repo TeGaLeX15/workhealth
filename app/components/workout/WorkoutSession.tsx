@@ -1,12 +1,13 @@
-// app/components/WorkoutSession.tsx
+// app/components/workout/WorkoutSession.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import WorkoutProgress from "./WorkoutProgress";
 import WorkoutSetScreen from "./WorkoutSetScreen";
 import WorkoutRestScreen from "./WorkoutRestScreen";
+import RestTimer from "./RestTimer";
 
 type WorkoutSet = {
   id: string;
@@ -38,7 +39,11 @@ export default function WorkoutSession({
   });
 
   const [isResting, setIsResting] = useState(false);
+
+  const [restEndTime, setRestEndTime] = useState<number | null>(null);
+
   const [restSeconds, setRestSeconds] = useState(REST_SECONDS);
+
   const [restTotalSeconds, setRestTotalSeconds] = useState(REST_SECONDS);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -46,44 +51,55 @@ export default function WorkoutSession({
 
   const currentSet = completedSets[currentIndex];
 
-  // Rest timer effect
+  /*
+   * REST TIMER
+   *
+   * restEndTime is the source of truth.
+   * The interval only keeps the visible countdown updated.
+   */
   useEffect(() => {
-    if (!isResting) return;
+    if (!isResting || restEndTime === null) {
+      return;
+    }
 
-    const timer = window.setInterval(() => {
-      setRestSeconds((seconds) => {
-        if (seconds <= 1) {
-          window.clearInterval(timer);
-          return 0;
-        }
+    const updateTimer = () => {
+      const remainingMs = restEndTime - Date.now();
 
-        return seconds - 1;
-      });
-    }, 1000);
+      const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+
+      setRestSeconds(remainingSeconds);
+
+      /*
+       * Do NOT finish the rest here.
+       *
+       * RestTimer must first receive 0, play the finishing
+       * sound and then call handleRestComplete().
+       */
+    };
+
+    updateTimer();
+
+    const timer = window.setInterval(updateTimer, 250);
 
     return () => {
       window.clearInterval(timer);
     };
-  }, [isResting]);
+  }, [isResting, restEndTime]);
 
-  // Finish resting state when restSeconds reaches 0
-  useEffect(() => {
-    if (!isResting || restSeconds !== 0) {
-      return;
-    }
+  /*
+   * Called by RestTimer after the finishing sound
+   * has successfully been started.
+   */
+  const handleRestComplete = useCallback(() => {
+    setIsResting(false);
+    setRestEndTime(null);
+    setRestSeconds(REST_SECONDS);
+    setRestTotalSeconds(REST_SECONDS);
+  }, []);
 
-    const timeout = window.setTimeout(() => {
-      setIsResting(false);
-      setRestSeconds(REST_SECONDS);
-      setRestTotalSeconds(REST_SECONDS);
-    }, 500);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [isResting, restSeconds]);
-
-  // Protect against an invalid/completed state
+  /*
+   * Protect against an invalid/completed state.
+   */
   if (!currentSet) {
     return (
       <div className="flex min-h-[300px] items-center justify-center">
@@ -99,7 +115,9 @@ export default function WorkoutSession({
     );
   }
 
-  // Complete set function
+  /*
+   * Complete current set.
+   */
   async function handleCompleteSet() {
     if (isLoading || isResting) {
       return;
@@ -107,6 +125,13 @@ export default function WorkoutSession({
 
     setIsLoading(true);
     setError("");
+
+    /*
+     * Activate Web Audio from the user's gesture.
+     *
+     * This is important for mobile browsers/PWA.
+     */
+    window.dispatchEvent(new Event("bodyos:activate-rest-audio"));
 
     try {
       const response = await fetch(
@@ -135,13 +160,25 @@ export default function WorkoutSession({
         ),
       );
 
+      /*
+       * Workout finished.
+       */
       if (data.completed) {
         router.refresh();
         return;
       }
 
+      /*
+       * Move to the next set.
+       */
       setCurrentIndex((index) => index + 1);
 
+      /*
+       * Start rest.
+       */
+      const endTime = Date.now() + REST_SECONDS * 1000;
+
+      setRestEndTime(endTime);
       setRestSeconds(REST_SECONDS);
       setRestTotalSeconds(REST_SECONDS);
       setIsResting(true);
@@ -152,21 +189,45 @@ export default function WorkoutSession({
     }
   }
 
-  // Rest control functions
+  /*
+   * Skip rest.
+   */
   function skipRest() {
     setIsResting(false);
+    setRestEndTime(null);
     setRestSeconds(REST_SECONDS);
     setRestTotalSeconds(REST_SECONDS);
   }
 
+  /*
+   * Add 30 seconds.
+   */
   function increaseRest() {
+    setRestEndTime((currentEndTime) => {
+      const baseTime =
+        currentEndTime && currentEndTime > Date.now()
+          ? currentEndTime
+          : Date.now();
+
+      return baseTime + 30 * 1000;
+    });
+
     setRestSeconds((seconds) => seconds + 30);
     setRestTotalSeconds((seconds) => seconds + 30);
   }
 
   return (
     <div className="w-full">
+      {/* REST AUDIO / COMPLETION */}
+
+      <RestTimer
+        restSeconds={restSeconds}
+        isResting={isResting}
+        onComplete={handleRestComplete}
+      />
+
       {/* PROGRESS */}
+
       <div className="mt-8 sm:mt-10">
         <WorkoutProgress
           sets={completedSets}
@@ -176,6 +237,7 @@ export default function WorkoutSession({
       </div>
 
       {/* CURRENT STATE */}
+
       {isResting ? (
         <WorkoutRestScreen
           currentSet={currentSet}
