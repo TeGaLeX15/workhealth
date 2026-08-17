@@ -1,3 +1,4 @@
+// app/api/exercises/[exerciseId]/max/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
@@ -8,18 +9,12 @@ type RouteContext = {
   }>;
 };
 
-export async function PUT(
-  request: Request,
-  context: RouteContext,
-) {
+export async function PUT(request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Не авторизован" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
     }
 
     const { exerciseId } = await context.params;
@@ -27,9 +22,7 @@ export async function PUT(
     const body = await request.json();
 
     const maxReps =
-      typeof body.maxReps === "number"
-        ? body.maxReps
-        : Number(body.maxReps);
+      typeof body.maxReps === "number" ? body.maxReps : Number(body.maxReps);
 
     if (!Number.isInteger(maxReps) || maxReps <= 0) {
       return NextResponse.json(

@@ -1,6 +1,4 @@
 // app/server/auth/session.ts
-// app/server/auth/session.ts
-
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { cache } from "react";

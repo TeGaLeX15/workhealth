@@ -27,11 +27,7 @@
   --divider: #f4f4f5;
 
   /* Interaction */
-  --input-focus-ring: color-mix(
-    in srgb,
-    var(--accent) 20%,
-    transparent
-  );
+  --input-focus-ring: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 /* ==========================================================================
@@ -131,6 +127,45 @@ body {
 
 .bodyos-safe-right {
   padding-right: env(safe-area-inset-right);
+}
+
+/* ==========================================================================
+   Body OS — App Loader
+   ========================================================================== */
+
+.bodyos-loader svg polyline {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bodyos-loader-back {
+  stroke: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.bodyos-loader-front {
+  stroke: var(--accent);
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: bodyos-loader-dash 1.4s linear infinite;
+}
+
+@keyframes bodyos-loader-dash {
+  72.5% {
+    opacity: 0;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyos-loader-front {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 
 /* ==========================================================================

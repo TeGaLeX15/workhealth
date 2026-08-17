@@ -37,8 +37,7 @@ export async function POST(request: Request) {
     const { email, password } = validation.data;
 
     const timezone =
-      typeof body.timezone === "string" &&
-      isValidTimeZone(body.timezone)
+      typeof body.timezone === "string" && isValidTimeZone(body.timezone)
         ? body.timezone
         : "Asia/Almaty";
 
@@ -57,10 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(
-      password,
-      12,
-    );
+    const passwordHash = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
       data: {

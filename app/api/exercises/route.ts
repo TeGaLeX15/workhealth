@@ -9,10 +9,7 @@ export async function GET() {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Не авторизован" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
     }
 
     const exercises = await prisma.exercise.findMany({

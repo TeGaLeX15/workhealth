@@ -1,3 +1,4 @@
+// app/api/exercises/[exerciseId]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
@@ -8,18 +9,12 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: Request,
-  context: RouteContext,
-) {
+export async function GET(_request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Не авторизован" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
     }
 
     const { exerciseId } = await context.params;

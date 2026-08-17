@@ -10,18 +10,12 @@ type RouteContext = {
   }>;
 };
 
-export async function POST(
-  _request: Request,
-  context: RouteContext,
-) {
+export async function POST(_request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Не авторизован" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
     }
 
     const { workoutId, setId } = await context.params;
@@ -54,15 +48,10 @@ export async function POST(
       );
     }
 
-    const currentSet = workout.sets.find(
-      (set) => set.id === setId,
-    );
+    const currentSet = workout.sets.find((set) => set.id === setId);
 
     if (!currentSet) {
-      return NextResponse.json(
-        { error: "Подход не найден" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Подход не найден" }, { status: 404 });
     }
 
     if (currentSet.completed) {
@@ -84,9 +73,7 @@ export async function POST(
     });
 
     const remainingSets = workout.sets.filter(
-      (set) =>
-        set.id !== setId &&
-        !set.completed,
+      (set) => set.id !== setId && !set.completed,
     );
 
     let updatedWorkout;
@@ -111,10 +98,7 @@ export async function POST(
       completed: remainingSets.length === 0,
     });
   } catch (error) {
-    console.error(
-      "Complete workout set error:",
-      error,
-    );
+    console.error("Complete workout set error:", error);
 
     return NextResponse.json(
       {
