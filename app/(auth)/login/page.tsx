@@ -11,6 +11,12 @@ import AuthFooter from "@/app/components/auth/AuthFooter";
 import AuthInput from "@/app/components/auth/AuthInput";
 import PasswordInput from "@/app/components/auth/PasswordInput";
 
+import { useAsyncSubmit } from "@/app/lib/hooks/useAsyncSubmit";
+import { login } from "@/app/lib/auth/login";
+import {
+  getClientTimezone,
+  setStoredTimezone,
+} from "@/app/lib/timezone/client";
 import { loginSchema } from "@/app/lib/validation/auth";
 
 export default function LoginPage() {
@@ -19,12 +25,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
-
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isCompleted, error, execute, clearError } =
+    useAsyncSubmit();
 
   const validationResult = loginSchema.safeParse({
     email,
@@ -45,7 +50,6 @@ export default function LoginPage() {
 
     setEmailTouched(true);
     setPasswordTouched(true);
-    setError("");
 
     const validation = loginSchema.safeParse({
       email,
@@ -56,36 +60,26 @@ export default function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
+    const timezone = getClientTimezone();
 
-    try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...validation.data,
+    const result = await execute((signal) =>
+      login(
+        {
+          email: validation.data.email,
+          password: validation.data.password,
           timezone,
-        }),
-      });
+        },
+        signal,
+      ),
+    );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error ?? "Не удалось войти");
-        return;
-      }
-
-      router.replace("/");
-      router.refresh();
-    } catch {
-      setError("Не удалось подключиться к серверу");
-    } finally {
-      setIsLoading(false);
+    if (result === null) {
+      return;
     }
+
+    setStoredTimezone(timezone);
+
+    await router.replace("/");
   }
 
   return (
@@ -138,11 +132,11 @@ export default function LoginPage() {
             value={email}
             onChange={(value) => {
               setEmail(value);
-              setError("");
+              clearError();
             }}
             onBlur={() => setEmailTouched(true)}
             placeholder="you@example.com"
-            disabled={isLoading}
+            disabled={isLoading || isCompleted}
             required
             touched={emailTouched}
             error={emailError}
@@ -187,12 +181,12 @@ export default function LoginPage() {
               value={password}
               onChange={(value) => {
                 setPassword(value);
-                setError("");
+                clearError();
               }}
               onBlur={() => setPasswordTouched(true)}
               placeholder="Введите пароль"
               autoComplete="current-password"
-              disabled={isLoading}
+              disabled={isLoading || isCompleted}
               required
               touched={passwordTouched}
               error={passwordError}
@@ -201,6 +195,7 @@ export default function LoginPage() {
 
           {error && (
             <div
+              role="alert"
               className="
                 rounded-[15px]
                 border
@@ -221,7 +216,9 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={!isFormValid || isLoading}
+            disabled={!isFormValid || isLoading || isCompleted}
+            aria-disabled={!isFormValid || isLoading || isCompleted}
+            aria-busy={isLoading}
             className="
               mt-1
               flex
@@ -245,7 +242,7 @@ export default function LoginPage() {
                 "0 7px 20px color-mix(in srgb, var(--accent) 18%, transparent)",
             }}
           >
-            {isLoading ? "Входим..." : "Войти"}
+            {isLoading ? "Входим..." : isCompleted ? "Готово" : "Войти"}
           </button>
         </form>
       </AuthCard>
