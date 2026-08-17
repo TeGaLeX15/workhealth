@@ -8,7 +8,10 @@ import { sendPasswordResetEmail } from "@/app/server/email/password-reset";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 
-export async function createPasswordResetRequest(email: string) {
+export async function createPasswordResetRequest(
+  email: string,
+  origin: string,
+) {
   const now = new Date();
   const rateLimitSince = new Date(now.getTime() - RATE_LIMIT_WINDOW_MS);
 
@@ -73,7 +76,7 @@ export async function createPasswordResetRequest(email: string) {
     }),
   ]);
 
-  const resetUrl = new URL("/reset-password", process.env.NEXT_PUBLIC_APP_URL);
+  const resetUrl = new URL("/reset-password", origin);
 
   resetUrl.searchParams.set("token", token);
 

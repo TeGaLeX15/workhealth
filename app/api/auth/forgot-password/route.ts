@@ -33,7 +33,9 @@ export async function POST(request: Request) {
       );
     }
 
-    await createPasswordResetRequest(email);
+    const origin = new URL(request.url).origin;
+
+    await createPasswordResetRequest(email, origin);
 
     await ensureMinimumResponseTime(
       startedAt,
