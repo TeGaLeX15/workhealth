@@ -1,6 +1,6 @@
 // app/(app)/exercise/[exerciseId]/page.tsx
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/app/server/auth/session";
+import { requireCurrentUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
 import {
   dateStringToUtcDate,
@@ -18,11 +18,7 @@ type ExercisePageProps = {
 };
 
 export default async function ExercisePage({ params }: ExercisePageProps) {
-  const user = await getSessionUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const user = await requireCurrentUser();
 
   const { exerciseId } = await params;
 

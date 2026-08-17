@@ -1,7 +1,7 @@
 // app/api/user/timezone/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 
 function isValidTimeZone(timeZone: string) {
   try {
@@ -17,7 +17,7 @@ function isValidTimeZone(timeZone: string) {
 
 export async function PUT(request: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 
 import {
   dateStringToUtcDate,
@@ -22,7 +22,7 @@ export async function POST(
   try {
     // ─── Authentication ────────────────────────────────────────────
 
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

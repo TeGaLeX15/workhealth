@@ -1,7 +1,7 @@
 // app/api/training-weeks/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 import { isSupportedExercise } from "@/app/lib/training/generate-workout";
 import { generateTrainingWeek } from "@/app/lib/training/generate-training-week";
 
@@ -40,7 +40,7 @@ function isSameCalendarDay(first: Date, second: Date): boolean {
 
 export async function POST(request: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

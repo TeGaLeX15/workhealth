@@ -1,6 +1,6 @@
 // app/(app)/workouts/[workoutId]/page.tsx
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/app/server/auth/session";
+import { requireCurrentUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
 
 import WorkoutHeader from "@/app/components/workout/WorkoutHeader";
@@ -15,11 +15,7 @@ type WorkoutPageProps = {
 };
 
 export default async function WorkoutPage({ params }: WorkoutPageProps) {
-  const user = await getSessionUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const user = await requireCurrentUser();
 
   const { workoutId } = await params;
 

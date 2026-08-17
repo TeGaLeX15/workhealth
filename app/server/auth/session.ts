@@ -1,6 +1,11 @@
 // app/server/auth/session.ts
+// app/server/auth/session.ts
+
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
+import { cache } from "react";
+import { redirect } from "next/navigation";
+
 import { prisma } from "@/app/server/db";
 
 const SESSION_COOKIE = "bodyos_session";
@@ -10,32 +15,13 @@ function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-export async function createSession(userId: string) {
-  const token = randomBytes(32).toString("hex");
-  const tokenHash = hashToken(token);
-
-  const expiresAt = new Date(Date.now() + SESSION_DURATION);
-
-  await prisma.session.create({
-    data: {
-      userId,
-      tokenHash,
-      expiresAt,
-    },
-  });
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    expires: expiresAt,
-    path: "/",
-  });
-}
-
-export async function getSessionUser() {
+/**
+ * Returns the currently authenticated user.
+ *
+ * React cache() makes repeated calls during the same
+ * server render resolve from the same promise/result.
+ */
+export const getCurrentUser = cache(async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
@@ -49,7 +35,9 @@ export async function getSessionUser() {
     where: {
       tokenHash,
     },
-    include: {
+    select: {
+      id: true,
+      expiresAt: true,
       user: {
         select: {
           id: true,
@@ -77,6 +65,47 @@ export async function getSessionUser() {
   }
 
   return session.user;
+});
+
+/**
+ * Protected app boundary.
+ *
+ * This is the only place responsible for redirecting
+ * unauthenticated users inside the protected app.
+ */
+export const requireCurrentUser = cache(async () => {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return user;
+});
+
+export async function createSession(userId: string) {
+  const token = randomBytes(32).toString("hex");
+  const tokenHash = hashToken(token);
+
+  const expiresAt = new Date(Date.now() + SESSION_DURATION);
+
+  await prisma.session.create({
+    data: {
+      userId,
+      tokenHash,
+      expiresAt,
+    },
+  });
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    expires: expiresAt,
+    path: "/",
+  });
 }
 
 export async function deleteSession() {

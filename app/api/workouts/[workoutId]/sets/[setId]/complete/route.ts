@@ -1,7 +1,7 @@
 // app/api/workouts/[workoutId]/sets/[setId]/complete/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 
 type RouteContext = {
   params: Promise<{
@@ -15,7 +15,7 @@ export async function POST(
   context: RouteContext,
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

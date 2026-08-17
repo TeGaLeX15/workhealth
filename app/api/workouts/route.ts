@@ -1,7 +1,7 @@
 // app/api/workouts/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 
 import {
   dateStringToUtcDate,
@@ -10,7 +10,7 @@ import {
 
 export async function POST(request: Request) {
   try {
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

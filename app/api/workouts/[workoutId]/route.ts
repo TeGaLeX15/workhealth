@@ -1,7 +1,7 @@
 // app/api/workouts/[workoutId]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
-import { getSessionUser } from "@/app/server/auth/session";
+import { getCurrentUser } from "@/app/server/auth/session";
 
 export async function GET(
   _request: Request,
@@ -12,7 +12,7 @@ export async function GET(
   },
 ) {
   try {
-    const user = await getSessionUser();
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(
