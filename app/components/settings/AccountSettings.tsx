@@ -37,7 +37,6 @@ export default function AccountSettings() {
       }
 
       router.replace("/login");
-      router.refresh();
     } catch {
       setError("Не удалось подключиться к серверу");
     } finally {

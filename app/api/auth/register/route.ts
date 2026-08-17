@@ -1,9 +1,9 @@
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 
 import { prisma } from "@/app/server/db";
 import { createSession } from "@/app/server/auth/session";
+import { hashPassword } from "@/app/server/auth/password";
 
 import { registerRequestSchema } from "@/app/lib/validation/auth";
 
@@ -30,7 +30,9 @@ export async function POST(request: Request) {
         {
           error: "Некорректные данные",
         },
-        { status: 400 },
+        {
+          status: 400,
+        },
       );
     }
 
@@ -52,11 +54,13 @@ export async function POST(request: Request) {
         {
           error: "Пользователь с таким email уже существует",
         },
-        { status: 409 },
+        {
+          status: 409,
+        },
       );
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
@@ -76,7 +80,9 @@ export async function POST(request: Request) {
       {
         user,
       },
-      { status: 201 },
+      {
+        status: 201,
+      },
     );
   } catch (error) {
     console.error("Registration error:", error);
@@ -85,7 +91,9 @@ export async function POST(request: Request) {
       {
         error: "Не удалось создать аккаунт",
       },
-      { status: 500 },
+      {
+        status: 500,
+      },
     );
   }
 }

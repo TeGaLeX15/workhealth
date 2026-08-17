@@ -52,3 +52,13 @@ export type WorkoutSet = Prisma.WorkoutSetModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
+ * Model PasswordResetRequest
+ * 
+ */
+export type PasswordResetRequest = Prisma.PasswordResetRequestModel

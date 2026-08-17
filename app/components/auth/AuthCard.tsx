@@ -5,7 +5,7 @@ interface AuthCardProps {
   title: string;
   description: string;
   children: ReactNode;
-  footer: ReactNode;
+  footer?: ReactNode;
 }
 
 export default function AuthCard({

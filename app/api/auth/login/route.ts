@@ -1,6 +1,6 @@
 // app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import { hashPassword, verifyPassword } from "@/app/server/auth/password";
 
 import { prisma } from "@/app/server/db";
 import { createSession } from "@/app/server/auth/session";
@@ -38,14 +38,10 @@ export async function POST(request: Request) {
 
     const { email, password } = validation.data;
 
-    // ─── Client timezone ─────────────────────────────────────────────
-
     const clientTimezone =
       typeof body.timezone === "string" && isValidTimeZone(body.timezone)
         ? body.timezone
         : null;
-
-    // ─── User ────────────────────────────────────────────────────────
 
     const user = await prisma.user.findUnique({
       where: {
@@ -64,9 +60,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ─── Password ────────────────────────────────────────────────────
-
-    const passwordValid = await bcrypt.compare(password, user.passwordHash);
+    const passwordValid = await verifyPassword(password, user.passwordHash);
 
     if (!passwordValid) {
       return NextResponse.json(
@@ -77,6 +71,21 @@ export async function POST(request: Request) {
           status: 401,
         },
       );
+    }
+
+    const isLegacyPassword = !user.passwordHash.includes(":");
+
+    if (isLegacyPassword) {
+      const newPasswordHash = await hashPassword(password);
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          passwordHash: newPasswordHash,
+        },
+      });
     }
 
     // ─── Timezone sync ───────────────────────────────────────────────
@@ -105,8 +114,6 @@ export async function POST(request: Request) {
       userTimezone: user.timezone,
       nodeTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
-
-    // ─── Session ────────────────────────────────────────────────────
 
     await createSession(user.id);
 
