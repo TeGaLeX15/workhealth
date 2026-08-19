@@ -6,27 +6,82 @@ import Link from "next/link";
 
 import { useSoundSettings } from "@/app/lib/sounds/useSoundSettings";
 
+/**
+ * Пропсы компонента завершённой тренировки.
+ */
 type CompletedWorkoutProps = {
+  /**
+   * Данные завершённой тренировки.
+   */
   workout: {
+    /**
+     * Упражнение, которое выполнялось на тренировке.
+     */
     exercise: {
+      /**
+       * Название упражнения.
+       */
       name: string;
     };
+
+    /**
+     * Подходы, выполненные в рамках тренировки.
+     */
     sets: {
+      /**
+       * Фактически выполненное количество повторений.
+       *
+       * `null` означает, что фактическое значение отсутствует,
+       * поэтому используется целевое количество повторений.
+       */
       actualReps: number | null;
+
+      /**
+       * Целевое количество повторений в подходе.
+       */
       targetReps: number;
     }[];
   };
 };
 
+/**
+ * Путь к звуковому эффекту завершения тренировки.
+ */
 const WORKOUT_COMPLETE_SOUND = "/sounds/workout-complete.mp3";
 
+/**
+ * Ключ события, используемый для передачи состояния
+ * воспроизведения звука через `sessionStorage`.
+ */
 const WORKOUT_COMPLETE_EVENT = "bodyos:workout-complete";
 
+/**
+ * Отображает экран завершённой тренировки с итоговой статистикой
+ * и переходом обратно к списку тренировок.
+ *
+ * Дополнительно воспроизводит звуковой эффект завершения тренировки,
+ * если звук включён в настройках и для текущей тренировки
+ * установлен соответствующий флаг в `sessionStorage`.
+ *
+ * @param props Пропсы компонента.
+ * @param props.workout Данные завершённой тренировки.
+ * @returns Разметка экрана завершённой тренировки.
+ */
 export default function CompletedWorkout({ workout }: CompletedWorkoutProps) {
   const soundSettings = useSoundSettings();
 
+  /**
+   * Предотвращает повторное воспроизведение звука
+   * в рамках текущего монтирования компонента.
+   */
   const playedRef = useRef(false);
 
+  /**
+   * Общее количество выполненных повторений.
+   *
+   * Если фактическое количество повторений отсутствует,
+   * используется целевое значение подхода.
+   */
   const totalReps = workout.sets.reduce(
     (total, set) => total + (set.actualReps ?? set.targetReps),
     0,
@@ -64,7 +119,7 @@ export default function CompletedWorkout({ workout }: CompletedWorkoutProps) {
     audio.volume = 1;
 
     void audio.play().catch(() => {
-      // Browser may block playback.
+      // Браузер может блокировать звук
     });
   }, [soundSettings.enabled, soundSettings.workoutComplete]);
 

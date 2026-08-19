@@ -1,10 +1,21 @@
 // app/components/exercises/max-reps/MaxRepsInput.tsx
 type MaxRepsInputProps = {
+  /** Текущее значение количества повторений. */
   value: string;
+
+  /** Отключает поле ввода. */
   disabled: boolean;
+
+  /** Обрабатывает изменение значения. */
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+/**
+ * Поле ввода максимального количества повторений.
+ *
+ * Разрешает ввод только числовых значений и поддерживает
+ * цифровую клавиатуру на мобильных устройствах.
+ */
 export default function MaxRepsInput({
   value,
   disabled,

@@ -3,12 +3,26 @@ import type { FC } from "react";
 
 import type { WorkoutSet } from "./types";
 
+/**
+ * Пропсы превью подходов тренировки.
+ */
 type WorkoutSetsPreviewProps = {
+  /** Список подходов тренировки. */
   sets: WorkoutSet[];
+
+  /** Указывает, находится ли тренировка в процессе выполнения. */
   isInProgress: boolean;
+
+  /** Индекс текущего подхода. */
   currentSetIndex: number;
 };
 
+/**
+ * Превью подходов тренировки.
+ *
+ * Отображает выполненные, текущий и предстоящие подходы,
+ * визуально выделяя их текущее состояние и количество повторений.
+ */
 const WorkoutSetsPreview: FC<WorkoutSetsPreviewProps> = ({
   sets,
   isInProgress,

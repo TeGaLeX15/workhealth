@@ -6,6 +6,12 @@ import { prisma } from "@/app/server/db";
 
 const SESSION_COOKIE = "bodyos_session";
 
+/**
+ * Хеширует значение сессии алгоритмом SHA-256.
+ *
+ * В базе хранится только хеш токена, поэтому исходное значение
+ * cookie не используется напрямую при поиске сессии.
+ */
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
@@ -18,6 +24,13 @@ export type TrainingExercise = {
   maxUpdatedAt: string | null;
 };
 
+/**
+ * Возвращает упражнения текущего авторизованного пользователя
+ * вместе с сохранёнными максимумами и датами их обновления.
+ *
+ * Если сессия отсутствует, не найдена или истекла, возвращает null.
+ * Истёкшая сессия удаляется из базы и из cookie браузера.
+ */
 export async function getTrainingExercises(): Promise<
   TrainingExercise[] | null
 > {

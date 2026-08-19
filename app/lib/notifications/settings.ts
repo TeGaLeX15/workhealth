@@ -1,18 +1,34 @@
 // app/lib/notifications/settings.ts
+
+/**
+ * Настройки уведомлений приложения.
+ */
 export type NotificationSettings = {
+  /** Включены ли уведомления в приложении. */
   enabled: boolean;
 
+  /** Напоминания о предстоящей тренировке. */
   workoutReminder: boolean;
+
+  /** Уведомления о пропущенной тренировке. */
   missedWorkout: boolean;
 
+  /** Уведомления о следующем подходе. */
   nextSet: boolean;
 
+  /** Уведомления об установлении нового максимума. */
   newMax: boolean;
+
+  /** Уведомления о достижении цели. */
   goalReached: boolean;
 
+  /** Еженедельный отчёт о тренировках. */
   weeklyReport: boolean;
 };
 
+/**
+ * Настройки уведомлений по умолчанию.
+ */
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   enabled: true,
 
@@ -35,6 +51,14 @@ let initialized = false;
 
 const listeners = new Set<() => void>();
 
+/**
+ * Проверяет, соответствует ли значение структуре
+ * настроек уведомлений.
+ *
+ * @param value Значение для проверки.
+ * @returns true, если значение является корректными
+ * настройками уведомлений.
+ */
 function isNotificationSettings(value: unknown): value is NotificationSettings {
   if (!value || typeof value !== "object") {
     return false;
@@ -53,6 +77,10 @@ function isNotificationSettings(value: unknown): value is NotificationSettings {
   );
 }
 
+/**
+ * Загружает настройки уведомлений из localStorage
+ * и инициализирует локальный кэш.
+ */
 function initializeSettings() {
   if (initialized || typeof window === "undefined") {
     return;
@@ -77,16 +105,36 @@ function initializeSettings() {
   }
 }
 
+/**
+ * Возвращает текущие настройки уведомлений.
+ *
+ * При первом вызове настройки загружаются
+ * из localStorage в браузере.
+ */
 export function getNotificationSettings(): NotificationSettings {
   initializeSettings();
 
   return cachedSettings;
 }
 
+/**
+ * Возвращает настройки уведомлений,
+ * используемые во время серверного рендера.
+ *
+ * На сервере всегда используются настройки по умолчанию,
+ * поскольку localStorage недоступен.
+ */
 export function getServerNotificationSettings(): NotificationSettings {
   return DEFAULT_NOTIFICATION_SETTINGS;
 }
 
+/**
+ * Обновляет настройки уведомлений, сохраняет их в localStorage
+ * и уведомляет подписанные компоненты об изменении.
+ *
+ * @param update Новые значения настроек
+ * или функция, вычисляющая их на основе текущих.
+ */
 export function updateNotificationSettings(
   update:
     | Partial<NotificationSettings>
@@ -108,7 +156,8 @@ export function updateNotificationSettings(
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSettings));
     } catch {
-      // Keep in-memory state if localStorage is unavailable.
+      // Сохраняем состояние в памяти,
+      // если localStorage недоступен.
     }
   }
 
@@ -117,6 +166,15 @@ export function updateNotificationSettings(
   });
 }
 
+/**
+ * Подписывает слушатель на изменения настроек уведомлений.
+ *
+ * Отслеживает изменения как внутри текущей вкладки,
+ * так и в localStorage из других вкладок.
+ *
+ * @param listener Функция, вызываемая при изменении настроек.
+ * @returns Функция для отмены подписки.
+ */
 export function subscribeToNotificationSettings(listener: () => void) {
   listeners.add(listener);
 

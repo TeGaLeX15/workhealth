@@ -13,6 +13,16 @@ type ResetPasswordFormProps = {
   token: string;
 };
 
+/**
+ * Форма установки нового пароля.
+ *
+ * Проверяет новый пароль и его подтверждение,
+ * отправляет запрос на сервер и отображает результат
+ * успешного изменения пароля.
+ *
+ * @param token Токен восстановления пароля из URL.
+ * @returns Форма восстановления пароля или сообщение об успешном изменении.
+ */
 export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,6 +46,12 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   const isFormValid = password.length >= 8 && confirmPassword === password;
 
+  /**
+   * Обрабатывает отправку формы.
+   *
+   * Выполняет локальную валидацию перед отправкой запроса
+   * и предотвращает повторную отправку во время выполнения операции.
+   */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 

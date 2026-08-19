@@ -1,11 +1,11 @@
 // app/lib/timezone/local-date.ts
 
 /**
- * Returns the current calendar date
- * in the user's timezone.
+ * Возвращает текущую календарную дату
+ * в часовом поясе пользователя в формате YYYY-MM-DD.
  *
- * Used to determine:
- * "What day is it for the user?"
+ * @param date Дата, относительно которой определяется календарный день.
+ * @param timeZone Часовой пояс пользователя в формате IANA.
  */
 export function getLocalDateString(date: Date, timeZone: string): string {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -19,25 +19,25 @@ export function getLocalDateString(date: Date, timeZone: string): string {
 }
 
 /**
- * Converts a YYYY-MM-DD calendar date
- * to a UTC-midnight Date.
+ * Преобразует календарную дату в формате YYYY-MM-DD
+ * в Date, соответствующий полуночи по UTC.
  *
- * Used for storing @db.Date values
- * and comparing calendar dates.
+ * Используется для хранения и сравнения значений Prisma @db.Date.
+ *
+ * @param dateString Календарная дата в формате YYYY-MM-DD.
  */
 export function dateStringToUtcDate(dateString: string): Date {
   return new Date(`${dateString}T00:00:00.000Z`);
 }
 
 /**
- * Returns a YYYY-MM-DD string directly
- * from a Date representing a Prisma @db.Date column.
+ * Возвращает календарную дату в формате YYYY-MM-DD
+ * из значения Date, представляющего колонку Prisma @db.Date.
  *
- * IMPORTANT:
- * The user's timezone is NOT used here.
+ * Часовой пояс пользователя здесь намеренно не используется,
+ * поскольку @db.Date хранит календарную дату, а не конкретный момент времени.
  *
- * @db.Date represents a calendar date:
- * 2026-08-10 means exactly August 10.
+ * @param date Значение Date, представляющее календарную дату.
  */
 export function getDateColumnString(date: Date): string {
   const year = date.getUTCFullYear();

@@ -3,15 +3,35 @@ import { Minus, Plus } from "lucide-react";
 
 import MaxRepsInput from "./MaxRepsInput";
 
+/**
+ * Пропсы счётчика максимального количества повторений.
+ */
 type MaxRepsCounterProps = {
+  /** Текущее количество повторений. */
   maxReps: number;
+
+  /** Текущее значение в поле ввода. */
   inputValue: string;
+
+  /** Показывает состояние загрузки и блокирует взаимодействие. */
   isLoading: boolean;
+
+  /** Запускает изменение количества повторений в указанном направлении. */
   onStartPress: (direction: 1 | -1) => void;
+
+  /** Останавливает изменение количества повторений. */
   onStopPress: () => void;
+
+  /** Обрабатывает изменение значения в поле ввода. */
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+/**
+ * Счётчик максимального количества повторений.
+ *
+ * Позволяет изменять значение кнопками увеличения и уменьшения
+ * или вводить его вручную через числовое поле.
+ */
 export default function MaxRepsCounter({
   maxReps,
   inputValue,

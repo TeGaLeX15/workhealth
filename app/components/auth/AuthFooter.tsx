@@ -1,6 +1,13 @@
 // app/components/auth/AuthFooter.tsx
 import { APP_VERSION } from "@/app/lib/app-version";
 
+/**
+ * Нижний блок страниц авторизации.
+ *
+ * Отображает название приложения и текущую версию Body OS.
+ *
+ * @returns Футер страницы авторизации.
+ */
 export default function AuthFooter() {
   return (
     <footer

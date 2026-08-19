@@ -5,6 +5,11 @@ import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme, ACCENTS } from "@/app/providers/theme-provider";
 import SettingSection from "@/app/components/settings/SettingSection";
 
+/**
+ * Настройки внешнего вида приложения.
+ *
+ * Позволяет выбрать режим темы и акцентный цвет интерфейса.
+ */
 export default function AppearanceSettings() {
   const { themeMode, setThemeMode, accentKey, setAccentKey, dark } = useTheme();
 

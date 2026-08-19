@@ -1,12 +1,23 @@
 // app/components/settings/SettingSection.tsx
 import type { ReactNode } from "react";
 
+/**
+ * Пропсы секции настроек.
+ */
 type SettingSectionProps = {
+  /** Заголовок секции. */
   title: string;
+
+  /** Краткое описание секции. */
   description: string;
+
+  /** Содержимое секции. */
   children: ReactNode;
 };
 
+/**
+ * Секция настроек с заголовком, описанием и содержимым.
+ */
 export default function SettingSection({
   title,
   description,

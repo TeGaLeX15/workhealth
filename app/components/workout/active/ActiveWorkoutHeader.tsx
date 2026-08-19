@@ -1,13 +1,45 @@
 // app/components/workout/active/ActiveWorkoutHeader.tsx
 import { Dumbbell, Trophy } from "lucide-react";
 
+/**
+ * Пропсы заголовка активной тренировки.
+ */
 type ActiveWorkoutHeaderProps = {
+  /**
+   * Порядковый номер тренировки.
+   */
   workoutNumber: number;
+
+  /**
+   * Количество завершённых подходов.
+   */
   completedSets: number;
+
+  /**
+   * Общее количество подходов.
+   */
   totalSets: number;
+
+  /**
+   * Определяет, завершена ли вся тренировка.
+   */
   isCompleted: boolean;
 };
 
+/**
+ * Отображает заголовок активной тренировки с её номером
+ * и текущим количеством выполненных подходов.
+ *
+ * Для завершённой тренировки вместо иконки гантели
+ * отображается трофей.
+ *
+ * @param props Пропсы компонента.
+ * @param props.workoutNumber Порядковый номер тренировки.
+ * @param props.completedSets Количество завершённых подходов.
+ * @param props.totalSets Общее количество подходов.
+ * @param props.isCompleted Определяет, завершена ли тренировка.
+ * @returns Разметка заголовка тренировки.
+ */
 export default function ActiveWorkoutHeader({
   workoutNumber,
   completedSets,

@@ -1,8 +1,14 @@
 // app/components/exercises/max-reps/MaxRepsError.tsx
 type MaxRepsErrorProps = {
+  /** Текст ошибки для отображения пользователю. */
   error: string;
 };
 
+/**
+ * Отображает сообщение об ошибке формы максимального количества повторений.
+ *
+ * Если ошибка отсутствует, компонент ничего не рендерит.
+ */
 export default function MaxRepsError({ error }: MaxRepsErrorProps) {
   if (!error) {
     return null;

@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
 
+/**
+ * Возвращает тренировку текущего пользователя вместе с упражнением,
+ * тренировочной неделей и подходами.
+ */
 export async function GET(
   _request: Request,
   {

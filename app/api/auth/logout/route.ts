@@ -2,6 +2,9 @@
 import { NextResponse } from "next/server";
 import { deleteSession } from "@/app/server/auth/session";
 
+/**
+ * Завершает текущую пользовательскую сессию.
+ */
 export async function POST() {
   try {
     await deleteSession();

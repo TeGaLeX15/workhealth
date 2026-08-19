@@ -10,6 +10,9 @@ type RouteContext = {
   }>;
 };
 
+/**
+ * Завершает подход текущей тренировки.
+ */
 export async function POST(_request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();

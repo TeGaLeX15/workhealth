@@ -3,13 +3,29 @@ import type { FC } from "react";
 
 import { formatDateRange, getWorkoutLabel } from "./utils";
 
+/**
+ * Пропсы заголовка тренировочной недели.
+ */
 type TrainingWeekHeaderProps = {
+  /** Номер тренировочной недели. */
   weekNumber: number;
+
+  /** Дата начала недели. */
   startDate: Date;
+
+  /** Дата окончания недели. */
   endDate: Date;
+
+  /** Количество тренировок в неделе. */
   workoutCount: number;
 };
 
+/**
+ * Заголовок тренировочной недели.
+ *
+ * Отображает номер недели, диапазон дат и количество запланированных
+ * тренировок с корректным склонением.
+ */
 const TrainingWeekHeader: FC<TrainingWeekHeaderProps> = ({
   weekNumber,
   startDate,

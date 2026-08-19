@@ -5,14 +5,32 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 
+/**
+ * Пропсы строки навигации в настройках.
+ */
 type SettingsNavigationRowProps = {
+  /** Адрес страницы, на которую ведёт строка. */
   href: string;
+
+  /** Иконка строки. */
   icon: ReactNode;
+
+  /** Название пункта. */
   label: string;
+
+  /** Краткое описание пункта. */
   description: string;
+
+  /** Отключает переход и отображает строку как недоступную. */
   disabled?: boolean;
 };
 
+/**
+ * Строка навигации настроек.
+ *
+ * Отображает иконку, название и описание пункта, а также стрелку перехода.
+ * В отключённом состоянии вместо ссылки рендерит недоступный элемент.
+ */
 export default function SettingsNavigationRow({
   href,
   icon,

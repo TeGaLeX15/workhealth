@@ -11,6 +11,16 @@ export type LoginResponse = {
   success?: boolean;
 };
 
+/**
+ * Выполняет вход пользователя в аккаунт.
+ *
+ * Отправляет email, пароль и часовой пояс
+ * на сервер и возвращает результат авторизации.
+ *
+ * @param params Данные для входа.
+ * @param signal Сигнал для отмены запроса.
+ * @returns Результат авторизации.
+ */
 export async function login(
   params: LoginParams,
   signal?: AbortSignal,

@@ -13,6 +13,16 @@ type ExercisesProps = {
   exercises: Exercise[];
 };
 
+/**
+ * Список упражнений пользователя.
+ *
+ * Отображает карточки доступных упражнений с их описанием.
+ * Если упражнения отсутствуют, показывает соответствующее
+ * информационное сообщение.
+ *
+ * @param exercises Список упражнений пользователя.
+ * @returns Список карточек упражнений или сообщение об отсутствии упражнений.
+ */
 export default function Exercises({ exercises }: ExercisesProps) {
   if (exercises.length === 0) {
     return (

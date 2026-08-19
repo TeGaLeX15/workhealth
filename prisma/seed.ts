@@ -1,6 +1,9 @@
+// prisma/seed.ts
+
 import "dotenv/config";
 
 import { PrismaClient } from "../app/generated/prisma/client";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({
@@ -11,6 +14,9 @@ const prisma = new PrismaClient({
   adapter,
 });
 
+/**
+ * Начальный набор упражнений для заполнения базы данных.
+ */
 const exercises = [
   {
     name: "Подтягивания",
@@ -30,6 +36,15 @@ const exercises = [
   },
 ];
 
+/**
+ * Заполняет базу данных начальными упражнениями.
+ *
+ * Для каждого упражнения используется `upsert`:
+ * если упражнение с таким `slug` уже существует, его название
+ * обновляется; в противном случае создаётся новая запись.
+ *
+ * @returns Promise, который завершается после заполнения базы данных.
+ */
 async function main() {
   for (const exercise of exercises) {
     await prisma.exercise.upsert({

@@ -1,8 +1,25 @@
 // app/components/workout/active/ActiveWorkoutProgress.tsx
+
+/**
+ * Пропсы компонента прогресса активной тренировки.
+ */
 type ActiveWorkoutProgressProps = {
+  /**
+   * Процент выполнения тренировки.
+   *
+   * Ожидается значение в диапазоне от `0` до `100`.
+   */
   progress: number;
 };
 
+/**
+ * Отображает индикатор прогресса текущей тренировки
+ * и процент её выполнения.
+ *
+ * @param props Пропсы компонента.
+ * @param props.progress Текущий процент выполнения тренировки.
+ * @returns Разметка индикатора прогресса.
+ */
 export default function ActiveWorkoutProgress({
   progress,
 }: ActiveWorkoutProgressProps) {

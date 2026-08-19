@@ -7,6 +7,23 @@ import { useRouter } from "next/navigation";
 const MIN_REPS = 1;
 const MAX_REPS = 1000;
 
+/**
+ * Управляет установкой личного максимума повторений для упражнения.
+ *
+ * Хук отвечает за:
+ * - изменение количества повторений через кнопки;
+ * - увеличение/уменьшение значения при удержании кнопки;
+ * - ручной ввод количества повторений;
+ * - валидацию и ограничение значения;
+ * - сохранение максимума на сервере;
+ * - создание новой тренировочной программы;
+ * - переход к созданной тренировке;
+ * - отображение состояния загрузки и ошибок.
+ *
+ * @param exerciseId Уникальный идентификатор упражнения.
+ *
+ * @returns Состояние и обработчики для управления максимумом повторений.
+ */
 export default function useMaxReps(exerciseId: string) {
   const router = useRouter();
 
@@ -19,8 +36,15 @@ export default function useMaxReps(exerciseId: string) {
 
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ─── Counter ──────────────────────────────────────────────────────────────
-
+  /**
+   * Изменяет количество максимальных повторений.
+   *
+   * Значение автоматически ограничивается диапазоном
+   * от MIN_REPS до MAX_REPS.
+   *
+   * @param amount Количество повторений для изменения.
+   * Может быть положительным или отрицательным.
+   */
   const changeReps = useCallback((amount: number) => {
     setMaxReps((current) => {
       const next = Math.min(MAX_REPS, Math.max(MIN_REPS, current + amount));
@@ -31,6 +55,10 @@ export default function useMaxReps(exerciseId: string) {
     });
   }, []);
 
+  /**
+   * Останавливает автоматическое изменение значения
+   * при удержании кнопки.
+   */
   const stopPress = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -43,6 +71,18 @@ export default function useMaxReps(exerciseId: string) {
     }
   }, []);
 
+  /**
+   * Запускает изменение количества повторений.
+   *
+   * При обычном нажатии значение изменяется один раз.
+   * При длительном удержании после небольшой задержки
+   * запускается автоматическое повторение с постепенно
+   * увеличивающейся скоростью.
+   *
+   * @param direction Направление изменения:
+   * 1 — увеличить количество повторений,
+   * -1 — уменьшить количество повторений.
+   */
   const startPress = useCallback(
     (direction: 1 | -1) => {
       if (isLoading) return;
@@ -71,8 +111,13 @@ export default function useMaxReps(exerciseId: string) {
     return () => stopPress();
   }, [stopPress]);
 
-  // ─── Input ────────────────────────────────────────────────────────────────
-
+  /**
+   * Обрабатывает ручной ввод количества повторений.
+   *
+   * Разрешает только целые положительные числа.
+   * Значение автоматически ограничивается диапазоном
+   * от MIN_REPS до MAX_REPS.
+   */
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const rawValue = event.target.value;
 
@@ -100,8 +145,16 @@ export default function useMaxReps(exerciseId: string) {
     setMaxReps(clampedValue);
   }
 
-  // ─── Submit ───────────────────────────────────────────────────────────────
-
+  /**
+   * Сохраняет установленный максимум повторений.
+   *
+   * После успешного сохранения:
+   * 1. создаёт новую тренировочную программу;
+   * 2. получает идентификатор первой тренировки;
+   * 3. перенаправляет пользователя на страницу тренировки.
+   *
+   * Во время выполнения повторная отправка блокируется.
+   */
   async function handleSubmit() {
     if (isLoading) return;
 

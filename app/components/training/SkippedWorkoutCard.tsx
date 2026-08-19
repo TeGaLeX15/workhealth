@@ -4,10 +4,20 @@ import type { FC } from "react";
 import type { Workout } from "./types";
 import { formatWorkoutDate, getStatusStyle } from "./utils";
 
+/**
+ * Пропсы карточки пропущенной тренировки.
+ */
 type SkippedWorkoutCardProps = {
+  /** Данные пропущенной тренировки. */
   workout: Workout;
 };
 
+/**
+ * Карточка пропущенной тренировки.
+ *
+ * Отображает дату, номер тренировки и её статус
+ * в неактивном визуальном состоянии.
+ */
 const SkippedWorkoutCard: FC<SkippedWorkoutCardProps> = ({ workout }) => {
   return (
     <div

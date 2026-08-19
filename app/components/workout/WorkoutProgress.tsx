@@ -1,17 +1,39 @@
 // app/components/WorkoutProgress.tsx
 import { Check, Coffee, Dumbbell } from "lucide-react";
 
+/**
+ * Представляет минимальные данные тренировочного подхода,
+ * необходимые для отображения прогресса тренировки.
+ */
 type WorkoutSet = {
   id: string;
   setNumber: number;
 };
 
+/**
+ * Свойства компонента прогресса тренировки.
+ */
 type WorkoutProgressProps = {
   sets: WorkoutSet[];
   currentIndex: number;
   isResting: boolean;
 };
 
+/**
+ * Отображает последовательность подходов тренировки,
+ * их текущее состояние и состояние отдыха между подходами.
+ *
+ * Завершённые подходы отображаются с отметкой выполнения,
+ * текущий подход выделяется акцентным цветом, а между подходами
+ * отображаются индикаторы отдыха.
+ *
+ * @param props - Свойства компонента.
+ * @param props.sets - Список подходов текущей тренировки.
+ * @param props.currentIndex - Индекс текущего незавершённого подхода.
+ * @param props.isResting - Находится ли пользователь сейчас на отдыхе.
+ *
+ * @returns Индикатор прогресса тренировки.
+ */
 export default function WorkoutProgress({
   sets,
   currentIndex,

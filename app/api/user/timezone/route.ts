@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
 
+/**
+ * Проверяет, является ли строка валидным IANA-часовым поясом.
+ */
 function isValidTimeZone(timeZone: string) {
   try {
     new Intl.DateTimeFormat("en-US", {
@@ -15,6 +18,12 @@ function isValidTimeZone(timeZone: string) {
   }
 }
 
+/**
+ * Обновляет часовой пояс текущего пользователя.
+ *
+ * Проверяет переданный timezone через Intl API и сохраняет
+ * его только при изменении текущего значения.
+ */
 export async function PUT(request: Request) {
   try {
     const user = await getCurrentUser();

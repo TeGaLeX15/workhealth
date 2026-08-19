@@ -11,11 +11,27 @@ import ActiveWorkoutAction from "./active/ActiveWorkoutAction";
 
 import type { ActiveWorkoutCardProps } from "./active/types";
 
+/**
+ * Отображает карточку текущей тренировки с её прогрессом,
+ * подходами и действием для продолжения или завершения.
+ *
+ * Если у тренировки нет подходов, отображается состояние
+ * с информацией об отсутствии подходов.
+ *
+ * @param props Пропсы компонента.
+ * @param props.workoutId Идентификатор тренировки.
+ * @param props.workoutNumber Порядковый номер тренировки.
+ * @param props.sets Список подходов текущей тренировки.
+ * @returns Разметка карточки активной тренировки.
+ */
 export default function ActiveWorkoutCard({
   workoutId,
   workoutNumber,
   sets,
 }: ActiveWorkoutCardProps) {
+  /**
+   * Отдельное состояние для тренировки без подходов.
+   */
   if (sets.length === 0) {
     return (
       <section
@@ -87,16 +103,38 @@ export default function ActiveWorkoutCard({
     );
   }
 
+  /**
+   * Количество завершённых подходов.
+   */
   const completedSets = sets.filter((set) => set.completed).length;
 
+  /**
+   * Общее количество подходов в тренировке.
+   */
   const totalSets = sets.length;
 
+  /**
+   * Индекс первого незавершённого подхода.
+   *
+   * Если все подходы завершены, значение равно `-1`.
+   */
   const currentSetIndex = sets.findIndex((set) => !set.completed);
 
+  /**
+   * Текущий незавершённый подход.
+   *
+   * Если все подходы завершены, значение равно `null`.
+   */
   const currentSet = currentSetIndex >= 0 ? sets[currentSetIndex] : null;
 
+  /**
+   * Определяет, завершены ли все подходы тренировки.
+   */
   const isCompleted = completedSets === totalSets;
 
+  /**
+   * Рассчитывает процент выполнения тренировки.
+   */
   const progress =
     totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
 

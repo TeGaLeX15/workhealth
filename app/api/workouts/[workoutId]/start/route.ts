@@ -9,6 +9,9 @@ import {
   getLocalDateString,
 } from "@/app/lib/timezone/local-date";
 
+/**
+ * Обрабатывает запрос на восстановление пароля.
+ */
 export async function POST(
   _request: Request,
   {
@@ -20,8 +23,6 @@ export async function POST(
   },
 ) {
   try {
-    // ─── Authentication ────────────────────────────────────────────
-
     const user = await getCurrentUser();
 
     if (!user) {
@@ -35,8 +36,6 @@ export async function POST(
       );
     }
 
-    // ─── Params ────────────────────────────────────────────────────
-
     const { workoutId } = await params;
 
     if (!workoutId) {
@@ -49,8 +48,6 @@ export async function POST(
         },
       );
     }
-
-    // ─── Workout ───────────────────────────────────────────────────
 
     const workout = await prisma.workout.findFirst({
       where: {
@@ -70,8 +67,6 @@ export async function POST(
       );
     }
 
-    // ─── Status ────────────────────────────────────────────────────
-
     if (workout.status !== "PLANNED") {
       return NextResponse.json(
         {
@@ -87,13 +82,8 @@ export async function POST(
       );
     }
 
-    // ─── Current local date ────────────────────────────────────────
-
     const todayString = getLocalDateString(new Date(), user.timezone);
-
     const today = dateStringToUtcDate(todayString);
-
-    // ─── Missed workout ────────────────────────────────────────────
 
     if (workout.scheduledDate < today) {
       await prisma.workout.update({
@@ -116,8 +106,6 @@ export async function POST(
       );
     }
 
-    // ─── Future workout ────────────────────────────────────────────
-
     if (workout.scheduledDate > today) {
       return NextResponse.json(
         {
@@ -129,8 +117,6 @@ export async function POST(
         },
       );
     }
-
-    // ─── Sequential training check ────────────────────────────────
 
     const previousUnfinishedWorkout = await prisma.workout.findFirst({
       where: {
@@ -182,8 +168,6 @@ export async function POST(
         },
       );
     }
-
-    // ─── Start workout ─────────────────────────────────────────────
 
     const updatedWorkout = await prisma.workout.update({
       where: {

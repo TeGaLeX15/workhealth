@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
 
+/**
+ * Возвращает список упражнений с персональными результатами пользователя.
+ */
 export async function GET() {
   try {
     const user = await getCurrentUser();

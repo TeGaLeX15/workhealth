@@ -7,6 +7,9 @@ import { createSession } from "@/app/server/auth/session";
 
 import { loginSchema } from "@/app/lib/validation/auth";
 
+/**
+ * Проверяет, является ли значение корректным IANA timezone.
+ */
 function isValidTimeZone(timeZone: string) {
   try {
     new Intl.DateTimeFormat("en-US", {
@@ -19,6 +22,12 @@ function isValidTimeZone(timeZone: string) {
   }
 }
 
+/**
+ * Аутентифицирует пользователя и создаёт сессию.
+ *
+ * Дополнительно синхронизирует timezone устройства с профилем
+ * и обновляет устаревший формат хеша пароля при успешном входе.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();

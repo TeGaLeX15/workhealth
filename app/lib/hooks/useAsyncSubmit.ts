@@ -6,9 +6,16 @@ import { useCallback, useRef, useState } from "react";
 const DEFAULT_TIMEOUT = 15_000;
 
 type AsyncSubmitOptions = {
+  /** Максимальное время выполнения операции в миллисекундах. */
   timeout?: number;
 };
 
+/**
+ * Извлекает понятное сообщение об ошибке из неизвестного значения.
+ *
+ * Если ошибка не содержит подходящего сообщения,
+ * возвращается стандартный текст.
+ */
 function getErrorMessage(error: unknown): string {
   if (typeof error === "string" && error.trim()) {
     return error;
@@ -27,10 +34,20 @@ function getErrorMessage(error: unknown): string {
   return "Не удалось выполнить операцию. Попробуй ещё раз.";
 }
 
+/**
+ * Проверяет, была ли ошибка вызвана отменой AbortController.
+ */
 function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
+/**
+ * Управляет асинхронной отправкой с защитой от повторного запуска,
+ * таймаутом, обработкой ошибок и состоянием завершения.
+ *
+ * Используется для операций, которые пользователь может запустить
+ * повторным нажатием, чтобы не допустить несколько одновременных запросов.
+ */
 export function useAsyncSubmit(options: AsyncSubmitOptions = {}) {
   const timeout = options.timeout ?? DEFAULT_TIMEOUT;
 
@@ -40,6 +57,16 @@ export function useAsyncSubmit(options: AsyncSubmitOptions = {}) {
 
   const submittingRef = useRef(false);
 
+  /**
+   * Запускает асинхронную операцию.
+   *
+   * Если операция уже выполняется, повторный запуск игнорируется.
+   * Операции передаётся AbortSignal, который автоматически отменяется
+   * после истечения заданного таймаута.
+   *
+   * @returns Результат операции или null при ошибке,
+   * таймауте либо повторном вызове.
+   */
   const execute = useCallback(
     async <T>(
       operation: (signal: AbortSignal) => Promise<T>,
@@ -90,10 +117,16 @@ export function useAsyncSubmit(options: AsyncSubmitOptions = {}) {
     [timeout],
   );
 
+  /**
+   * Очищает текущее сообщение об ошибке.
+   */
   const clearError = useCallback(() => {
     setError("");
   }, []);
 
+  /**
+   * Полностью сбрасывает состояние асинхронной операции.
+   */
   const reset = useCallback(() => {
     submittingRef.current = false;
 

@@ -1,16 +1,41 @@
 // app/components/workout/CancelledWorkout.tsx
 import Link from "next/link";
 
+/**
+ * Пропсы компонента отменённой тренировки.
+ */
 type CancelledWorkoutProps = {
+  /**
+   * Данные отменённой тренировки.
+   */
   workout: {
+    /**
+     * Упражнение, связанное с тренировкой.
+     */
     exercise: {
+      /**
+       * Название упражнения.
+       */
       name: string;
     };
   };
 };
 
+/**
+ * Цвет, используемый для обозначения отменённой тренировки.
+ */
 const cancelledColor = "#ef4444";
 
+/**
+ * Отображает состояние отменённой тренировки.
+ *
+ * Показывает причину недоступности тренировки, название упражнения
+ * и предоставляет переход обратно к списку тренировок.
+ *
+ * @param props Пропсы компонента.
+ * @param props.workout Данные отменённой тренировки.
+ * @returns Разметка экрана отменённой тренировки.
+ */
 export default function CancelledWorkout({ workout }: CancelledWorkoutProps) {
   return (
     <section className="mt-6" aria-labelledby="cancelled-workout-title">

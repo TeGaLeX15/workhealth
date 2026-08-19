@@ -8,6 +8,17 @@ interface AuthCardProps {
   footer?: ReactNode;
 }
 
+/**
+ * Карточка для содержимого страниц авторизации.
+ *
+ * Отображает заголовок, описание, основное содержимое
+ * и необязательный нижний блок.
+ *
+ * @param title Заголовок карточки.
+ * @param description Описание под заголовком.
+ * @param children Основное содержимое карточки.
+ * @param footer Необязательный нижний блок карточки.
+ */
 export default function AuthCard({
   title,
   description,

@@ -13,6 +13,18 @@ type StartWorkoutResponse = {
   error?: string;
 };
 
+/**
+ * Кнопка запуска тренировки.
+ *
+ * Отправляет запрос на сервер для запуска тренировки, предотвращает
+ * повторную отправку во время выполнения запроса и отображает состояния
+ * загрузки, успешного запуска и ошибки.
+ *
+ * @param props - Свойства компонента.
+ * @param props.workoutId - Идентификатор тренировки.
+ *
+ * @returns Кнопка запуска тренировки с обработкой состояний.
+ */
 export default function StartWorkoutButton({
   workoutId,
 }: StartWorkoutButtonProps) {
@@ -22,6 +34,11 @@ export default function StartWorkoutButton({
   const [isStarted, setIsStarted] = useState(false);
   const [error, setError] = useState("");
 
+  /**
+   * Запускает тренировку через API.
+   *
+   * После успешного запуска обновляет server-rendered состояние страницы.
+   */
   async function handleStart() {
     if (isLoading || isStarted) return;
 

@@ -1,8 +1,18 @@
 // app/components/exercises/ExerciseCardSkeleton.tsx
 type ExerciseCardSkeletonProps = {
+  /** Количество скелетонов карточек. */
   count?: number;
 };
 
+/**
+ * Скелетон списка карточек упражнений.
+ *
+ * Используется во время загрузки данных, чтобы сохранить
+ * структуру интерфейса и избежать резкого изменения layout.
+ *
+ * @param count Количество отображаемых скелетонов.
+ * @returns Набор скелетонов карточек упражнений.
+ */
 export default function ExerciseCardSkeleton({
   count = 4,
 }: ExerciseCardSkeletonProps) {
@@ -87,7 +97,6 @@ export default function ExerciseCardSkeleton({
               </div>
 
               {/* RECORD */}
-
               <div className="mt-3 flex items-center gap-2">
                 <div
                   className="

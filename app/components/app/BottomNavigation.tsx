@@ -6,6 +6,12 @@ import { usePathname } from "next/navigation";
 import { House, Dumbbell, ChartNoAxesColumn, Settings } from "lucide-react";
 import { useTheme } from "@/app/providers/theme-provider";
 
+/**
+ * Пункты основной навигации приложения.
+ *
+ * Используются в нижней навигационной панели
+ * на мобильных и компактных экранах.
+ */
 const navigation = [
   {
     href: "/",
@@ -29,11 +35,22 @@ const navigation = [
   },
 ];
 
+/**
+ * Нижняя основная навигация Body OS.
+ *
+ * Определяет активный раздел по текущему URL
+ * и скрывается во время активной тренировки,
+ * чтобы не отвлекать пользователя и не позволять
+ * случайно покинуть тренировочный экран.
+ */
 export default function BottomNavigation() {
   const pathname = usePathname();
   const { accent } = useTheme();
 
-  // Hide global navigation during an active workout.
+  /**
+   * Во время активной тренировки глобальная навигация
+   * не отображается.
+   */
   const isActiveWorkout = pathname.startsWith("/workout/");
 
   if (isActiveWorkout) {
@@ -71,6 +88,10 @@ export default function BottomNavigation() {
         "
       >
         {navigation.map((item) => {
+          /**
+           * Главная активна только на точном пути "/".
+           * Для остальных разделов учитываются вложенные маршруты.
+           */
           const isActive =
             item.href === "/"
               ? pathname === "/"
@@ -100,7 +121,7 @@ export default function BottomNavigation() {
                 color: isActive ? accent : "var(--muted)",
               }}
             >
-              {/* ICON */}
+              {/* Иконка пункта навигации */}
               <span
                 className="
                   flex
@@ -123,7 +144,7 @@ export default function BottomNavigation() {
                 />
               </span>
 
-              {/* LABEL */}
+              {/* Название пункта навигации */}
               <span
                 className="
                   mt-1.5

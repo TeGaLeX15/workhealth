@@ -2,11 +2,34 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
+/**
+ * Пропсы действия активной тренировки.
+ */
 type ActiveWorkoutActionProps = {
+  /**
+   * Идентификатор тренировки.
+   */
   workoutId: string;
+
+  /**
+   * Определяет, завершена ли тренировка.
+   *
+   * От этого зависит текст и визуальное оформление кнопки.
+   */
   isCompleted: boolean;
 };
 
+/**
+ * Отображает ссылку для перехода к странице тренировки.
+ *
+ * Для незавершённой тренировки предлагает продолжить выполнение,
+ * а для завершённой — перейти к просмотру тренировки.
+ *
+ * @param props Пропсы компонента.
+ * @param props.workoutId Идентификатор тренировки.
+ * @param props.isCompleted Определяет, завершена ли тренировка.
+ * @returns Разметка действия тренировки.
+ */
 export default function ActiveWorkoutAction({
   workoutId,
   isCompleted,

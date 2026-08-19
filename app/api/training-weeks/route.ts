@@ -1,10 +1,15 @@
 // app/api/training-weeks/route.ts
 import { NextResponse } from "next/server";
+
 import { prisma } from "@/app/server/db";
 import { getCurrentUser } from "@/app/server/auth/session";
 import { isSupportedExercise } from "@/app/lib/training/generate-workout";
 import { generateTrainingWeek } from "@/app/lib/training/generate-training-week";
 
+/**
+ * Возвращает текущую календарную дату пользователя
+ * в указанном часовом поясе в виде UTC-даты без времени.
+ */
 function getTodayInTimeZone(timeZone: string): Date {
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -16,9 +21,7 @@ function getTodayInTimeZone(timeZone: string): Date {
   const parts = formatter.formatToParts(new Date());
 
   const year = Number(parts.find((part) => part.type === "year")?.value);
-
   const month = Number(parts.find((part) => part.type === "month")?.value);
-
   const day = Number(parts.find((part) => part.type === "day")?.value);
 
   if (
@@ -34,10 +37,17 @@ function getTodayInTimeZone(timeZone: string): Date {
   return new Date(Date.UTC(year, month - 1, day));
 }
 
+/**
+ * Проверяет, соответствуют ли две даты одному календарному дню.
+ */
 function isSameCalendarDay(first: Date, second: Date): boolean {
   return first.getTime() === second.getTime();
 }
 
+/**
+ * Возвращает активную программу тренировок пользователя
+ * или создаёт новую тренировочную неделю для упражнения.
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
@@ -69,9 +79,6 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * Проверяем упражнение.
-     */
     const exercise = await prisma.exercise.findUnique({
       where: {
         id: exerciseId,
@@ -89,9 +96,6 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * Проверяем поддержку генерации.
-     */
     if (!isSupportedExercise(exercise.slug)) {
       return NextResponse.json(
         {
@@ -104,9 +108,6 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * Получаем максимум пользователя.
-     */
     const userExercise = await prisma.userExercise.findUnique({
       where: {
         userId_exerciseId: {
@@ -128,31 +129,15 @@ export async function POST(request: Request) {
     }
 
     const maxReps = userExercise.maxReps;
-
-    /*
-     * Используем timezone пользователя.
-     *
-     * Например:
-     *
-     * Asia/Almaty
-     * Europe/Moscow
-     * America/New_York
-     */
     const timeZone = user.timezone || "Asia/Almaty";
-
     const today = getTodayInTimeZone(timeZone);
 
-    /*
-     * Ищем активную неделю
-     * именно этого упражнения.
-     */
     const existingWeek = await prisma.trainingWeek.findFirst({
       where: {
         userId: user.id,
         exerciseId: exercise.id,
         status: "ACTIVE",
       },
-
       include: {
         workouts: {
           orderBy: {
@@ -162,14 +147,7 @@ export async function POST(request: Request) {
       },
     });
 
-    /*
-     * Если активная неделя существует —
-     * используем её.
-     */
     if (existingWeek) {
-      /*
-       * 1. Сначала ищем тренировку сегодня.
-       */
       const todayWorkout = existingWeek.workouts.find((workout) => {
         const workoutDate = new Date(workout.scheduledDate);
 
@@ -184,11 +162,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             trainingWeek: existingWeek,
-
             workouts: existingWeek.workouts,
-
             trainingWeekId: existingWeek.id,
-
             workoutId: todayWorkout.id,
           },
           {
@@ -197,10 +172,6 @@ export async function POST(request: Request) {
         );
       }
 
-      /*
-       * 2. Если сегодня тренировки нет —
-       * ищем ближайшую будущую.
-       */
       const upcomingWorkout = existingWeek.workouts.find((workout) => {
         const workoutDate = new Date(workout.scheduledDate);
 
@@ -215,11 +186,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             trainingWeek: existingWeek,
-
             workouts: existingWeek.workouts,
-
             trainingWeekId: existingWeek.id,
-
             workoutId: upcomingWorkout.id,
           },
           {
@@ -228,14 +196,7 @@ export async function POST(request: Request) {
         );
       }
 
-      /*
-       * 3. Будущих тренировок нет.
-       *
-       * Значит пользователь мог пропустить
-       * тренировку в прошлом.
-       *
-       * Возвращаем первую незавершённую.
-       */
+      // Если будущих тренировок нет, возвращаем первую незавершённую.
       const unfinishedWorkout = existingWeek.workouts.find(
         (workout) =>
           workout.status !== "COMPLETED" && workout.status !== "CANCELLED",
@@ -245,11 +206,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             trainingWeek: existingWeek,
-
             workouts: existingWeek.workouts,
-
             trainingWeekId: existingWeek.id,
-
             workoutId: unfinishedWorkout.id,
           },
           {
@@ -258,17 +216,10 @@ export async function POST(request: Request) {
         );
       }
 
-      /*
-       * 4. Все тренировки недели
-       * завершены или отменены.
-       *
-       * Закрываем неделю.
-       */
       await prisma.trainingWeek.update({
         where: {
           id: existingWeek.id,
         },
-
         data: {
           status: "COMPLETED",
           completedAt: new Date(),
@@ -276,15 +227,11 @@ export async function POST(request: Request) {
       });
     }
 
-    /*
-     * Определяем номер следующей недели.
-     */
     const lastWeek = await prisma.trainingWeek.findFirst({
       where: {
         userId: user.id,
         exerciseId: exercise.id,
       },
-
       orderBy: {
         weekNumber: "desc",
       },
@@ -292,10 +239,6 @@ export async function POST(request: Request) {
 
     const weekNumber = (lastWeek?.weekNumber ?? 0) + 1;
 
-    /*
-     * Генерируем новую неделю
-     * в timezone пользователя.
-     */
     const generatedWeek = generateTrainingWeek(
       exercise.slug,
       maxReps,
@@ -303,24 +246,15 @@ export async function POST(request: Request) {
       timeZone,
     );
 
-    /*
-     * Создаём неделю и все тренировки
-     * одной транзакцией.
-     */
     const result = await prisma.$transaction(async (tx) => {
       const trainingWeek = await tx.trainingWeek.create({
         data: {
           userId: user.id,
           exerciseId: exercise.id,
-
           weekNumber,
-
           maxReps,
-
           startDate: generatedWeek.startDate,
-
           endDate: generatedWeek.endDate,
-
           status: "ACTIVE",
         },
       });
@@ -329,21 +263,14 @@ export async function POST(request: Request) {
         await tx.workout.create({
           data: {
             trainingWeekId: trainingWeek.id,
-
             userId: user.id,
-
             exerciseId: exercise.id,
-
             workoutNumber: generatedWorkout.workoutNumber,
-
             scheduledDate: generatedWorkout.scheduledDate,
-
             status: "PLANNED",
-
             sets: {
               create: generatedWorkout.sets.map((set) => ({
                 setNumber: set.setNumber,
-
                 targetReps: set.targetReps,
               })),
             },
@@ -355,7 +282,6 @@ export async function POST(request: Request) {
         where: {
           trainingWeekId: trainingWeek.id,
         },
-
         orderBy: {
           scheduledDate: "asc",
         },
@@ -376,11 +302,8 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         trainingWeek: result.trainingWeek,
-
         workouts: result.workouts,
-
         trainingWeekId: result.trainingWeek.id,
-
         workoutId: firstWorkout.id,
       },
       {

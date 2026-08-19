@@ -132,12 +132,22 @@ const ACCENT_STORAGE_KEY = "bodyos-accent";
 const DEFAULT_THEME: ThemeMode = "system";
 const DEFAULT_ACCENT: AccentKey = "green";
 
-/* ─── Validation ─────────────────────────────────────────────────────────── */
-
+/**
+ * Проверяет, является ли значение допустимым режимом темы.
+ *
+ * @param value Значение для проверки.
+ * @returns `true`, если значение является допустимым режимом темы.
+ */
 function isThemeMode(value: unknown): value is ThemeMode {
   return value === "light" || value === "dark" || value === "system";
 }
 
+/**
+ * Проверяет, является ли значение допустимым ключом акцентного цвета.
+ *
+ * @param value Значение для проверки.
+ * @returns `true`, если значение является допустимым ключом акцента.
+ */
 function isAccentKey(value: unknown): value is AccentKey {
   return (
     value === "green" ||
@@ -153,8 +163,11 @@ function isAccentKey(value: unknown): value is AccentKey {
   );
 }
 
-/* ─── Local storage ──────────────────────────────────────────────────────── */
-
+/**
+ * Получает сохранённый режим темы из localStorage.
+ *
+ * @returns Сохранённый режим темы или значение по умолчанию.
+ */
 function getStoredTheme(): ThemeMode {
   if (typeof window === "undefined") {
     return DEFAULT_THEME;
@@ -169,6 +182,11 @@ function getStoredTheme(): ThemeMode {
   }
 }
 
+/**
+ * Получает сохранённый акцентный цвет из localStorage.
+ *
+ * @returns Сохранённый акцент или значение по умолчанию.
+ */
 function getStoredAccent(): AccentKey {
   if (typeof window === "undefined") {
     return DEFAULT_ACCENT;
@@ -183,10 +201,14 @@ function getStoredAccent(): AccentKey {
   }
 }
 
-/* ─── Store ──────────────────────────────────────────────────────────────── */
-
 const listeners = new Set<() => void>();
 
+/**
+ * Подписывает компонент на изменения настроек темы.
+ *
+ * @param callback Функция, вызываемая при изменении настроек.
+ * @returns Функция для отмены подписки.
+ */
 function subscribeSettings(callback: () => void) {
   listeners.add(callback);
 
@@ -195,32 +217,49 @@ function subscribeSettings(callback: () => void) {
   };
 }
 
+/**
+ * Уведомляет подписчиков об изменении настроек темы.
+ */
 function notifySettingsChanged() {
   listeners.forEach((listener) => listener());
 }
 
+/**
+ * Сохраняет режим темы в localStorage и уведомляет подписчиков.
+ *
+ * @param theme Новый режим темы.
+ */
 function saveTheme(theme: ThemeMode) {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
-    // Ignore storage errors.
+    // Ошибки localStorage не должны прерывать работу приложения.
   }
 
   notifySettingsChanged();
 }
 
+/**
+ * Сохраняет акцентный цвет в localStorage и уведомляет подписчиков.
+ *
+ * @param accent Новый акцентный цвет.
+ */
 function saveAccent(accent: AccentKey) {
   try {
     window.localStorage.setItem(ACCENT_STORAGE_KEY, accent);
   } catch {
-    // Ignore storage errors.
+    // Ошибки localStorage не должны прерывать работу приложения.
   }
 
   notifySettingsChanged();
 }
 
-/* ─── System theme ───────────────────────────────────────────────────────── */
-
+/**
+ * Подписывает компонент на изменения системной темы.
+ *
+ * @param callback Функция, вызываемая при изменении системной темы.
+ * @returns Функция для отмены подписки.
+ */
 function subscribeSystemTheme(callback: () => void) {
   if (typeof window === "undefined") {
     return () => {};
@@ -235,6 +274,11 @@ function subscribeSystemTheme(callback: () => void) {
   };
 }
 
+/**
+ * Определяет, используется ли тёмная системная тема.
+ *
+ * @returns `true`, если система использует тёмную тему.
+ */
 function getSystemTheme() {
   if (typeof window === "undefined") {
     return false;
@@ -243,11 +287,14 @@ function getSystemTheme() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+/**
+ * Возвращает значение системной темы для серверного рендера.
+ *
+ * @returns `false`, так как сервер не имеет доступа к системным настройкам.
+ */
 function getServerSystemTheme() {
   return false;
 }
-
-/* ─── Context ────────────────────────────────────────────────────────────── */
 
 type ThemeContextValue = {
   themeMode: ThemeMode;
@@ -266,8 +313,12 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-/* ─── Theme provider ────────────────────────────────────────────────────── */
-
+/**
+ * Провайдер настроек темы и акцентного цвета приложения.
+ *
+ * Хранит настройки в localStorage, отслеживает системную тему
+ * и синхронизирует выбранные значения с CSS-переменными документа.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeMode = useSyncExternalStore(
     subscribeSettings,
@@ -298,8 +349,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setAccentKey = useCallback((accent: AccentKey) => {
     saveAccent(accent);
   }, []);
-
-  /* ─── DOM / system UI synchronization ─────────────────────────────────── */
 
   useEffect(() => {
     const root = document.documentElement;
@@ -363,8 +412,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/* ─── Hook ───────────────────────────────────────────────────────────────── */
-
+/**
+ * Возвращает настройки темы текущего приложения.
+ *
+ * @returns Значения и методы управления темой.
+ * @throws Ошибку, если хук используется вне `ThemeProvider`.
+ */
 export function useTheme() {
   const context = useContext(ThemeContext);
 

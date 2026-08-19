@@ -2,12 +2,41 @@
 import { Check } from "lucide-react";
 import type { WorkoutSet } from "./types";
 
+/**
+ * Пропсы компонента со списком подходов активной тренировки.
+ */
 type ActiveWorkoutSetsProps = {
+  /**
+   * Список подходов тренировки.
+   */
   sets: WorkoutSet[];
+
+  /**
+   * Индекс текущего незавершённого подхода.
+   *
+   * Равно `-1`, если незавершённых подходов нет.
+   */
   currentSetIndex: number;
+
+  /**
+   * Определяет, завершена ли вся тренировка.
+   */
   isCompleted: boolean;
 };
 
+/**
+ * Отображает последовательность подходов активной тренировки
+ * и визуально выделяет завершённые и текущий подходы.
+ *
+ * Для завершённых подходов отображается иконка выполнения,
+ * для остальных — номер подхода и количество повторений.
+ *
+ * @param props Пропсы компонента.
+ * @param props.sets Список подходов тренировки.
+ * @param props.currentSetIndex Индекс текущего незавершённого подхода.
+ * @param props.isCompleted Определяет, завершена ли вся тренировка.
+ * @returns Разметка списка подходов.
+ */
 export default function ActiveWorkoutSets({
   sets,
   currentSetIndex,
@@ -27,8 +56,17 @@ export default function ActiveWorkoutSets({
       >
         <div className="flex gap-2">
           {sets.map((set, index) => {
+            /**
+             * Определяет, завершён ли текущий подход.
+             */
             const completed = set.completed;
 
+            /**
+             * Определяет, является ли подход текущим.
+             *
+             * При завершённой тренировке текущий подход
+             * дополнительно не выделяется.
+             */
             const current = !isCompleted && index === currentSetIndex;
 
             return (

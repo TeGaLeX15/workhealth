@@ -10,6 +10,14 @@ type SendPasswordResetEmailParams = {
   resetUrl: string;
 };
 
+/**
+ * Отправляет пользователю письмо со ссылкой для восстановления пароля.
+ *
+ * @param to email получателя.
+ * @param resetUrl одноразовая ссылка для установки нового пароля.
+ *
+ * @throws {Error} Если сервис отправки письма вернул ошибку.
+ */
 export async function sendPasswordResetEmail({
   to,
   resetUrl,

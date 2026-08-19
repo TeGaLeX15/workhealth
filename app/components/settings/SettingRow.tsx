@@ -1,13 +1,26 @@
 // app/components/settings/SettingRow.tsx
 import type { ReactNode } from "react";
 
+/**
+ * Пропсы строки настройки.
+ */
 type SettingRowProps = {
+  /** Иконка настройки. */
   icon: ReactNode;
+
+  /** Название настройки. */
   label: string;
+
+  /** Текущее значение настройки. */
   value: string;
+
+  /** Указывает, является ли строка последней в секции. */
   last?: boolean;
 };
 
+/**
+ * Строка настройки с иконкой, названием и текущим значением.
+ */
 export default function SettingRow({
   icon,
   label,

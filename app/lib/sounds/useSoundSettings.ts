@@ -11,6 +11,15 @@ import {
   type SoundSettings,
 } from "./settings";
 
+/**
+ * Возвращает текущие настройки звука
+ * и подписывает компонент на их изменения.
+ *
+ * Использует useSyncExternalStore для корректной
+ * синхронизации внешнего хранилища с React.
+ *
+ * @returns Текущие настройки звука.
+ */
 export function useSoundSettings(): SoundSettings {
   return useSyncExternalStore(
     subscribeToSoundSettings,
@@ -19,6 +28,11 @@ export function useSoundSettings(): SoundSettings {
   );
 }
 
+/**
+ * Возвращает функцию для обновления настроек звука.
+ *
+ * @returns Функция обновления настроек звука.
+ */
 export function useUpdateSoundSettings() {
   return updateSoundSettings;
 }

@@ -5,6 +5,13 @@ import { prisma } from "@/app/server/db";
 import { hashPassword } from "@/app/server/auth/password";
 import { hashPasswordResetToken } from "@/app/server/auth/password-reset";
 
+/**
+ * Устанавливает новый пароль по действующему токену восстановления.
+ *
+ * После успешной смены пароля токен помечается использованным,
+ * все активные сессии пользователя завершаются, а остальные
+ * неиспользованные токены восстановления становятся недействительными.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();

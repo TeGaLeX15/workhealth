@@ -1,11 +1,25 @@
 // app/lib/api/client.ts
+
+/**
+ * Структура ошибки, которую API может вернуть клиенту.
+ */
 export type ApiErrorResponse = {
   error?: unknown;
 };
 
+/**
+ * Ошибка HTTP-запроса к API.
+ *
+ * Помимо сообщения содержит HTTP-статус ответа,
+ * чтобы вызывающий код мог различать типы ошибок.
+ */
 export class ApiError extends Error {
   readonly status: number;
 
+  /**
+   * @param message Сообщение об ошибке.
+   * @param status HTTP-статус ответа.
+   */
   constructor(message: string, status: number) {
     super(message);
 
@@ -14,6 +28,13 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Извлекает сообщение об ошибке из ответа сервера.
+ *
+ * @param data Данные, полученные от API.
+ * @returns Сообщение об ошибке или пустую строку,
+ * если корректное сообщение отсутствует.
+ */
 function getServerError(data: unknown): string {
   if (!data || typeof data !== "object") {
     return "";
@@ -32,6 +53,16 @@ function getServerError(data: unknown): string {
   return error.trim();
 }
 
+/**
+ * Разбирает тело HTTP-ответа.
+ *
+ * JSON обрабатывается только для ответов
+ * с соответствующим Content-Type.
+ *
+ * @param response HTTP-ответ сервера.
+ * @returns Распарсенные данные или null,
+ * если тело отсутствует либо не удалось его разобрать.
+ */
 async function parseResponseBody(response: Response): Promise<unknown> {
   const contentType = response.headers.get("content-type");
 
@@ -46,6 +77,18 @@ async function parseResponseBody(response: Response): Promise<unknown> {
   }
 }
 
+/**
+ * Выполняет HTTP-запрос к API и обрабатывает его ответ.
+ *
+ * При успешном ответе возвращает данные указанного типа.
+ * При ошибке сервера выбрасывает ApiError с сообщением
+ * и HTTP-статусом ответа.
+ *
+ * @param url URL API-запроса.
+ * @param options Параметры HTTP-запроса.
+ * @returns Данные ответа.
+ * @throws ApiError Если сервер вернул неуспешный HTTP-статус.
+ */
 export async function apiClient<T>(
   url: string,
   options: RequestInit = {},

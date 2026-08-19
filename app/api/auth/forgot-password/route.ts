@@ -7,6 +7,12 @@ import { ensureMinimumResponseTime } from "@/app/server/security/timing";
 const MINIMUM_RESPONSE_TIME_MS = 1200;
 const RESPONSE_JITTER_MS = 300;
 
+/**
+ * Обрабатывает запрос на восстановление пароля.
+ *
+ * Использует минимальное время ответа со случайным отклонением,
+ * чтобы затруднить определение существования аккаунта по времени ответа.
+ */
 export async function POST(request: Request) {
   const startedAt = Date.now();
 

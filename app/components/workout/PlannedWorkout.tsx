@@ -43,15 +43,26 @@ export default function PlannedWorkout({
     0,
   );
 
-  // scheduledDate is a calendar date from Prisma @db.Date.
-  // Do not convert it through the user's timezone.
+  /*
+   * scheduledDate — календарная дата из Prisma @db.Date.
+   *
+   * Не преобразуем её через часовой пояс пользователя,
+   * чтобы дата тренировки не сместилась на соседний день.
+   */
   const scheduledDateString = getDateColumnString(workout.scheduledDate);
 
-  // Determine today's date in the user's timezone.
+  /*
+   * Получаем сегодняшнюю календарную дату
+   * в часовом поясе пользователя.
+   */
   const todayString = getLocalDateString(new Date(), timeZone);
 
   const isToday = scheduledDateString === todayString;
 
+  /*
+   * Дата из @db.Date интерпретируется как календарная дата в UTC,
+   * поэтому для отображения используем UTC.
+   */
   const dateLabel = isToday
     ? "Сегодня"
     : getDateLabel(workout.scheduledDate, "UTC");
@@ -62,7 +73,7 @@ export default function PlannedWorkout({
 
   return (
     <section>
-      {/* HERO */}
+      {/* ОСНОВНОЙ БЛОК */}
       <div
         className="
           relative
@@ -79,7 +90,7 @@ export default function PlannedWorkout({
           borderColor: "var(--border)",
         }}
       >
-        {/* TOP */}
+        {/* ВЕРХНЯЯ СТРОКА */}
         <div className="flex items-center justify-between gap-3">
           <div
             className="
@@ -127,7 +138,7 @@ export default function PlannedWorkout({
           </span>
         </div>
 
-        {/* EXERCISE + SUBTITLE */}
+        {/* НАЗВАНИЕ УПРАЖНЕНИЯ */}
         <div className="mt-4">
           <h2
             className="
@@ -158,7 +169,7 @@ export default function PlannedWorkout({
           </p>
         </div>
 
-        {/* MAIN METRIC */}
+        {/* ОСНОВНОЙ ПОКАЗАТЕЛЬ */}
         <div
           className="
             mt-6
@@ -200,7 +211,7 @@ export default function PlannedWorkout({
             </span>
           </div>
 
-          {/* SET COUNT */}
+          {/* КОЛИЧЕСТВО ПОДХОДОВ */}
           <div
             className="
               mb-0.5
@@ -240,7 +251,7 @@ export default function PlannedWorkout({
           </div>
         </div>
 
-        {/* DIVIDER */}
+        {/* РАЗДЕЛИТЕЛЬ */}
         <div
           className="mt-5 h-px w-full"
           style={{
@@ -248,7 +259,7 @@ export default function PlannedWorkout({
           }}
         />
 
-        {/* FOOTER */}
+        {/* НИЖНЯЯ СТРОКА */}
         <div
           className="
             mt-3
@@ -279,10 +290,10 @@ export default function PlannedWorkout({
         </div>
       </div>
 
-      {/* PLAN */}
+      {/* ПЛАН ТРЕНИРОВКИ */}
       <WorkoutPlan sets={workout.sets} />
 
-      {/* ACTION */}
+      {/* ДЕЙСТВИЕ */}
       <div className="mt-5">
         {canStart ? (
           <StartWorkoutButton workoutId={workout.id} />

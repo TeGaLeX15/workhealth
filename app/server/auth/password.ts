@@ -8,6 +8,17 @@ const scryptAsync = promisify(scrypt);
 const KEY_LENGTH = 64;
 const SALT_LENGTH = 16;
 
+/**
+ * Хеширует пароль с использованием scrypt.
+ *
+ * Результат содержит соль и производный ключ,
+ * разделённые двоеточием:
+ *
+ * `salt:derivedKey`
+ *
+ * @param password Пароль в открытом виде.
+ * @returns Хеш пароля с солью и производным ключом.
+ */
 export async function hashPassword(password: string) {
   const salt = randomBytes(SALT_LENGTH);
 
@@ -16,9 +27,21 @@ export async function hashPassword(password: string) {
   return `${salt.toString("hex")}:${derivedKey.toString("hex")}`;
 }
 
+/**
+ * Проверяет пароль относительно сохранённого хеша.
+ *
+ * Сначала проверяется актуальный формат scrypt.
+ * Если хеш не соответствует формату scrypt,
+ * используется bcrypt для обратной совместимости
+ * с существующими аккаунтами.
+ *
+ * @param password Пароль в открытом виде.
+ * @param passwordHash Сохранённый хеш пароля.
+ * @returns `true`, если пароль совпадает с хешем, иначе `false`.
+ */
 export async function verifyPassword(password: string, passwordHash: string) {
   /*
-   * Новый формат:
+   * Текущий формат scrypt:
    *
    * salt:derivedKey
    */
@@ -50,10 +73,10 @@ export async function verifyPassword(password: string, passwordHash: string) {
   }
 
   /*
-   * Старый bcrypt-формат.
+   * Старый формат bcrypt.
    *
-   * Используется только для миграции
-   * существующих аккаунтов.
+   * Оставлен только для обратной совместимости
+   * и миграции существующих аккаунтов.
    */
   try {
     return await bcrypt.compare(password, passwordHash);

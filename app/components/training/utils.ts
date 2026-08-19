@@ -1,6 +1,12 @@
 // app/components/training/utils.ts
 import type { Workout, WorkoutSet, WorkoutStatus } from "./types";
 
+/**
+ * Возвращает текстовую метку статуса тренировки.
+ *
+ * @param status - Статус тренировки.
+ * @returns Локализованное название статуса.
+ */
 export function getStatusLabel(status: WorkoutStatus) {
   switch (status) {
     case "PLANNED":
@@ -20,6 +26,12 @@ export function getStatusLabel(status: WorkoutStatus) {
   }
 }
 
+/**
+ * Возвращает стили для отображения статуса тренировки.
+ *
+ * @param status - Статус тренировки.
+ * @returns Объект CSS-стилей для бейджа статуса.
+ */
 export function getStatusStyle(status: WorkoutStatus) {
   switch (status) {
     case "IN_PROGRESS":
@@ -57,6 +69,12 @@ export function getStatusStyle(status: WorkoutStatus) {
   }
 }
 
+/**
+ * Возвращает стили карточки тренировки в зависимости от её статуса.
+ *
+ * @param status - Статус тренировки.
+ * @returns Объект CSS-стилей для карточки.
+ */
 export function getWorkoutCardStyle(status: WorkoutStatus) {
   switch (status) {
     case "IN_PROGRESS":
@@ -89,6 +107,13 @@ export function getWorkoutCardStyle(status: WorkoutStatus) {
   }
 }
 
+/**
+ * Форматирует диапазон дат тренировки.
+ *
+ * @param startDate - Дата начала периода.
+ * @param endDate - Дата окончания периода.
+ * @returns Диапазон дат в русском формате.
+ */
 export function formatDateRange(startDate: Date, endDate: Date) {
   const formatter = new Intl.DateTimeFormat("ru-RU", {
     day: "numeric",
@@ -98,6 +123,12 @@ export function formatDateRange(startDate: Date, endDate: Date) {
   return `${formatter.format(startDate)} — ${formatter.format(endDate)}`;
 }
 
+/**
+ * Форматирует дату тренировки для компактного отображения.
+ *
+ * @param date - Дата тренировки.
+ * @returns Отформатированная дата с сокращёнными днём недели и месяцем.
+ */
 export function formatWorkoutDate(date: Date) {
   const formatter = new Intl.DateTimeFormat("ru-RU", {
     weekday: "short",
@@ -108,14 +139,32 @@ export function formatWorkoutDate(date: Date) {
   return formatter.format(date).replace(/\.$/, "");
 }
 
+/**
+ * Вычисляет общее количество целевых повторений во всех подходах.
+ *
+ * @param sets - Список подходов тренировки.
+ * @returns Общее количество повторений.
+ */
 export function getTotalReps(sets: WorkoutSet[]) {
   return sets.reduce((total, set) => total + set.targetReps, 0);
 }
 
+/**
+ * Подсчитывает количество выполненных подходов.
+ *
+ * @param sets - Список подходов тренировки.
+ * @returns Количество выполненных подходов.
+ */
 export function getCompletedSets(sets: WorkoutSet[]) {
   return sets.filter((set) => set.completed).length;
 }
 
+/**
+ * Вычисляет процент выполнения тренировки по завершённым подходам.
+ *
+ * @param sets - Список подходов тренировки.
+ * @returns Процент выполнения от 0 до 100.
+ */
 export function getWorkoutProgress(sets: WorkoutSet[]) {
   if (sets.length === 0) {
     return 0;
@@ -126,6 +175,12 @@ export function getWorkoutProgress(sets: WorkoutSet[]) {
   return Math.round((completedSets / sets.length) * 100);
 }
 
+/**
+ * Возвращает правильную форму слова «подход» для указанного количества.
+ *
+ * @param count - Количество подходов.
+ * @returns Склонённая форма слова «подход».
+ */
 export function getWorkoutSetLabel(count: number) {
   if (count === 1) {
     return "подход";
@@ -138,6 +193,12 @@ export function getWorkoutSetLabel(count: number) {
   return "подходов";
 }
 
+/**
+ * Возвращает правильную форму слова «тренировка» для указанного количества.
+ *
+ * @param count - Количество тренировок.
+ * @returns Склонённая форма слова «тренировка».
+ */
 export function getWorkoutLabel(count: number) {
   if (count === 1) {
     return "тренировка";
@@ -150,6 +211,12 @@ export function getWorkoutLabel(count: number) {
   return "тренировок";
 }
 
+/**
+ * Находит индекс текущего незавершённого подхода.
+ *
+ * @param workout - Тренировка с набором подходов.
+ * @returns Индекс первого незавершённого подхода или `-1`, если все подходы выполнены.
+ */
 export function getCurrentSetIndex(workout: Workout) {
   return workout.sets.findIndex((set) => !set.completed);
 }

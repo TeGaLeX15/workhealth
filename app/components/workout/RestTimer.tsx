@@ -19,6 +19,25 @@ const VIBRATION_DURATION = 200;
 const COUNTDOWN_SOUND = "/sounds/rest-countdown.mp3";
 const COMPLETE_SOUND = "/sounds/rest-complete.mp3";
 
+/**
+ * Управляет звуковыми и вибрационными событиями таймера отдыха.
+ *
+ * Компонент не отображает UI. Он отслеживает состояние таймера,
+ * воспроизводит звуки обратного отсчёта и завершения отдыха,
+ * вызывает вибрацию при завершении и уведомляет родительский
+ * компонент о завершении периода отдыха.
+ *
+ * Для воспроизведения звуков используется Web Audio API.
+ *
+ * @param props - Свойства компонента.
+ * @param props.restSeconds - Количество оставшихся секунд отдыха.
+ * @param props.isResting - Находится ли тренировка в состоянии отдыха.
+ * @param props.countdownEnabled - Включён ли звук обратного отсчёта.
+ * @param props.completeEnabled - Включён ли звук завершения отдыха.
+ * @param props.onComplete - Обработчик завершения периода отдыха.
+ *
+ * @returns Всегда возвращает `null`, так как компонент не содержит UI.
+ */
 export default function RestTimer({
   restSeconds,
   isResting,
@@ -38,15 +57,16 @@ export default function RestTimer({
   const onCompleteRef = useRef(onComplete);
 
   /*
-   * Keep the latest completion callback without
-   * restarting the timer event effect.
+   * Сохраняем актуальный обработчик завершения
+   * без перезапуска эффекта обработки таймера.
    */
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
   /*
-   * Get or create the Web Audio context.
+   * Получает существующий или создаёт новый
+   * контекст Web Audio.
    */
   const getAudioContext = useCallback(async () => {
     if (typeof window === "undefined") {
@@ -79,14 +99,14 @@ export default function RestTimer({
   }, []);
 
   /*
-   * Load and decode a sound.
+   * Загружает и декодирует звуковой файл.
    */
   const loadSound = useCallback(
     async (context: AudioContext, url: string): Promise<AudioBuffer> => {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`Failed to load sound: ${url}`);
+        throw new Error(`Не удалось загрузить звук: ${url}`);
       }
 
       const arrayBuffer = await response.arrayBuffer();
@@ -97,9 +117,10 @@ export default function RestTimer({
   );
 
   /*
-   * Prepare all rest sounds.
+   * Подготавливает все звуки таймера отдыха.
    *
-   * Audio is loaded when at least one rest sound is enabled.
+   * Звуки загружаются, если включён хотя бы один
+   * из параметров звукового сопровождения.
    */
   const prepareAudio = useCallback(async () => {
     if (!countdownEnabled && !completeEnabled) {
@@ -131,14 +152,14 @@ export default function RestTimer({
       countdownBufferRef.current = countdownBuffer;
       completeBufferRef.current = completeBuffer;
     } catch {
-      // Audio is optional.
+      // Звуковое сопровождение необязательно.
     } finally {
       isLoadingRef.current = false;
     }
   }, [countdownEnabled, completeEnabled, getAudioContext, loadSound]);
 
   /*
-   * Play a decoded sound.
+   * Воспроизводит декодированный звуковой буфер.
    */
   const playSound = useCallback(
     async (buffer: AudioBuffer | null) => {
@@ -162,7 +183,8 @@ export default function RestTimer({
   );
 
   /*
-   * Prepare audio whenever at least one sound is enabled.
+   * Подготавливает звуки, если включено хотя бы одно
+   * звуковое событие таймера.
    */
   useEffect(() => {
     if (!countdownEnabled && !completeEnabled) {
@@ -173,7 +195,7 @@ export default function RestTimer({
   }, [countdownEnabled, completeEnabled, prepareAudio]);
 
   /*
-   * Handle timer events.
+   * Обрабатывает события таймера.
    */
   useEffect(() => {
     if (!isResting) {
@@ -188,7 +210,7 @@ export default function RestTimer({
     previousSecondsRef.current = restSeconds;
 
     /*
-     * Ignore the first render of a new rest period.
+     * Игнорируем первое обновление нового периода отдыха.
      */
     if (previousSeconds === null) {
       completedRef.current = false;
@@ -197,7 +219,7 @@ export default function RestTimer({
     }
 
     /*
-     * Rest completed.
+     * Период отдыха завершён.
      */
     if (restSeconds === 0) {
       if (completedRef.current) {
@@ -207,25 +229,25 @@ export default function RestTimer({
       completedRef.current = true;
 
       /*
-       * Completion sound.
+       * Воспроизводим звук завершения отдыха.
        */
       if (completeEnabled) {
         void playSound(completeBufferRef.current);
       }
 
       /*
-       * Vibration belongs to the rest completion event.
+       * Вибрация относится к событию завершения отдыха.
        *
-       * It is independent from sound settings.
+       * Она не зависит от настроек звука.
        */
       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
         navigator.vibrate(VIBRATION_DURATION);
       }
 
       /*
-       * Move to the next set after the 0 state
-       * has been rendered and the completion event
-       * has been triggered.
+       * Переходим к следующему подходу после того,
+       * как состояние 0 будет отображено и событие
+       * завершения будет обработано.
        */
       window.setTimeout(() => {
         onCompleteRef.current();
@@ -235,7 +257,7 @@ export default function RestTimer({
     }
 
     /*
-     * Countdown: 3 → 2 → 1.
+     * Обратный отсчёт: 3 → 2 → 1.
      */
     if (
       countdownEnabled &&
@@ -247,7 +269,7 @@ export default function RestTimer({
   }, [restSeconds, isResting, countdownEnabled, completeEnabled, playSound]);
 
   /*
-   * Release Web Audio resources on unmount.
+   * Освобождаем ресурсы Web Audio при размонтировании компонента.
    */
   useEffect(() => {
     return () => {

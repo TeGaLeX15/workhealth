@@ -1,5 +1,4 @@
 // app/components/TimezoneSync.tsx
-// app/components/TimezoneSync.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -10,6 +9,18 @@ import {
   setStoredTimezone,
 } from "@/app/lib/timezone/client";
 
+/**
+ * Синхронизирует часовой пояс пользователя
+ * между браузером и сервером.
+ *
+ * При монтировании определяет часовой пояс браузера
+ * и сравнивает его с последним сохранённым значением.
+ *
+ * Если часовой пояс изменился, отправляет его на сервер
+ * и сохраняет новое значение в localStorage после успешного ответа.
+ *
+ * Компонент не рендерит никакого UI.
+ */
 export default function TimezoneSync() {
   useEffect(() => {
     const timezone = getClientTimezone();
@@ -26,6 +37,12 @@ export default function TimezoneSync() {
 
     let cancelled = false;
 
+    /**
+     * Отправляет текущий часовой пояс пользователя на сервер.
+     *
+     * Если компонент был размонтирован до завершения запроса,
+     * локальное состояние не изменяется.
+     */
     async function syncTimezone() {
       try {
         const response = await fetch("/api/user/timezone", {

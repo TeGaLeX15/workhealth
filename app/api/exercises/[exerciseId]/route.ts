@@ -9,6 +9,9 @@ type RouteContext = {
   }>;
 };
 
+/**
+ * Возвращает упражнение и персональный максимальный результат пользователя.
+ */
 export async function GET(_request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();

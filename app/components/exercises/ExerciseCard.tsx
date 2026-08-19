@@ -16,6 +16,17 @@ const exerciseIcons: Record<string, string> = {
   squats: "/exercises/squats.png",
 };
 
+/**
+ * Карточка упражнения.
+ *
+ * Показывает изображение упражнения, его название,
+ * задействованные мышечные группы и текущий личный рекорд.
+ * Карточка является ссылкой на страницу конкретного упражнения.
+ *
+ * @param exercise Данные упражнения пользователя.
+ * @param description Краткое описание задействованных мышечных групп.
+ * @returns Интерактивная карточка упражнения.
+ */
 export default function ExerciseCard({
   exercise,
   description,

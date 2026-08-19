@@ -9,6 +9,16 @@ type WorkoutPlanProps = {
 
 const REST_SECONDS = 60;
 
+/**
+ * Отображает план текущей тренировки с количеством повторений
+ * в каждом подходе и временем отдыха между подходами.
+ *
+ * @param props - Свойства компонента.
+ * @param props.sets - Список подходов с их порядковыми номерами
+ * и целевым количеством повторений.
+ *
+ * @returns План тренировки.
+ */
 export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
   return (
     <section className="mt-7">
@@ -88,7 +98,7 @@ export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
                     }}
                   />
                 )}
-                
+
                 <div className="flex w-full items-center gap-1.5">
                   <span
                     className="h-px flex-1"
@@ -108,21 +118,21 @@ export default function WorkoutPlan({ sets }: WorkoutPlanProps) {
                   />
                 </div>
 
-              <span
-                className="
-                  mt-2
-                  text-[30px]
-                  font-bold
-                  leading-none
-                  tracking-[-0.07em]
-                  tabular-nums
-                "
-                style={{
-                  color: "var(--foreground)",
-                }}
-              >
-                {set.targetReps}
-              </span>
+                <span
+                  className="
+                    mt-2
+                    text-[30px]
+                    font-bold
+                    leading-none
+                    tracking-[-0.07em]
+                    tabular-nums
+                  "
+                  style={{
+                    color: "var(--foreground)",
+                  }}
+                >
+                  {set.targetReps}
+                </span>
 
                 <span
                   className="

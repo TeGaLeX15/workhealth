@@ -6,10 +6,22 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * Отображает основную шапку приложения.
+ *
+ * Содержит логотип Body OS, ссылку на главную страницу
+ * и переход в профиль пользователя. Также показывает
+ * текущее состояние интернет-соединения.
+ *
+ * @returns Шапка приложения.
+ */
 export default function AppHeader() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
+    /**
+     * Обновляет состояние подключения к интернету.
+     */
     const updateOnlineStatus = () => {
       setIsOnline(navigator.onLine);
     };
@@ -52,7 +64,6 @@ export default function AppHeader() {
           px-5
         "
       >
-        {/* BRAND */}
         <Link
           href="/"
           aria-label="Body OS — главная"
@@ -122,7 +133,6 @@ export default function AppHeader() {
           </div>
         </Link>
 
-        {/* PROFILE */}
         <Link
           href="/profile"
           aria-label={isOnline ? "Профиль — онлайн" : "Профиль — офлайн"}
@@ -147,7 +157,6 @@ export default function AppHeader() {
         >
           <UserRound size={19} strokeWidth={1.8} aria-hidden="true" />
 
-          {/* CONNECTION STATUS */}
           <span
             aria-hidden="true"
             className="

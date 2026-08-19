@@ -3,22 +3,52 @@
 
 import { Plus, SkipForward } from "lucide-react";
 
+/**
+ * Данные текущего подхода тренировки.
+ */
 type WorkoutSet = {
+  /** Уникальный идентификатор подхода. */
   id: string;
+
+  /** Порядковый номер подхода. */
   setNumber: number;
+
+  /** Целевое количество повторений. */
   targetReps: number;
+
+  /** Фактически выполненное количество повторений. */
   actualReps: number | null;
+
+  /** Указывает, завершён ли подход. */
   completed: boolean;
 };
 
+/**
+ * Пропсы экрана отдыха между подходами.
+ */
 type WorkoutRestScreenProps = {
+  /** Следующий подход, который будет выполнен после отдыха. */
   currentSet: WorkoutSet;
+
+  /** Оставшееся время отдыха в секундах. */
   restSeconds: number;
+
+  /** Общая продолжительность текущего периода отдыха в секундах. */
   restTotalSeconds: number;
+
+  /** Обработчик досрочного завершения отдыха. */
   onSkip: () => void;
+
+  /** Обработчик добавления 30 секунд к отдыху. */
   onIncrease: () => void;
 };
 
+/**
+ * Экран отдыха между подходами.
+ *
+ * Отображает круговой таймер, информацию о следующем подходе
+ * и действия для управления продолжительностью отдыха.
+ */
 export default function WorkoutRestScreen({
   currentSet,
   restSeconds,
@@ -41,6 +71,7 @@ export default function WorkoutRestScreen({
   return (
     <div className="w-full">
       {/* TIMER */}
+
       <div className="flex justify-center pt-10 pb-8 sm:pt-12 sm:pb-10">
         <div
           className="
@@ -68,6 +99,7 @@ export default function WorkoutRestScreen({
           }}
         >
           {/* INNER CIRCLE */}
+
           <div
             aria-hidden="true"
             className="
@@ -81,6 +113,7 @@ export default function WorkoutRestScreen({
           />
 
           {/* TIMER CONTENT */}
+
           <div className="relative text-center">
             <div
               className="
@@ -114,6 +147,7 @@ export default function WorkoutRestScreen({
       </div>
 
       {/* NEXT SET */}
+
       <div
         className="
           rounded-[21px]
@@ -180,6 +214,7 @@ export default function WorkoutRestScreen({
       </div>
 
       {/* ACTIONS */}
+
       <div className="mt-3 flex gap-2.5">
         <button
           type="button"

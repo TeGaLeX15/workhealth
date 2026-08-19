@@ -20,6 +20,19 @@ const statusLabel = {
   SKIPPED: "Пропущена",
 };
 
+/**
+ * Отображает заголовок тренировки с номером тренировочной недели,
+ * статусом, номером тренировки и названием упражнения.
+ *
+ * @param props - Свойства компонента.
+ * @param props.workout - Данные текущей тренировки.
+ * @param props.workout.workoutNumber - Порядковый номер тренировки.
+ * @param props.workout.status - Текущий статус тренировки.
+ * @param props.workout.exercise.name - Название упражнения.
+ * @param props.workout.trainingWeek.weekNumber - Номер тренировочной недели.
+ *
+ * @returns Заголовок тренировки.
+ */
 export default function WorkoutHeader({ workout }: WorkoutHeaderProps) {
   const isCompleted = workout.status === "COMPLETED";
   const isCancelled = workout.status === "CANCELLED";

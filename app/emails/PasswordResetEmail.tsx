@@ -16,6 +16,15 @@ type PasswordResetEmailProps = {
   resetUrl: string;
 };
 
+/**
+ * Письмо для восстановления пароля пользователя.
+ *
+ * Содержит кнопку для перехода на страницу смены пароля,
+ * резервную ссылку и уведомление о безопасности аккаунта.
+ *
+ * @param resetUrl Ссылка для восстановления пароля.
+ * @returns React Email-компонент письма.
+ */
 export default function PasswordResetEmail({
   resetUrl,
 }: PasswordResetEmailProps) {
@@ -27,12 +36,10 @@ export default function PasswordResetEmail({
 
       <Body style={styles.body}>
         <Container style={styles.container}>
-          {/* Brand */}
           <Section style={styles.brandSection}>
             <Text style={styles.brand}>BODY OS</Text>
           </Section>
 
-          {/* Main content */}
           <Section style={styles.card}>
             <Heading style={styles.heading}>Восстановление пароля</Heading>
 
@@ -45,20 +52,17 @@ export default function PasswordResetEmail({
               Нажмите кнопку ниже, чтобы установить новый пароль.
             </Text>
 
-            {/* CTA */}
             <Section style={styles.buttonSection}>
               <Button href={resetUrl} style={styles.button}>
                 Изменить пароль
               </Button>
             </Section>
 
-            {/* Expiration */}
             <Text style={styles.mutedText}>
               Ссылка действует ограниченное время и может быть использована
               только один раз.
             </Text>
 
-            {/* Fallback URL */}
             <Text style={styles.fallbackLabel}>
               Если кнопка не работает, откройте ссылку:
             </Text>
@@ -68,7 +72,6 @@ export default function PasswordResetEmail({
             </Link>
           </Section>
 
-          {/* Security notice */}
           <Section style={styles.notice}>
             <Text style={styles.noticeTitle}>
               Не запрашивали восстановление?
@@ -80,7 +83,6 @@ export default function PasswordResetEmail({
             </Text>
           </Section>
 
-          {/* Footer */}
           <Section style={styles.footer}>
             <Text style={styles.footerBrand}>BODY OS</Text>
 

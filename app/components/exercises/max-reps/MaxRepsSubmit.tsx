@@ -1,12 +1,26 @@
 // app/components/exercises/max-reps/MaxRepsSubmit.tsx
 import { ArrowRight } from "lucide-react";
 
+/**
+ * Пропсы кнопки продолжения после выполнения упражнения на максимум повторений.
+ */
 type MaxRepsSubmitProps = {
+  /** Показывает состояние подготовки тренировочной программы. */
   isLoading: boolean;
+
+  /** Отключает кнопку, если отправка недоступна. */
   disabled: boolean;
+
+  /** Обрабатывает нажатие на кнопку продолжения. */
   onSubmit: () => void;
 };
 
+/**
+ * Кнопка отправки результата максимального количества повторений.
+ *
+ * Во время загрузки отображает сообщение о подготовке программы
+ * и блокирует повторное взаимодействие.
+ */
 export default function MaxRepsSubmit({
   isLoading,
   disabled,

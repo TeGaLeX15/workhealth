@@ -1,12 +1,23 @@
 // app/components/settings/SettingsNavigationSection.tsx
 import type { ReactNode } from "react";
 
+/**
+ * Пропсы секции навигации настроек.
+ */
 type SettingsNavigationSectionProps = {
+  /** Заголовок секции. */
   title: string;
+
+  /** Краткое описание секции. */
   description: string;
+
+  /** Содержимое секции. */
   children: ReactNode;
 };
 
+/**
+ * Секция навигации настроек с заголовком, описанием и содержимым.
+ */
 export default function SettingsNavigationSection({
   title,
   description,

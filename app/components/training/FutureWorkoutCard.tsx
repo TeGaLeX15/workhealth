@@ -5,10 +5,20 @@ import { Lock } from "lucide-react";
 import type { Workout } from "./types";
 import { formatWorkoutDate, getTotalReps, getWorkoutSetLabel } from "./utils";
 
+/**
+ * Пропсы карточки будущей тренировки.
+ */
 type FutureWorkoutCardProps = {
+  /** Данные запланированной тренировки. */
   workout: Workout;
 };
 
+/**
+ * Карточка будущей тренировки.
+ *
+ * Отображает дату, номер и основные параметры запланированной тренировки.
+ * Будущая тренировка представлена как недоступная для выполнения.
+ */
 const FutureWorkoutCard: FC<FutureWorkoutCardProps> = ({ workout }) => {
   const totalReps = getTotalReps(workout.sets);
   const totalSets = workout.sets.length;

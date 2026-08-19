@@ -1,14 +1,33 @@
 // app/components/settings/SettingToggle.tsx
 type SettingToggleProps = {
+  /** Название настройки. */
   label: string;
+
+  /** Краткое описание настройки. */
   description: string;
+
+  /** Текущее состояние переключателя. */
   enabled: boolean;
+
+  /** Обрабатывает изменение состояния переключателя. */
   onChange: () => void;
+
+  /** Цвет активного состояния переключателя. */
   accent: string;
+
+  /** Указывает, является ли элемент последним в списке. */
   last?: boolean;
+
+  /** Отключает взаимодействие с переключателем. */
   disabled?: boolean;
 };
 
+/**
+ * Переключатель настройки с названием и описанием.
+ *
+ * Отображает текущее состояние настройки и позволяет изменить его
+ * через интерактивный switch.
+ */
 export default function SettingToggle({
   label,
   description,

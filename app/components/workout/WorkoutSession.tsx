@@ -11,16 +11,34 @@ import RestTimer from "./RestTimer";
 
 import { useSoundSettings } from "@/app/lib/sounds/useSoundSettings";
 
+/**
+ * Данные подхода тренировки.
+ */
 type WorkoutSet = {
+  /** Уникальный идентификатор подхода. */
   id: string;
+
+  /** Порядковый номер подхода. */
   setNumber: number;
+
+  /** Целевое количество повторений. */
   targetReps: number;
+
+  /** Фактически выполненное количество повторений. */
   actualReps: number | null;
+
+  /** Указывает, завершён ли подход. */
   completed: boolean;
 };
 
+/**
+ * Пропсы сессии тренировки.
+ */
 type WorkoutSessionProps = {
+  /** Уникальный идентификатор тренировки. */
   workoutId: string;
+
+  /** Список подходов текущей тренировки. */
   sets: WorkoutSet[];
 };
 
@@ -28,6 +46,13 @@ const REST_SECONDS = 60;
 
 const WORKOUT_COMPLETE_EVENT = "bodyos:workout-complete";
 
+/**
+ * Управляет интерактивной сессией тренировки.
+ *
+ * Отвечает за выполнение подходов, переход между ними,
+ * запуск и управление таймером отдыха, сохранение результатов
+ * и завершение всей тренировки.
+ */
 export default function WorkoutSession({
   workoutId,
   sets,
@@ -84,8 +109,8 @@ export default function WorkoutSession({
     };
   }, [isResting, restEndTime]);
 
-  /*
-   * Complete current rest.
+  /**
+   * Завершает текущий период отдыха и сбрасывает состояние таймера.
    */
   const handleRestComplete = useCallback(() => {
     setIsResting(false);
@@ -112,8 +137,11 @@ export default function WorkoutSession({
     );
   }
 
-  /*
-   * Complete current set.
+  /**
+   * Завершает текущий подход и сохраняет результат на сервере.
+   *
+   * После успешного сохранения либо завершает тренировку,
+   * либо переводит сессию к следующему подходу и запускает отдых.
    */
   async function handleCompleteSet() {
     if (isLoading || isResting) {
@@ -196,8 +224,8 @@ export default function WorkoutSession({
     }
   }
 
-  /*
-   * Skip rest.
+  /**
+   * Пропускает текущий период отдыха.
    */
   function skipRest() {
     setIsResting(false);
@@ -206,8 +234,8 @@ export default function WorkoutSession({
     setRestTotalSeconds(REST_SECONDS);
   }
 
-  /*
-   * Add 30 seconds.
+  /**
+   * Увеличивает текущий период отдыха на 30 секунд.
    */
   function increaseRest() {
     setRestEndTime((currentEndTime) => {

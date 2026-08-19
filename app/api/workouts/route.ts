@@ -8,6 +8,13 @@ import {
   getLocalDateString,
 } from "@/app/lib/timezone/local-date";
 
+/**
+ * Возвращает доступную тренировку текущего пользователя.
+ *
+ * Обрабатывает пропущенные тренировки, определяет тренировку
+ * на сегодня или ближайшую будущую и завершает тренировочную
+ * неделю, если в ней больше нет активных тренировок.
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();

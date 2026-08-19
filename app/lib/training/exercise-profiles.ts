@@ -1,7 +1,17 @@
 // app/lib/training/exercise-profiles.ts
 import type { ExerciseProfile, ExerciseSlug } from "./types";
 
+/**
+ * Профили генерации тренировок для поддерживаемых упражнений.
+ *
+ * Каждый профиль определяет начальную интенсивность,
+ * скорость снижения нагрузки, минимальную интенсивность,
+ * количество подходов и минимальное количество повторений.
+ */
 export const exerciseProfiles: Record<ExerciseSlug, ExerciseProfile> = {
+  /**
+   * Профиль для подтягиваний.
+   */
   "pull-ups": {
     slug: "pull-ups",
     maxIntensity: 0.75,
@@ -11,6 +21,9 @@ export const exerciseProfiles: Record<ExerciseSlug, ExerciseProfile> = {
     minReps: 1,
   },
 
+  /**
+   * Профиль для отжиманий.
+   */
   "push-ups": {
     slug: "push-ups",
     maxIntensity: 0.7,
@@ -20,6 +33,9 @@ export const exerciseProfiles: Record<ExerciseSlug, ExerciseProfile> = {
     minReps: 2,
   },
 
+  /**
+   * Профиль для отжиманий на брусьях.
+   */
   dips: {
     slug: "dips",
     maxIntensity: 0.72,
@@ -29,6 +45,9 @@ export const exerciseProfiles: Record<ExerciseSlug, ExerciseProfile> = {
     minReps: 2,
   },
 
+  /**
+   * Профиль для приседаний.
+   */
   squats: {
     slug: "squats",
     maxIntensity: 0.7,

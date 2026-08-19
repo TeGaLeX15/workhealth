@@ -8,6 +8,19 @@ import { sendPasswordResetEmail } from "@/app/server/email/password-reset";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 
+/**
+ * Создаёт запрос на восстановление пароля.
+ *
+ * Ограничивает частоту запросов, создаёт новый токен
+ * восстановления, инвалидирует предыдущие активные токены
+ * и отправляет пользователю письмо со ссылкой для сброса пароля.
+ *
+ * Если пользователь с указанным email не существует,
+ * функция завершается без отправки письма.
+ *
+ * @param email Email пользователя.
+ * @param origin Origin приложения для формирования ссылки восстановления.
+ */
 export async function createPasswordResetRequest(
   email: string,
   origin: string,

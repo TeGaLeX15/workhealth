@@ -6,6 +6,17 @@ import SkippedWorkoutCard from "./training/SkippedWorkoutCard";
 
 import type { TrainingWeekCardProps } from "./training/types";
 
+/**
+ * Отображает тренировочную неделю и список тренировок,
+ * распределяя их по соответствующим состояниям.
+ *
+ * @param weekNumber Номер тренировочной недели.
+ * @param startDate Дата начала недели.
+ * @param endDate Дата окончания недели.
+ * @param workouts Тренировки текущей недели.
+ * @param currentWorkoutId Идентификатор текущей доступной тренировки.
+ * @returns Карточка тренировочной недели.
+ */
 export default function TrainingWeekCard({
   weekNumber,
   startDate,

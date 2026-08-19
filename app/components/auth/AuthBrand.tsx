@@ -1,6 +1,12 @@
 // app/components/auth/AuthBrand.tsx
 import Image from "next/image";
 
+/**
+ * Брендовый блок авторизационных страниц.
+ *
+ * Отображает логотип Body OS, название приложения
+ * и короткое описание под ним.
+ */
 export default function AuthBrand() {
   return (
     <div className="mb-7 text-center sm:mb-8">

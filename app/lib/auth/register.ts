@@ -11,6 +11,16 @@ export type RegisterResponse = {
   success?: boolean;
 };
 
+/**
+ * Регистрирует нового пользователя.
+ *
+ * Отправляет email, пароль и часовой пояс
+ * на сервер и возвращает результат регистрации.
+ *
+ * @param params Данные для регистрации.
+ * @param signal Сигнал для отмены запроса.
+ * @returns Результат регистрации.
+ */
 export async function register(
   params: RegisterParams,
   signal?: AbortSignal,

@@ -1,21 +1,49 @@
 // app/components/workout/WorkoutSetScreen.tsx
 "use client";
 
+/**
+ * Данные текущего подхода тренировки.
+ */
 type WorkoutSet = {
+  /** Уникальный идентификатор подхода. */
   id: string;
+
+  /** Порядковый номер подхода. */
   setNumber: number;
+
+  /** Целевое количество повторений. */
   targetReps: number;
+
+  /** Фактически выполненное количество повторений. */
   actualReps: number | null;
+
+  /** Указывает, завершён ли подход. */
   completed: boolean;
 };
 
+/**
+ * Пропсы экрана текущего подхода.
+ */
 type WorkoutSetScreenProps = {
+  /** Текущий подход тренировки. */
   currentSet: WorkoutSet;
+
+  /** Указывает, выполняется ли сохранение результата. */
   isLoading: boolean;
+
+  /** Сообщение об ошибке при сохранении подхода. */
   error: string;
+
+  /** Обработчик завершения текущего подхода. */
   onComplete: () => void;
 };
 
+/**
+ * Экран выполнения текущего подхода.
+ *
+ * Показывает целевое количество повторений и позволяет пользователю
+ * завершить подход нажатием на интерактивный круг.
+ */
 export default function WorkoutSetScreen({
   currentSet,
   isLoading,

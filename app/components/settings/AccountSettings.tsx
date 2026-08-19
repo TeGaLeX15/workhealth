@@ -6,12 +6,20 @@ import { useRouter } from "next/navigation";
 
 import SettingSection from "@/app/components/settings/SettingSection";
 
+/**
+ * Настройки аккаунта.
+ *
+ * Позволяет пользователю завершить текущую сессию и выйти из аккаунта.
+ */
 export default function AccountSettings() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /**
+   * Завершает текущую сессию пользователя и перенаправляет на страницу входа.
+   */
   async function handleLogout() {
     if (isLoading) return;
 
@@ -28,7 +36,7 @@ export default function AccountSettings() {
       try {
         data = await response.json();
       } catch {
-        // API may return an empty or non-JSON response.
+        // API может вернуть пустой ответ или ответ не в формате JSON.
       }
 
       if (!response.ok) {

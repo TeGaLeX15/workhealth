@@ -8,6 +8,12 @@ type DateParts = {
   day: number;
 };
 
+/**
+ * Получает календарную дату в указанном часовом поясе.
+ *
+ * Время и часовой пояс исходного Date не используются напрямую —
+ * функция извлекает только локальные год, месяц и день пользователя.
+ */
 function getDatePartsInTimeZone(date: Date, timeZone: string): DateParts {
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -29,7 +35,7 @@ function getDatePartsInTimeZone(date: Date, timeZone: string): DateParts {
     !Number.isInteger(month) ||
     !Number.isInteger(day)
   ) {
-    throw new Error(`Failed to determine the date in timezone "${timeZone}"`);
+    throw new Error(`Не удалось определить дату в часовом поясе "${timeZone}"`);
   }
 
   return {
@@ -39,10 +45,17 @@ function getDatePartsInTimeZone(date: Date, timeZone: string): DateParts {
   };
 }
 
+/**
+ * Преобразует компоненты календарной даты
+ * в UTC Date, представляющий начало этого дня.
+ */
 function dateFromParts(parts: DateParts): Date {
   return new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
 }
 
+/**
+ * Добавляет указанное количество календарных дней к дате.
+ */
 function addDays(date: Date, days: number): Date {
   const result = new Date(date);
 
@@ -51,6 +64,27 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
+/**
+ * Формирует расписание тренировочной недели.
+ *
+ * Новая программа всегда начинается с текущего календарного дня
+ * пользователя.
+ *
+ * При трёх тренировках и интервале в два дня расписание выглядит так:
+ *
+ * Вт — тренировка №1
+ * Ср — отдых
+ * Чт — тренировка №2
+ * Пт — отдых
+ * Сб — тренировка №3
+ * Вс — отдых
+ *
+ * При этом тренировочная неделя всегда занимает
+ * семь календарных дней: со дня начала до +6 дней.
+ *
+ * @param now Текущий момент времени.
+ * @param timeZone Часовой пояс пользователя.
+ */
 export function getTrainingWeekSchedule(
   now = new Date(),
   timeZone = "Asia/Almaty",
@@ -58,24 +92,6 @@ export function getTrainingWeekSchedule(
   const localDateParts = getDatePartsInTimeZone(now, timeZone);
 
   const today = dateFromParts(localDateParts);
-
-  /**
-   * A new training program always starts today.
-   *
-   * For example, if the user creates a program
-   * on Tuesday:
-   *
-   * Tue — workout #1
-   * Wed — rest
-   * Thu — workout #2
-   * Fri — rest
-   * Sat — workout #3
-   * Sun — rest
-   *
-   * The program week still spans
-   * a full 7 calendar days:
-   * Tue → Mon.
-   */
 
   const startDate = today;
 

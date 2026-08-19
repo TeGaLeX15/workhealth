@@ -9,15 +9,24 @@ import { prisma } from "@/app/server/db";
 const SESSION_COOKIE = "bodyos_session";
 const SESSION_DURATION = 1000 * 60 * 60 * 24 * 30;
 
+/**
+ * Хеширует токен сессии алгоритмом SHA-256.
+ *
+ * В базе данных хранится только хеш токена, поэтому исходное значение
+ * cookie не используется напрямую при поиске сессии.
+ */
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
 /**
- * Returns the currently authenticated user.
+ * Возвращает текущего авторизованного пользователя.
  *
- * React cache() makes repeated calls during the same
- * server render resolve from the same promise/result.
+ * React cache() позволяет переиспользовать результат при повторных
+ * вызовах во время одного серверного рендера.
+ *
+ * Если cookie отсутствует, сессия не найдена или истекла,
+ * возвращает null. Истёкшая сессия удаляется из базы и cookie.
  */
 export const getCurrentUser = cache(async () => {
   const cookieStore = await cookies();
@@ -66,10 +75,10 @@ export const getCurrentUser = cache(async () => {
 });
 
 /**
- * Protected app boundary.
+ * Возвращает текущего пользователя и защищает серверный маршрут
+ * или страницу от доступа неавторизованных пользователей.
  *
- * This is the only place responsible for redirecting
- * unauthenticated users inside the protected app.
+ * Если пользователь не авторизован, выполняет редирект на страницу входа.
  */
 export const requireCurrentUser = cache(async () => {
   const user = await getCurrentUser();
@@ -81,6 +90,14 @@ export const requireCurrentUser = cache(async () => {
   return user;
 });
 
+/**
+ * Создаёт новую сессию пользователя и устанавливает
+ * защищённую HTTP-only cookie с токеном сессии.
+ *
+ * В базе данных сохраняется только хеш токена.
+ *
+ * @param userId — идентификатор пользователя, для которого создаётся сессия.
+ */
 export async function createSession(userId: string) {
   const token = randomBytes(32).toString("hex");
   const tokenHash = hashToken(token);
@@ -106,6 +123,12 @@ export async function createSession(userId: string) {
   });
 }
 
+/**
+ * Завершает текущую пользовательскую сессию.
+ *
+ * Удаляет сессию из базы данных и очищает session cookie.
+ * Если cookie отсутствует, просто очищает её значение.
+ */
 export async function deleteSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;

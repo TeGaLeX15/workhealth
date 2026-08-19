@@ -6,10 +6,20 @@ import MaxRepsError from "./MaxRepsError";
 import MaxRepsSubmit from "./MaxRepsSubmit";
 import useMaxReps from "./useMaxReps";
 
+/**
+ * Пропсы формы ввода максимального количества повторений.
+ */
 type MaxRepsFormProps = {
+  /** Идентификатор упражнения. */
   exerciseId: string;
 };
 
+/**
+ * Форма для ввода и отправки максимального количества повторений.
+ *
+ * Управляет состоянием через `useMaxReps` и объединяет счётчик,
+ * единицу измерения, отображение ошибки и кнопку продолжения.
+ */
 export default function MaxRepsForm({ exerciseId }: MaxRepsFormProps) {
   const {
     maxReps,

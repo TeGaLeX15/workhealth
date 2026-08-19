@@ -1,13 +1,28 @@
+// app/lib/sounds/settings.ts
+
+/**
+ * Настройки звуковых уведомлений приложения.
+ */
 export type SoundSettings = {
+  /** Включены ли звуки в приложении. */
   enabled: boolean;
 
+  /** Звук обратного отсчёта времени отдыха. */
   restCountdown: boolean;
+
+  /** Звук окончания времени отдыха. */
   restComplete: boolean;
 
+  /** Звук завершения тренировки. */
   workoutComplete: boolean;
+
+  /** Звук установления нового максимума. */
   newMax: boolean;
 };
 
+/**
+ * Настройки звука по умолчанию.
+ */
 export const DEFAULT_SOUND_SETTINGS: SoundSettings = {
   enabled: true,
 
@@ -26,6 +41,12 @@ let initialized = false;
 
 const listeners = new Set<() => void>();
 
+/**
+ * Проверяет, соответствует ли значение структуре настроек звука.
+ *
+ * @param value Значение для проверки.
+ * @returns true, если значение является корректными настройками звука.
+ */
 function isSoundSettings(value: unknown): value is SoundSettings {
   if (!value || typeof value !== "object") {
     return false;
@@ -42,6 +63,10 @@ function isSoundSettings(value: unknown): value is SoundSettings {
   );
 }
 
+/**
+ * Загружает настройки звука из localStorage
+ * и инициализирует локальный кэш.
+ */
 function initializeSettings() {
   if (initialized || typeof window === "undefined") {
     return;
@@ -66,16 +91,36 @@ function initializeSettings() {
   }
 }
 
+/**
+ * Возвращает текущие настройки звука.
+ *
+ * При первом вызове настройки загружаются
+ * из localStorage в браузере.
+ */
 export function getSoundSettings(): SoundSettings {
   initializeSettings();
 
   return cachedSettings;
 }
 
+/**
+ * Возвращает настройки звука,
+ * используемые во время серверного рендера.
+ *
+ * На сервере всегда используются настройки по умолчанию,
+ * поскольку localStorage недоступен.
+ */
 export function getServerSoundSettings(): SoundSettings {
   return DEFAULT_SOUND_SETTINGS;
 }
 
+/**
+ * Обновляет настройки звука, сохраняет их в localStorage
+ * и уведомляет подписанные компоненты об изменении.
+ *
+ * @param update Новые значения настроек
+ * или функция, вычисляющая их на основе текущих.
+ */
 export function updateSoundSettings(
   update: Partial<SoundSettings> | ((current: SoundSettings) => SoundSettings),
 ) {
@@ -95,7 +140,8 @@ export function updateSoundSettings(
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSettings));
     } catch {
-      // Keep in-memory state if localStorage is unavailable.
+      // Сохраняем состояние в памяти,
+      // если localStorage недоступен.
     }
   }
 
@@ -104,6 +150,15 @@ export function updateSoundSettings(
   });
 }
 
+/**
+ * Подписывает слушатель на изменения настроек звука.
+ *
+ * Отслеживает как изменения внутри текущей вкладки,
+ * так и изменения localStorage из других вкладок.
+ *
+ * @param listener Функция, вызываемая при изменении настроек.
+ * @returns Функция для отмены подписки.
+ */
 export function subscribeToSoundSettings(listener: () => void) {
   listeners.add(listener);
 

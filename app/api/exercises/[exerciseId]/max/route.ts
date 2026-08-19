@@ -9,6 +9,10 @@ type RouteContext = {
   }>;
 };
 
+/**
+ * Сохраняет или обновляет личный максимум повторений
+ * пользователя для указанного упражнения.
+ */
 export async function PUT(request: Request, context: RouteContext) {
   try {
     const user = await getCurrentUser();

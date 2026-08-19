@@ -15,10 +15,20 @@ import {
 } from "./utils";
 import WorkoutSetsPreview from "./WorkoutSetsPreview";
 
+/**
+ * Пропсы карточки тренировки.
+ */
 type TrainingWorkoutCardProps = {
+  /** Данные тренировки для отображения. */
   workout: Workout;
 };
 
+/**
+ * Карточка тренировки в списке тренировочной недели.
+ *
+ * Отображает дату, номер и статус тренировки, прогресс выполнения,
+ * список подходов и действие в зависимости от текущего состояния тренировки.
+ */
 const TrainingWorkoutCard: FC<TrainingWorkoutCardProps> = ({ workout }) => {
   const isInProgress = workout.status === "IN_PROGRESS";
   const isCompleted = workout.status === "COMPLETED";
