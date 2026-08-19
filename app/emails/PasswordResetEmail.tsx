@@ -32,12 +32,12 @@ export default function PasswordResetEmail({
     <Html>
       <Head />
 
-      <Preview>Восстановление пароля в Body OS</Preview>
+      <Preview>Восстановление пароля в BodyOS</Preview>
 
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.brandSection}>
-            <Text style={styles.brand}>BODY OS</Text>
+            <Text style={styles.brand}>BodyOS</Text>
           </Section>
 
           <Section style={styles.card}>
@@ -45,7 +45,7 @@ export default function PasswordResetEmail({
 
             <Text style={styles.text}>
               Мы получили запрос на восстановление пароля для вашего аккаунта
-              Body OS.
+              BodyOS.
             </Text>
 
             <Text style={styles.text}>
@@ -84,7 +84,7 @@ export default function PasswordResetEmail({
           </Section>
 
           <Section style={styles.footer}>
-            <Text style={styles.footerBrand}>BODY OS</Text>
+            <Text style={styles.footerBrand}>BodyOS</Text>
 
             <Text style={styles.footerText}>
               Ваши тренировки. Ваш прогресс.

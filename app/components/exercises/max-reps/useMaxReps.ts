@@ -177,6 +177,7 @@ export default function useMaxReps(exerciseId: string) {
 
       if (!maxResponse.ok) {
         setError(maxData.error ?? "Не удалось сохранить максимум");
+        setIsLoading(false);
         return;
       }
 
@@ -194,18 +195,19 @@ export default function useMaxReps(exerciseId: string) {
 
       if (!weekResponse.ok) {
         setError(weekData.error ?? "Не удалось создать программу");
+        setIsLoading(false);
         return;
       }
 
       if (!weekData.workoutId) {
         setError("Тренировка не найдена");
+        setIsLoading(false);
         return;
       }
 
       router.push(`/training/workouts/${weekData.workoutId}`);
     } catch {
       setError("Не удалось подключиться к серверу");
-    } finally {
       setIsLoading(false);
     }
   }

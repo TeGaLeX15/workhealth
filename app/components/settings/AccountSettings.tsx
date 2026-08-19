@@ -41,13 +41,15 @@ export default function AccountSettings() {
 
       if (!response.ok) {
         setError(data.error ?? "Не удалось выйти из аккаунта");
+        setIsLoading(false);
         return;
       }
 
+      // Logout успешно выполнен.
+      // Оставляем isLoading=true, пока происходит переход.
       router.replace("/login");
     } catch {
       setError("Не удалось подключиться к серверу");
-    } finally {
       setIsLoading(false);
     }
   }

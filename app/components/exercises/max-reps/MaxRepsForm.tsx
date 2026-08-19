@@ -65,7 +65,7 @@ export default function MaxRepsForm({ exerciseId }: MaxRepsFormProps) {
       {/* CTA */}
       <MaxRepsSubmit
         isLoading={isLoading}
-        disabled={inputValue === ""}
+        disabled={isLoading || inputValue === ""}
         onSubmit={handleSubmit}
       />
     </div>

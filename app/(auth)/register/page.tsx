@@ -20,7 +20,7 @@ import {
 import { registerSchema } from "@/app/lib/validation/auth";
 
 /**
- * Страница регистрации аккаунта Body OS.
+ * Страница регистрации аккаунта BodyOS.
  *
  * Отвечает за:
  * - ввод и валидацию данных нового пользователя;

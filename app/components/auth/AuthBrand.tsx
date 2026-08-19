@@ -4,7 +4,7 @@ import Image from "next/image";
 /**
  * Брендовый блок авторизационных страниц.
  *
- * Отображает логотип Body OS, название приложения
+ * Отображает логотип BodyOS, название приложения
  * и короткое описание под ним.
  */
 export default function AuthBrand() {
@@ -31,7 +31,7 @@ export default function AuthBrand() {
       >
         <Image
           src="/icons/android-chrome-512x512.png"
-          alt="Body OS"
+          alt="BodyOS"
           width={512}
           height={512}
           priority
@@ -51,7 +51,7 @@ export default function AuthBrand() {
           color: "var(--foreground)",
         }}
       >
-        Body OS
+        BodyOS
       </h1>
 
       <p

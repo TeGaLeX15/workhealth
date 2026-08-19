@@ -25,7 +25,7 @@ export async function sendPasswordResetEmail({
   const { error } = await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to,
-    subject: "Восстановление пароля — Body OS",
+    subject: "Восстановление пароля — BodyOS",
     react: PasswordResetEmail({
       resetUrl,
     }),

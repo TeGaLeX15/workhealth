@@ -260,7 +260,7 @@ export async function POST(request: Request) {
       });
 
       for (const generatedWorkout of generatedWeek.workouts) {
-        await tx.workout.create({
+        const workout = await tx.workout.create({
           data: {
             trainingWeekId: trainingWeek.id,
             userId: user.id,
@@ -268,13 +268,15 @@ export async function POST(request: Request) {
             workoutNumber: generatedWorkout.workoutNumber,
             scheduledDate: generatedWorkout.scheduledDate,
             status: "PLANNED",
-            sets: {
-              create: generatedWorkout.sets.map((set) => ({
-                setNumber: set.setNumber,
-                targetReps: set.targetReps,
-              })),
-            },
           },
+        });
+
+        await tx.workoutSet.createMany({
+          data: generatedWorkout.sets.map((set) => ({
+            workoutId: workout.id,
+            setNumber: set.setNumber,
+            targetReps: set.targetReps,
+          })),
         });
       }
 

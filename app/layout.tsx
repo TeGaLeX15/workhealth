@@ -20,26 +20,26 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://workhealth.vercel.app"),
 
   title: {
-    default: "Body OS",
-    template: "%s — Body OS",
+    default: "BodyOS",
+    template: "%s — BodyOS",
   },
 
   description:
     "Твоя система тренировок. Планируй тренировки, отслеживай прогресс и развивайся системно.",
 
-  applicationName: "Body OS",
+  applicationName: "BodyOS",
 
   authors: [
     {
-      name: "Body OS",
+      name: "BodyOS",
     },
   ],
 
-  creator: "Body OS",
-  publisher: "Body OS",
+  creator: "BodyOS",
+  publisher: "BodyOS",
 
   keywords: [
-    "Body OS",
+    "BodyOS",
     "тренировки",
     "система тренировок",
     "фитнес",
@@ -89,8 +89,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ru_RU",
     url: "https://workhealth.vercel.app",
-    siteName: "Body OS",
-    title: "Body OS — твоя система тренировок",
+    siteName: "BodyOS",
+    title: "BodyOS — твоя система тренировок",
     description:
       "Планируй тренировки, отслеживай прогресс и развивайся системно.",
     images: [
@@ -98,14 +98,14 @@ export const metadata: Metadata = {
         url: "/icons/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Body OS — твоя система тренировок",
+        alt: "BodyOS — твоя система тренировок",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Body OS — твоя система тренировок",
+    title: "BodyOS — твоя система тренировок",
     description:
       "Планируй тренировки, отслеживай прогресс и развивайся системно.",
     images: ["/icons/og-image.jpg"],

@@ -11,7 +11,7 @@ import SettingsNavigationRow from "@/app/components/settings/SettingsNavigationR
 import AuthFooter from "@/app/components/auth/AuthFooter";
 
 /**
- * Главная страница настроек Body OS.
+ * Главная страница настроек BodyOS.
  *
  * Содержит настройки внешнего вида, уведомлений и звуков,
  * аккаунта, а также информацию о версии приложения.

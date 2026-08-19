@@ -2,7 +2,7 @@
 import PageHeader from "@/app/components/app/PageHeader";
 
 /**
- * Главная страница Body OS.
+ * Главная страница BodyOS.
  *
  * Отображает приветствие пользователя, состояние сегодняшнего дня
  * и empty state до появления первых данных о тренировках.

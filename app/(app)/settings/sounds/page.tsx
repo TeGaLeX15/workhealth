@@ -16,7 +16,7 @@ import {
 type SoundToggleKey = "restCountdown" | "restComplete" | "workoutComplete";
 
 /**
- * Страница настроек звуков Body OS.
+ * Страница настроек звуков BodyOS.
  *
  * Позволяет управлять глобальным состоянием звуков
  * и отдельными звуковыми событиями во время тренировки.

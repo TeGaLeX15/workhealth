@@ -20,7 +20,7 @@ import {
 import { loginSchema } from "@/app/lib/validation/auth";
 
 /**
- * Страница входа в аккаунт Body OS.
+ * Страница входа в аккаунт BodyOS.
  *
  * Отвечает за:
  * - ввод и валидацию учетных данных;

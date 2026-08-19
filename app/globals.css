@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   BODY OS — DESIGN TOKENS
+   BodyOS — DESIGN TOKENS
    ========================================================================== */
 
 :root {
@@ -173,7 +173,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — APP LOADER
+   BodyOS — APP LOADER
    ========================================================================== */
 
 .bodyos-loader svg polyline {
@@ -205,7 +205,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — ACTIVE WORKOUT
+   BodyOS — ACTIVE WORKOUT
    ========================================================================== */
 
 .bodyos-active-workout {
@@ -228,7 +228,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — CURRENT SET
+   BodyOS — CURRENT SET
    ========================================================================== */
 
 .bodyos-current-set {
@@ -253,7 +253,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — CURRENT SET PULSE
+   BodyOS — CURRENT SET PULSE
    ========================================================================== */
 
 .bodyos-current-set-pulse {
@@ -274,7 +274,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — CURRENT INDICATOR
+   BodyOS — CURRENT INDICATOR
    ========================================================================== */
 
 .bodyos-current-indicator {
@@ -293,7 +293,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — CURRENT DOT
+   BodyOS — CURRENT DOT
    ========================================================================== */
 
 .bodyos-current-dot {
@@ -314,7 +314,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — ACTION DOT
+   BodyOS — ACTION DOT
    ========================================================================== */
 
 .bodyos-action-dot {
@@ -333,7 +333,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — WORKOUT PROGRESS
+   BodyOS — WORKOUT PROGRESS
    ========================================================================== */
 
 .workout-progress-current {
@@ -358,7 +358,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — REST INDICATOR
+   BodyOS — REST INDICATOR
    ========================================================================== */
 
 .workout-rest-active {
@@ -379,7 +379,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — ACTION BUTTON
+   BodyOS — ACTION BUTTON
    ========================================================================== */
 
 .bodyos-action-button {
@@ -396,7 +396,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ==========================================================================
-   BODY OS — REST TIMER
+   BodyOS — REST TIMER
    ========================================================================== */
 
 .bodyos-rest-timer {

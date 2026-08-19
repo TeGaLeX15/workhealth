@@ -6,11 +6,29 @@ import { hashPassword } from "@/app/server/auth/password";
 import { hashPasswordResetToken } from "@/app/server/auth/password-reset";
 
 /**
+ * Коды ошибок, возникающие при попытке использовать
+ * недействительный, просроченный или уже использованный
+ * токен восстановления пароля.
+ */
+type ResetPasswordErrorCode =
+  "RESET_TOKEN_INVALID" | "RESET_TOKEN_USED" | "RESET_TOKEN_EXPIRED";
+
+/**
  * Устанавливает новый пароль по действующему токену восстановления.
  *
- * После успешной смены пароля токен помечается использованным,
- * все активные сессии пользователя завершаются, а остальные
- * неиспользованные токены восстановления становятся недействительными.
+ * Перед изменением пароля проверяет существование, срок действия
+ * и состояние токена.
+ *
+ * После успешной смены пароля:
+ * - текущий токен помечается использованным;
+ * - пароль пользователя обновляется;
+ * - все активные сессии пользователя завершаются;
+ * - остальные неиспользованные токены восстановления
+ *   становятся недействительными.
+ *
+ * Операции изменения состояния пользователя выполняются
+ * внутри одной транзакции, чтобы они либо завершились полностью,
+ * либо были полностью отменены.
  */
 export async function POST(request: Request) {
   try {
@@ -42,8 +60,16 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Хешируем токен до обращения к базе данных.
+     *
+     * В базе хранится только хеш токена, а не его исходное значение.
+     */
     const tokenHash = hashPasswordResetToken(token);
 
+    /**
+     * Находим токен и получаем только необходимые данные.
+     */
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: {
         tokenHash,
@@ -78,7 +104,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (resetToken.expiresAt <= new Date()) {
+    const now = new Date();
+
+    if (resetToken.expiresAt <= now) {
       return NextResponse.json(
         {
           error: "Ссылка недействительна или устарела",
@@ -89,61 +117,84 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Хеширование пароля выполняется до открытия транзакции.
+     *
+     * Это важно: ресурсы соединения с базой данных не должны
+     * удерживаться во время CPU-затратной операции хеширования.
+     */
     const passwordHash = await hashPassword(password);
-    const now = new Date();
 
     await prisma.$transaction(
       async (tx) => {
-        const currentToken = await tx.passwordResetToken.findUnique({
+        /**
+         * Атомарно помечаем токен использованным.
+         *
+         * Условия usedAt и expiresAt защищают от ситуации,
+         * когда два запроса одновременно пытаются использовать
+         * один и тот же токен.
+         *
+         * Только один из них сможет изменить строку.
+         */
+        const claimedToken = await tx.passwordResetToken.updateMany({
           where: {
             id: resetToken.id,
-          },
-          select: {
-            userId: true,
-            expiresAt: true,
-            usedAt: true,
-          },
-        });
-
-        if (!currentToken) {
-          throw new Error("RESET_TOKEN_INVALID");
-        }
-
-        if (currentToken.usedAt !== null) {
-          throw new Error("RESET_TOKEN_USED");
-        }
-
-        if (currentToken.expiresAt <= now) {
-          throw new Error("RESET_TOKEN_EXPIRED");
-        }
-
-        await tx.user.update({
-          where: {
-            id: currentToken.userId,
-          },
-          data: {
-            passwordHash,
-          },
-        });
-
-        await tx.passwordResetToken.update({
-          where: {
-            id: resetToken.id,
+            userId: resetToken.userId,
+            usedAt: null,
+            expiresAt: {
+              gt: now,
+            },
           },
           data: {
             usedAt: now,
           },
         });
 
-        await tx.session.deleteMany({
+        if (claimedToken.count !== 1) {
+          /**
+           * Если строка не была обновлена, токен уже был
+           * использован, истёк или больше не существует.
+           *
+           * Для пользователя все эти ситуации выглядят одинаково:
+           * ссылка больше недействительна.
+           */
+          throw new Error("RESET_TOKEN_INVALID");
+        }
+
+        /**
+         * Устанавливаем новый пароль пользователя.
+         */
+        await tx.user.update({
           where: {
-            userId: currentToken.userId,
+            id: resetToken.userId,
+          },
+          data: {
+            passwordHash,
           },
         });
 
+        /**
+         * Завершаем все существующие сессии пользователя.
+         *
+         * Это гарантирует, что после смены пароля старые
+         * авторизованные сессии больше не останутся активными.
+         */
+        await tx.session.deleteMany({
+          where: {
+            userId: resetToken.userId,
+          },
+        });
+
+        /**
+         * Делаем остальные токены восстановления
+         * недействительными.
+         *
+         * Это предотвращает использование старых писем
+         * после успешной смены пароля.
+         */
         await tx.passwordResetToken.updateMany({
           where: {
-            userId: currentToken.userId,
+            userId: resetToken.userId,
             id: {
               not: resetToken.id,
             },
@@ -155,16 +206,27 @@ export async function POST(request: Request) {
         });
       },
       {
+        /**
+         * Транзакция содержит только быстрые операции с БД:
+         * хеширование пароля выполняется до её открытия.
+         */
         timeout: 10_000,
       },
     );
 
-    return NextResponse.json({
-      success: true,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     if (error instanceof Error) {
-      if (error.message === "RESET_TOKEN_INVALID") {
+      const errorCode = error.message as ResetPasswordErrorCode;
+
+      if (errorCode === "RESET_TOKEN_INVALID") {
         return NextResponse.json(
           {
             error: "Ссылка недействительна или устарела",
@@ -175,7 +237,7 @@ export async function POST(request: Request) {
         );
       }
 
-      if (error.message === "RESET_TOKEN_USED") {
+      if (errorCode === "RESET_TOKEN_USED") {
         return NextResponse.json(
           {
             error: "Ссылка уже была использована",
@@ -186,7 +248,7 @@ export async function POST(request: Request) {
         );
       }
 
-      if (error.message === "RESET_TOKEN_EXPIRED") {
+      if (errorCode === "RESET_TOKEN_EXPIRED") {
         return NextResponse.json(
           {
             error: "Ссылка недействительна или устарела",

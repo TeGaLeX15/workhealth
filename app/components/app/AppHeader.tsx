@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 /**
  * Отображает основную шапку приложения.
  *
- * Содержит логотип Body OS, ссылку на главную страницу
+ * Содержит логотип BodyOS, ссылку на главную страницу
  * и переход в профиль пользователя. Также показывает
  * текущее состояние интернет-соединения.
  *
@@ -66,7 +66,7 @@ export default function AppHeader() {
       >
         <Link
           href="/"
-          aria-label="Body OS — главная"
+          aria-label="BodyOS — главная"
           className="
             flex
             items-center
@@ -113,7 +113,7 @@ export default function AppHeader() {
                 color: "var(--foreground)",
               }}
             >
-              Body OS
+              BodyOS
             </div>
 
             <div

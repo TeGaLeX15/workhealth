@@ -4,7 +4,7 @@ import { APP_VERSION } from "@/app/lib/app-version";
 /**
  * Нижний блок страниц авторизации.
  *
- * Отображает название приложения и текущую версию Body OS.
+ * Отображает название приложения и текущую версию BodyOS.
  *
  * @returns Футер страницы авторизации.
  */
@@ -24,7 +24,7 @@ export default function AuthFooter() {
         color: "var(--subtle, var(--muted))",
       }}
     >
-      Body OS · версия {APP_VERSION}
+      BodyOS · версия {APP_VERSION}
     </footer>
   );
 }
