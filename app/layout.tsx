@@ -95,7 +95,7 @@ export const metadata: Metadata = {
       "Планируй тренировки, отслеживай прогресс и развивайся системно.",
     images: [
       {
-        url: "/icons/og-image.png",
+        url: "/icons/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Body OS — твоя система тренировок",
@@ -108,7 +108,7 @@ export const metadata: Metadata = {
     title: "Body OS — твоя система тренировок",
     description:
       "Планируй тренировки, отслеживай прогресс и развивайся системно.",
-    images: ["/icons/og-image.png"],
+    images: ["/icons/og-image.jpg"],
   },
 
   robots: {
