@@ -19,8 +19,28 @@ import {
 } from "@/app/lib/timezone/client";
 import { registerSchema } from "@/app/lib/validation/auth";
 
+/**
+ * Страница регистрации аккаунта Body OS.
+ *
+ * Отвечает за:
+ * - ввод и валидацию данных нового пользователя;
+ * - проверку пароля и его подтверждения;
+ * - отображение ошибок полей и запроса;
+ * - определение часового пояса пользователя;
+ * - создание аккаунта;
+ * - сохранение часового пояса после успешной регистрации;
+ * - перенаправление пользователя на главную страницу.
+ */
 export default function RegisterPage() {
+  /* ==========================================================================
+     ROUTER
+     ========================================================================== */
+
   const router = useRouter();
+
+  /* ==========================================================================
+     FORM STATE
+     ========================================================================== */
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,9 +50,27 @@ export default function RegisterPage() {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordRepeatTouched, setPasswordRepeatTouched] = useState(false);
 
+  /* ==========================================================================
+     SUBMISSION STATE
+     ========================================================================== */
+
+  /**
+   * Управляет состоянием асинхронной отправки формы:
+   * загрузкой, завершением и серверной ошибкой.
+   */
   const { isLoading, isCompleted, error, execute, clearError } =
     useAsyncSubmit();
 
+  /* ==========================================================================
+     VALIDATION
+     ========================================================================== */
+
+  /**
+   * Валидирует текущие значения формы через общую схему регистрации.
+   *
+   * Результат используется для отображения ошибок отдельных полей
+   * и определения доступности кнопки отправки.
+   */
   const validationResult = registerSchema.safeParse({
     email,
     password,
@@ -49,11 +87,23 @@ export default function RegisterPage() {
 
   const isFormValid = validationResult.success;
 
+  /* ==========================================================================
+     SUBMIT
+     ========================================================================== */
+
+  /**
+   * Создаёт аккаунт нового пользователя.
+   *
+   * Перед отправкой повторно валидирует форму, получает локальный часовой пояс
+   * и передаёт данные в auth-слой. После успешной регистрации сохраняет
+   * часовой пояс и перенаправляет пользователя на главную страницу.
+   */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setEmailTouched(true);
     setPasswordTouched(true);
+    setPasswordRepeatTouched(true);
 
     const validation = registerSchema.safeParse({
       email,
@@ -89,8 +139,10 @@ export default function RegisterPage() {
 
   return (
     <>
+      {/* BRAND */}
       <AuthBrand />
 
+      {/* REGISTER FORM */}
       <AuthCard
         title="Создать аккаунт"
         description="Создай аккаунт, чтобы сохранять тренировки и следить за своим прогрессом."
@@ -129,6 +181,7 @@ export default function RegisterPage() {
         }
       >
         <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+          {/* EMAIL */}
           <AuthInput
             id="email"
             label="Email"
@@ -147,6 +200,7 @@ export default function RegisterPage() {
             error={emailError}
           />
 
+          {/* PASSWORD */}
           <PasswordInput
             id="password"
             label="Пароль"
@@ -165,6 +219,7 @@ export default function RegisterPage() {
             error={passwordError}
           />
 
+          {/* PASSWORD CONFIRMATION */}
           <PasswordInput
             id="passwordRepeat"
             label="Повторите пароль"
@@ -183,6 +238,7 @@ export default function RegisterPage() {
             error={passwordRepeatError}
           />
 
+          {/* SERVER ERROR */}
           {error && (
             <div
               role="alert"
@@ -204,6 +260,7 @@ export default function RegisterPage() {
             </div>
           )}
 
+          {/* SUBMIT */}
           <button
             type="submit"
             disabled={!isFormValid || isLoading || isCompleted}
@@ -241,6 +298,7 @@ export default function RegisterPage() {
         </form>
       </AuthCard>
 
+      {/* FOOTER */}
       <AuthFooter />
     </>
   );

@@ -1,12 +1,13 @@
 // app/(app)/workouts/[workoutId]/page.tsx
 import { redirect } from "next/navigation";
+
 import { requireCurrentUser } from "@/app/server/auth/session";
 import { prisma } from "@/app/server/db";
 
-import WorkoutHeader from "@/app/components/workout/WorkoutHeader";
-import PlannedWorkout from "@/app/components/workout/PlannedWorkout";
-import WorkoutSession from "@/app/components/workout/WorkoutSession";
 import CompletedWorkout from "@/app/components/workout/CompletedWorkout";
+import PlannedWorkout from "@/app/components/workout/PlannedWorkout";
+import WorkoutHeader from "@/app/components/workout/WorkoutHeader";
+import WorkoutSession from "@/app/components/workout/WorkoutSession";
 
 type WorkoutPageProps = {
   params: Promise<{
@@ -14,13 +15,42 @@ type WorkoutPageProps = {
   }>;
 };
 
+/**
+ * Страница отдельной тренировки Body OS.
+ *
+ * Загружает тренировку пользователя, проверяет доступ к ней
+ * и отображает соответствующий интерфейс в зависимости от её статуса:
+ *
+ * - PLANNED — запланированная тренировка;
+ * - IN_PROGRESS — активная тренировка;
+ * - COMPLETED — завершённая тренировка.
+ *
+ * Пропущенные, отменённые или заблокированные тренировки
+ * перенаправляются обратно на страницу тренировок.
+ */
 export default async function WorkoutPage({ params }: WorkoutPageProps) {
+  /* ==========================================================================
+     AUTHENTICATION
+     ========================================================================== */
+
+  /**
+   * Получает текущего авторизованного пользователя.
+   *
+   * Используется для ограничения доступа к тренировкам
+   * только их владельцу.
+   */
   const user = await requireCurrentUser();
 
   const { workoutId } = await params;
 
-  // ─── Workout ───────────────────────────────────────────────────────────
+  /* ==========================================================================
+     WORKOUT
+     ========================================================================== */
 
+  /**
+   * Загружает тренировку пользователя вместе с упражнением,
+   * тренировочной неделей и подходами.
+   */
   const workout = await prisma.workout.findFirst({
     where: {
       id: workoutId,
@@ -37,16 +67,32 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
     },
   });
 
+  /**
+   * Если тренировка не существует или не принадлежит пользователю,
+   * возвращаем его на страницу тренировок.
+   */
   if (!workout) {
     redirect("/training");
   }
 
-  // ─── Access control ────────────────────────────────────────────────────
+  /* ==========================================================================
+     ACCESS CONTROL
+     ========================================================================== */
 
+  /**
+   * Пропущенные и отменённые тренировки недоступны для открытия.
+   */
   if (workout.status === "SKIPPED" || workout.status === "CANCELLED") {
     redirect("/training");
   }
 
+  /**
+   * Для запланированной тренировки проверяем,
+   * нет ли более ранней незавершённой тренировки
+   * этого же упражнения.
+   *
+   * Это предотвращает прохождение тренировок не по порядку.
+   */
   if (workout.status === "PLANNED") {
     const blockingWorkout = await prisma.workout.findFirst({
       where: {
@@ -82,27 +128,37 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       },
     });
 
+    /**
+     * Если существует более ранняя незавершённая тренировка,
+     * текущая тренировка считается заблокированной.
+     */
     if (blockingWorkout) {
       redirect("/training");
     }
   }
 
-  // ─── Render ─────────────────────────────────────────────────────────────
+  /* ==========================================================================
+     RENDER
+     ========================================================================== */
 
   return (
     <main className="mx-auto w-full">
+      {/* WORKOUT HEADER */}
       <WorkoutHeader workout={workout} />
 
+      {/* PLANNED WORKOUT */}
       {workout.status === "PLANNED" && (
         <PlannedWorkout workout={workout} timeZone={user.timezone} />
       )}
 
+      {/* ACTIVE WORKOUT */}
       {workout.status === "IN_PROGRESS" && (
         <section>
           <WorkoutSession workoutId={workout.id} sets={workout.sets} />
         </section>
       )}
 
+      {/* COMPLETED WORKOUT */}
       {workout.status === "COMPLETED" && <CompletedWorkout workout={workout} />}
     </main>
   );

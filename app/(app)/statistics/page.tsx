@@ -1,17 +1,24 @@
+// app/(app)/statistics/page.tsx
 import PageHeader from "@/app/components/app/PageHeader";
 
-// app/(app)/statistics/page.tsx
-export default async function StatisticsPage() {
+/**
+ * Страница статистики пользователя.
+ *
+ * Сейчас содержит empty state.
+ * В дальнейшем здесь появятся история тренировок, рекорды
+ * и динамика результатов.
+ */
+export default function StatisticsPage() {
   return (
     <>
-      {/* HEADER */}
+      {/* PAGE HEADER */}
       <PageHeader
         eyebrow="Статистика"
         title="Твой прогресс"
         description="Здесь появится история тренировок, рекорды и динамика твоих результатов"
       />
 
-      {/* EMPTY BLOCK */}
+      {/* EMPTY STATE */}
       <section
         className="flex min-h-[360px] flex-col items-center justify-center rounded-[28px] border px-6 py-10 text-center"
         style={{

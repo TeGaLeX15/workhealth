@@ -17,6 +17,8 @@
   /* Accent */
   --accent: #22c55e;
   --accent-dark: #16a34a;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --accent-contrast: #ffffff;
 
   /* Text */
   --muted: #71717a;
@@ -57,7 +59,7 @@
 }
 
 /* ==========================================================================
-   RESET
+   RESET / BASE
    ========================================================================== */
 
 *,
@@ -102,16 +104,8 @@ body {
 }
 
 /* ==========================================================================
-   PWA SAFE AREA
+   PWA — SAFE AREA
    ========================================================================== */
-
-/*
- * Используем safe-area через отдельные utility-классы,
- * а не добавляем padding всему body.
- *
- * Это важно: padding на body может сломать
- * вертикальную композицию страниц Body OS.
- */
 
 .bodyos-safe-top {
   padding-top: env(safe-area-inset-top);
@@ -130,7 +124,56 @@ body {
 }
 
 /* ==========================================================================
-   Body OS — App Loader
+   GLOBAL INTERACTION
+   ========================================================================== */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* ==========================================================================
+   FORM ELEMENTS
+   ========================================================================== */
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* ==========================================================================
+   BODY OS — APP LOADER
    ========================================================================== */
 
 .bodyos-loader svg polyline {
@@ -161,65 +204,13 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bodyos-loader-front {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-}
-
-/* ==========================================================================
-   INTERACTION
-   ========================================================================== */
-
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button {
-  font: inherit;
-}
-
-button,
-[role="button"] {
-  touch-action: manipulation;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-::selection {
-  background: var(--accent);
-  color: #ffffff;
-}
-
-/* ==========================================================================
-   FORM ELEMENTS
-   ========================================================================== */
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-input[type="number"] {
-  appearance: textfield;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  appearance: none;
-  margin: 0;
-}
-
 /* ==========================================================================
    BODY OS — ACTIVE WORKOUT
    ========================================================================== */
+
+.bodyos-active-workout {
+  animation: bodyos-active-workout 3s ease-in-out infinite;
+}
 
 @keyframes bodyos-active-workout {
   0%,
@@ -236,13 +227,19 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-active-workout {
-  animation: bodyos-active-workout 3s ease-in-out infinite;
-}
-
 /* ==========================================================================
    BODY OS — CURRENT SET
    ========================================================================== */
+
+.bodyos-current-set {
+  position: relative;
+
+  animation: bodyos-current-set 2.4s ease-in-out infinite;
+
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 
 @keyframes bodyos-current-set {
   0%,
@@ -255,13 +252,34 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-current-set {
-  animation: bodyos-current-set 2.4s ease-in-out infinite;
+/* ==========================================================================
+   BODY OS — CURRENT SET PULSE
+   ========================================================================== */
+
+.bodyos-current-set-pulse {
+  animation: bodyos-current-set-pulse 1.8s ease-out infinite;
+}
+
+@keyframes bodyos-current-set-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: scale(1.07);
+    opacity: 0;
+  }
 }
 
 /* ==========================================================================
    BODY OS — CURRENT INDICATOR
    ========================================================================== */
+
+.bodyos-current-indicator {
+  animation: bodyos-current-indicator 2s ease-in-out infinite;
+}
 
 @keyframes bodyos-current-indicator {
   0%,
@@ -274,13 +292,13 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-current-indicator {
-  animation: bodyos-current-indicator 2s ease-in-out infinite;
-}
-
 /* ==========================================================================
    BODY OS — CURRENT DOT
    ========================================================================== */
+
+.bodyos-current-dot {
+  animation: bodyos-current-dot 1.8s ease-in-out infinite;
+}
 
 @keyframes bodyos-current-dot {
   0%,
@@ -295,13 +313,13 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-current-dot {
-  animation: bodyos-current-dot 1.8s ease-in-out infinite;
-}
-
 /* ==========================================================================
    BODY OS — ACTION DOT
    ========================================================================== */
+
+.bodyos-action-dot {
+  animation: bodyos-action-dot 1.8s ease-in-out infinite;
+}
 
 @keyframes bodyos-action-dot {
   0%,
@@ -314,13 +332,13 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.bodyos-action-dot {
-  animation: bodyos-action-dot 1.8s ease-in-out infinite;
-}
-
 /* ==========================================================================
    BODY OS — WORKOUT PROGRESS
    ========================================================================== */
+
+.workout-progress-current {
+  animation: workout-progress-current 1.8s ease-in-out infinite;
+}
 
 @keyframes workout-progress-current {
   0%,
@@ -339,13 +357,13 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.workout-progress-current {
-  animation: workout-progress-current 1.8s ease-in-out infinite;
-}
-
 /* ==========================================================================
    BODY OS — REST INDICATOR
    ========================================================================== */
+
+.workout-rest-active {
+  animation: workout-rest-active 1.4s ease-in-out infinite;
+}
 
 @keyframes workout-rest-active {
   0%,
@@ -360,103 +378,9 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
-.workout-rest-active {
-  animation: workout-rest-active 1.4s ease-in-out infinite;
-}
-
 /* ==========================================================================
-   ACCESSIBILITY
+   BODY OS — ACTION BUTTON
    ========================================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .workout-progress-current,
-  .workout-rest-active {
-    animation: none;
-  }
-}
-
-/* =========================================================
-   BODY OS — CURRENT SET BUTTON
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   Idle pulse
-   --------------------------------------------------------- */
-
-@keyframes bodyos-current-set-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.25;
-  }
-
-  50% {
-    transform: scale(1.07);
-    opacity: 0;
-  }
-}
-
-/* ---------------------------------------------------------
-   Main button
-   --------------------------------------------------------- */
-
-.bodyos-current-set {
-  position: relative;
-  transition:
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 180ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* ---------------------------------------------------------
-   Pulse ring
-   --------------------------------------------------------- */
-
-.bodyos-current-set-pulse {
-  animation: bodyos-current-set-pulse 1.8s ease-out infinite;
-}
-
-/* ---------------------------------------------------------
-   Press
-   --------------------------------------------------------- */
-
-.bodyos-current-set:active {
-  transform: scale(0.93);
-  filter: brightness(0.96);
-}
-
-/* ---------------------------------------------------------
-   Reduced motion
-   --------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .bodyos-current-set-pulse {
-    animation: none;
-  }
-
-  .bodyos-current-set {
-    transition: none;
-  }
-
-  .bodyos-current-set:active {
-    transform: none;
-  }
-}
-
-/* =========================================================
-   BUTTON ACTIONS
-   ========================================================= */
 
 .bodyos-action-button {
   will-change: transform, box-shadow, filter;
@@ -471,19 +395,9 @@ input[type="number"]::-webkit-outer-spin-button {
   transform: translateY(2px) scale(0.96);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bodyos-action-button {
-    transition: none;
-  }
-
-  .bodyos-action-button:active {
-    transform: none;
-  }
-}
-
-/* =========================================================
-   REST TIMER
-   ========================================================= */
+/* ==========================================================================
+   BODY OS — REST TIMER
+   ========================================================================== */
 
 .bodyos-rest-timer {
   will-change: filter;
@@ -501,8 +415,43 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 }
 
+/* ==========================================================================
+   ACCESSIBILITY — REDUCED MOTION
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .bodyos-loader-front,
+  .bodyos-active-workout,
+  .bodyos-current-set,
+  .bodyos-current-set-pulse,
+  .bodyos-current-indicator,
+  .bodyos-current-dot,
+  .bodyos-action-dot,
+  .workout-progress-current,
+  .workout-rest-active,
   .bodyos-rest-timer {
     animation: none;
+  }
+
+  .bodyos-current-set,
+  .bodyos-action-button {
+    transition: none;
+  }
+
+  .bodyos-current-set:active,
+  .bodyos-action-button:active {
+    transform: none;
   }
 }

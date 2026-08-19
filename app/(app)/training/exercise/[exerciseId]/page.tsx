@@ -1,15 +1,15 @@
 // app/(app)/exercise/[exerciseId]/page.tsx
 import { redirect } from "next/navigation";
-import { requireCurrentUser } from "@/app/server/auth/session";
-import { prisma } from "@/app/server/db";
-import {
-  dateStringToUtcDate,
-  getLocalDateString,
-} from "@/app/lib/timezone/local-date";
 
 import MaxRepsForm from "@/app/components/exercises/max-reps/MaxRepsForm";
 import TrainingWeekCard from "@/app/components/TrainingWeekCard";
 import ActiveWorkoutCard from "@/app/components/workout/ActiveWorkoutCard";
+import {
+  dateStringToUtcDate,
+  getLocalDateString,
+} from "@/app/lib/timezone/local-date";
+import { requireCurrentUser } from "@/app/server/auth/session";
+import { prisma } from "@/app/server/db";
 
 type ExercisePageProps = {
   params: Promise<{
@@ -17,12 +17,37 @@ type ExercisePageProps = {
   }>;
 };
 
+/**
+ * Страница упражнения.
+ *
+ * Загружает упражнение и персональные данные пользователя,
+ * синхронизирует пропущенные тренировки и отображает текущую
+ * тренировку вместе с планом по тренировочным неделям.
+ *
+ * Если пользователь ещё не указал максимальное количество повторений,
+ * вместо тренировочного плана отображается форма первоначального замера.
+ */
 export default async function ExercisePage({ params }: ExercisePageProps) {
-  const user = await requireCurrentUser();
+  /* ==========================================================================
+     AUTHENTICATION & ROUTE PARAMS
+     ========================================================================== */
 
+  /**
+   * Получает текущего авторизованного пользователя и идентификатор упражнения.
+   */
+  const user = await requireCurrentUser();
   const { exerciseId } = await params;
 
-  // ─── Exercise ────────────────────────────────────────────────────────────
+  /* ==========================================================================
+     EXERCISE
+     ========================================================================== */
+
+  /**
+   * Загружает упражнение по идентификатору из URL.
+   *
+   * Если упражнение не существует, пользователь возвращается
+   * к списку доступных упражнений.
+   */
   const exercise = await prisma.exercise.findUnique({
     where: {
       id: exerciseId,
@@ -33,7 +58,13 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     redirect("/training");
   }
 
-  // ─── User exercise ───────────────────────────────────────────────────────
+  /* ==========================================================================
+     USER EXERCISE
+     ========================================================================== */
+
+  /**
+   * Загружает персональные данные пользователя для этого упражнения.
+   */
   const userExercise = await prisma.userExercise.findUnique({
     where: {
       userId_exerciseId: {
@@ -45,7 +76,14 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 
   const maxReps = userExercise?.maxReps ?? null;
 
-  // ─── Initial max reps ────────────────────────────────────────────────────
+  /* ==========================================================================
+     INITIAL MAX REPS
+     ========================================================================== */
+
+  /**
+   * Если пользователь ещё не проходил первоначальный замер,
+   * показываем форму для сохранения его максимального результата.
+   */
   if (maxReps === null) {
     return (
       <main className="px-4 pb-8 pt-8">
@@ -115,12 +153,29 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     );
   }
 
-  // ─── Current local date ──────────────────────────────────────────────────
-  const todayString = getLocalDateString(new Date(), user.timezone);
+  /* ==========================================================================
+     CURRENT DATE
+     ========================================================================== */
 
+  /**
+   * Определяет текущую дату пользователя с учётом его часового пояса.
+   *
+   * Используется для определения тренировок, которые были запланированы
+   * на прошлые даты, но ещё остались в статусе PLANNED.
+   */
+  const todayString = getLocalDateString(new Date(), user.timezone);
   const today = dateStringToUtcDate(todayString);
 
-  // ─── Sync missed workouts ────────────────────────────────────────────────
+  /* ==========================================================================
+     MISSED WORKOUTS
+     ========================================================================== */
+
+  /**
+   * Помечает пропущенные запланированные тренировки как SKIPPED.
+   *
+   * Выполняется перед загрузкой тренировочного плана, чтобы
+   * отображаемые данные сразу отражали актуальное состояние.
+   */
   await prisma.workout.updateMany({
     where: {
       userId: user.id,
@@ -135,7 +190,14 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     },
   });
 
-  // ─── Training data ───────────────────────────────────────────────────────
+  /* ==========================================================================
+     TRAINING DATA
+     ========================================================================== */
+
+  /**
+   * Загружает все тренировки упражнения вместе с тренировочными неделями
+   * и подходами.
+   */
   const workouts = await prisma.workout.findMany({
     where: {
       userId: user.id,
@@ -159,18 +221,35 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     ],
   });
 
-  // ─── Current workout ─────────────────────────────────────────────────────
+  /* ==========================================================================
+     CURRENT WORKOUT
+     ========================================================================== */
+
+  /**
+   * Определяет ближайшую активную или запланированную тренировку.
+   */
   const currentWorkout =
     workouts.find(
       (workout) =>
         workout.status === "IN_PROGRESS" || workout.status === "PLANNED",
     ) ?? null;
 
-  // ─── Active workout ──────────────────────────────────────────────────────
+  /**
+   * Определяет тренировку, которая выполняется прямо сейчас.
+   */
   const activeWorkout =
     workouts.find((workout) => workout.status === "IN_PROGRESS") ?? null;
 
-  // ─── Group workouts by training week ─────────────────────────────────────
+  /* ==========================================================================
+     TRAINING WEEKS
+     ========================================================================== */
+
+  /**
+   * Группирует тренировки по тренировочным неделям.
+   *
+   * Map используется для формирования одной записи недели,
+   * содержащей все связанные с ней тренировки.
+   */
   const weeks = new Map<
     string,
     {
@@ -196,14 +275,21 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     weeks.get(weekId)!.workouts.push(workout);
   }
 
+  /**
+   * Преобразует сгруппированные недели в массив и сортирует
+   * их по порядковому номеру.
+   */
   const weekList = Array.from(weeks.values()).sort(
     (a, b) => a.weekNumber - b.weekNumber,
   );
 
-  // ─── Exercise page ───────────────────────────────────────────────────────
+  /* ==========================================================================
+     RENDER
+     ========================================================================== */
+
   return (
     <main>
-      {/* Header */}
+      {/* PAGE HEADER */}
       <header className="text-center">
         <p
           className="
@@ -302,7 +388,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
         </div>
       </header>
 
-      {/* Active workout */}
+      {/* ACTIVE WORKOUT */}
       {activeWorkout && (
         <section className="mt-7">
           <ActiveWorkoutCard
@@ -313,7 +399,7 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
         </section>
       )}
 
-      {/* Training plan */}
+      {/* TRAINING PLAN */}
       <section className={activeWorkout ? "mt-10" : "mt-8"}>
         <div className="space-y-7">
           {weekList.map((week) => (

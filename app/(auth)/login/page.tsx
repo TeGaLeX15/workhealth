@@ -19,8 +19,27 @@ import {
 } from "@/app/lib/timezone/client";
 import { loginSchema } from "@/app/lib/validation/auth";
 
+/**
+ * Страница входа в аккаунт Body OS.
+ *
+ * Отвечает за:
+ * - ввод и валидацию учетных данных;
+ * - отображение ошибок полей и запроса;
+ * - определение часового пояса пользователя;
+ * - выполнение авторизации;
+ * - сохранение часового пояса после успешного входа;
+ * - перенаправление пользователя на главную страницу.
+ */
 export default function LoginPage() {
+  /* ==========================================================================
+     ROUTER
+     ========================================================================== */
+
   const router = useRouter();
+
+  /* ==========================================================================
+     FORM STATE
+     ========================================================================== */
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,9 +47,27 @@ export default function LoginPage() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
 
+  /* ==========================================================================
+     SUBMISSION STATE
+     ========================================================================== */
+
+  /**
+   * Управляет состоянием асинхронной отправки формы:
+   * загрузкой, завершением и серверной ошибкой.
+   */
   const { isLoading, isCompleted, error, execute, clearError } =
     useAsyncSubmit();
 
+  /* ==========================================================================
+     VALIDATION
+     ========================================================================== */
+
+  /**
+   * Валидирует текущие значения формы через общую схему авторизации.
+   *
+   * Результат используется как для отображения ошибок отдельных полей,
+   * так и для определения доступности кнопки отправки.
+   */
   const validationResult = loginSchema.safeParse({
     email,
     password,
@@ -45,6 +82,17 @@ export default function LoginPage() {
 
   const isFormValid = validationResult.success;
 
+  /* ==========================================================================
+     SUBMIT
+     ========================================================================== */
+
+  /**
+   * Выполняет авторизацию пользователя.
+   *
+   * Перед отправкой повторно валидирует форму, получает локальный часовой пояс
+   * и передаёт данные в auth-слой. После успешного входа сохраняет часовой пояс
+   * и перенаправляет пользователя на главную страницу.
+   */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -84,8 +132,10 @@ export default function LoginPage() {
 
   return (
     <>
+      {/* BRAND */}
       <AuthBrand />
 
+      {/* LOGIN FORM */}
       <AuthCard
         title="С возвращением"
         description="Войди в аккаунт, чтобы продолжить тренировку и следить за своим прогрессом."
@@ -124,6 +174,7 @@ export default function LoginPage() {
         }
       >
         <form onSubmit={handleSubmit} noValidate className="space-y-3.5">
+          {/* EMAIL */}
           <AuthInput
             id="email"
             label="Email"
@@ -142,6 +193,7 @@ export default function LoginPage() {
             error={emailError}
           />
 
+          {/* PASSWORD */}
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <span
@@ -193,6 +245,7 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* SERVER ERROR */}
           {error && (
             <div
               role="alert"
@@ -214,6 +267,7 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* SUBMIT */}
           <button
             type="submit"
             disabled={!isFormValid || isLoading || isCompleted}
@@ -247,6 +301,7 @@ export default function LoginPage() {
         </form>
       </AuthCard>
 
+      {/* FOOTER */}
       <AuthFooter />
     </>
   );

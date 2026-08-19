@@ -1,6 +1,12 @@
 // app/(app)/page.tsx
 import PageHeader from "@/app/components/app/PageHeader";
 
+/**
+ * Главная страница Body OS.
+ *
+ * Отображает приветствие пользователя, состояние сегодняшнего дня
+ * и empty state до появления первых данных о тренировках.
+ */
 export default function HomePage() {
   return (
     <>
@@ -11,7 +17,7 @@ export default function HomePage() {
         description="Твой прогресс, тренировки и основные показатели"
       />
 
-      {/* EMPTY BLOCKS */}
+      {/* TODAY */}
       <section
         className="rounded-[26px] border p-5"
         style={{
@@ -47,6 +53,7 @@ export default function HomePage() {
         </p>
       </section>
 
+      {/* EMPTY STATE */}
       <section
         className="mt-3 rounded-[26px] border px-6 py-10 text-center"
         style={{

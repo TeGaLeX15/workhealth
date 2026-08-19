@@ -6,10 +6,8 @@ import { ArrowLeft, Volume2 } from "lucide-react";
 import Link from "next/link";
 
 import { useTheme } from "@/app/providers/theme-provider";
-
 import SettingSection from "@/app/components/settings/SettingSection";
 import SettingToggle from "@/app/components/settings/SettingToggle";
-
 import {
   useSoundSettings,
   useUpdateSoundSettings,
@@ -17,22 +15,41 @@ import {
 
 type SoundToggleKey = "restCountdown" | "restComplete" | "workoutComplete";
 
+/**
+ * Страница настроек звуков Body OS.
+ *
+ * Позволяет управлять глобальным состоянием звуков
+ * и отдельными звуковыми событиями во время тренировки.
+ */
 export default function SoundsSettingsPage() {
+  /* PAGE LIFECYCLE */
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  /* SETTINGS */
 
   const { accent } = useTheme();
 
   const sounds = useSoundSettings();
   const updateSounds = useUpdateSoundSettings();
 
+  /* ACTIONS */
+
+  /**
+   * Переключает отдельную настройку звука.
+   *
+   * @param key Ключ звуковой настройки.
+   */
   function toggleSound(key: SoundToggleKey) {
     updateSounds((current) => ({
       ...current,
       [key]: !current[key],
     }));
   }
+
+  /* DERIVED STATE */
 
   const soundsDisabled = !sounds.enabled;
 

@@ -12,20 +12,53 @@ import AuthInput from "@/app/components/auth/AuthInput";
 import { useAsyncSubmit } from "@/app/lib/hooks/useAsyncSubmit";
 import { apiClient } from "@/app/lib/api/client";
 
+/**
+ * Страница восстановления пароля.
+ *
+ * Позволяет пользователю указать email и запросить
+ * ссылку для восстановления доступа к аккаунту.
+ */
 export default function ForgotPasswordPage() {
+  /* ==========================================================================
+     FORM STATE
+     ========================================================================== */
+
   const [email, setEmail] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
 
   const [isSent, setIsSent] = useState(false);
 
+  /* ==========================================================================
+     SUBMISSION
+     ========================================================================== */
+
   const { isLoading, error, execute, clearError } = useAsyncSubmit();
 
+  /* ==========================================================================
+     VALIDATION
+     ========================================================================== */
+
+  /**
+   * Определяет, является ли введённый email корректным.
+   */
   const isEmailValid =
     email.trim().length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
+  /**
+   * Возвращает ошибку email после взаимодействия пользователя с полем.
+   */
   const emailError =
     emailTouched && !isEmailValid ? "Введите корректный email" : "";
 
+  /* ==========================================================================
+     ACTIONS
+     ========================================================================== */
+
+  /**
+   * Отправляет запрос на восстановление пароля.
+   *
+   * @param event Событие отправки формы.
+   */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 

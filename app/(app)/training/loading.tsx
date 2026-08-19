@@ -1,4 +1,11 @@
 // app/(app)/loading.tsx
+
+/**
+ * Loading UI для защищённой части Body OS.
+ *
+ * Отображается Next.js во время ожидания загрузки содержимого
+ * страницы или серверных данных внутри app route.
+ */
 export default function Loader() {
   return (
     <div

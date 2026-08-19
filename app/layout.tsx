@@ -17,8 +17,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Body OS",
-  description: "Твоя система тренировок",
+  metadataBase: new URL("https://workhealth.vercel.app"),
+
+  title: {
+    default: "Body OS",
+    template: "%s — Body OS",
+  },
+
+  description:
+    "Твоя система тренировок. Планируй тренировки, отслеживай прогресс и развивайся системно.",
+
+  applicationName: "Body OS",
+
+  authors: [
+    {
+      name: "Body OS",
+    },
+  ],
+
+  creator: "Body OS",
+  publisher: "Body OS",
+
+  keywords: [
+    "Body OS",
+    "тренировки",
+    "система тренировок",
+    "фитнес",
+    "прогресс",
+    "workout",
+  ],
 
   manifest: "/icons/site.webmanifest",
 
@@ -56,6 +83,37 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    url: "https://workhealth.vercel.app",
+    siteName: "Body OS",
+    title: "Body OS — твоя система тренировок",
+    description:
+      "Планируй тренировки, отслеживай прогресс и развивайся системно.",
+    images: [
+      {
+        url: "/icons/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Body OS — твоя система тренировок",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Body OS — твоя система тренировок",
+    description:
+      "Планируй тренировки, отслеживай прогресс и развивайся системно.",
+    images: ["/icons/og-image.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

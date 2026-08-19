@@ -6,25 +6,46 @@ import { ArrowLeft, Bell } from "lucide-react";
 import Link from "next/link";
 
 import { useTheme } from "@/app/providers/theme-provider";
-
 import SettingSection from "@/app/components/settings/SettingSection";
 import SettingToggle from "@/app/components/settings/SettingToggle";
-
 import {
   useNotificationSettings,
   useUpdateNotificationSettings,
 } from "@/app/lib/notifications/useNotificationSettings";
 
+/**
+ * Страница настроек уведомлений Body OS.
+ *
+ * Позволяет управлять глобальным состоянием уведомлений пользователя.
+ */
 export default function NotificationsSettingsPage() {
+  /* ==========================================================================
+     PAGE LIFECYCLE
+     ========================================================================== */
+
+  /**
+   * Возвращает страницу в начало при её открытии.
+   */
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  /* ==========================================================================
+     SETTINGS
+     ========================================================================== */
 
   const { accent } = useTheme();
 
   const notifications = useNotificationSettings();
   const updateNotifications = useUpdateNotificationSettings();
 
+  /* ==========================================================================
+     ACTIONS
+     ========================================================================== */
+
+  /**
+   * Переключает глобальное состояние уведомлений.
+   */
   function toggleNotifications() {
     updateNotifications((current) => ({
       ...current,

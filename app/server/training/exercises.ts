@@ -62,7 +62,7 @@ export async function getTrainingExercises(): Promise<
     return null;
   }
 
-  if (session.expiresAt < new Date()) {
+  if (session.expiresAt <= new Date()) {
     await prisma.session.delete({
       where: {
         tokenHash,

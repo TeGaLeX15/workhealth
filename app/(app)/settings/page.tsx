@@ -1,24 +1,32 @@
 // app/(app)/settings/page.tsx
 import { Bell, Volume2 } from "lucide-react";
 
-import SettingSection from "@/app/components/settings/SettingSection";
-import SettingsNavigationRow from "@/app/components/settings/SettingsNavigationRow";
-import AppearanceSettings from "@/app/components/settings/AppearanceSettings";
-import AccountSettings from "@/app/components/settings/AccountSettings";
-import AuthFooter from "@/app/components/auth/AuthFooter";
 import PageHeader from "@/app/components/app/PageHeader";
 
+import AccountSettings from "@/app/components/settings/AccountSettings";
+import AppearanceSettings from "@/app/components/settings/AppearanceSettings";
+import SettingSection from "@/app/components/settings/SettingSection";
+import SettingsNavigationRow from "@/app/components/settings/SettingsNavigationRow";
+
+import AuthFooter from "@/app/components/auth/AuthFooter";
+
+/**
+ * Главная страница настроек Body OS.
+ *
+ * Содержит настройки внешнего вида, уведомлений и звуков,
+ * аккаунта, а также информацию о версии приложения.
+ */
 export default function SettingsPage() {
   return (
     <>
-      {/* HEADER */}
+      {/* PAGE HEADER */}
       <PageHeader
         eyebrow="Настройки"
         title="Персонализация"
         description="Настрой BodyOS под себя"
       />
 
-      {/* THEME */}
+      {/* APPEARANCE SETTINGS */}
       <AppearanceSettings />
 
       {/* NOTIFICATIONS & SOUNDS */}
@@ -48,10 +56,10 @@ export default function SettingsPage() {
         />
       </SettingSection>
 
-      {/* ACCOUNT */}
+      {/* ACCOUNT SETTINGS */}
       <AccountSettings />
 
-      {/* VERSION */}
+      {/* APP VERSION & AUTH */}
       <AuthFooter />
     </>
   );
